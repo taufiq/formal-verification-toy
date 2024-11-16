@@ -1,0 +1,559 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    FALSE
+    TRUTH_VALUES
+
+Grammar
+
+Rule 0     S' -> statement
+Rule 1     statement -> annotation
+Rule 2     statement -> assignment
+Rule 3     statement -> expression
+Rule 4     annotation -> ANNOTATION expression
+Rule 5     assignment -> VARIABLE ASSIGNMENT expression
+Rule 6     expression -> expression COMPARATOR term
+Rule 7     expression -> expression BOOLEAN_OPERATOR term
+Rule 8     term -> VARIABLE
+Rule 9     expression -> expression PLUS expression
+Rule 10    expression -> expression MINUS term
+Rule 11    expression -> term
+Rule 12    term -> term TIMES factor
+Rule 13    term -> TRUE
+Rule 14    term -> term DIVIDE factor
+Rule 15    term -> factor
+Rule 16    factor -> NUMBER
+Rule 17    factor -> LPAREN expression RPAREN
+
+Terminals, with rules where they appear
+
+ANNOTATION           : 4
+ASSIGNMENT           : 5
+BOOLEAN_OPERATOR     : 7
+COMPARATOR           : 6
+DIVIDE               : 14
+FALSE                : 
+LPAREN               : 17
+MINUS                : 10
+NUMBER               : 16
+PLUS                 : 9
+RPAREN               : 17
+TIMES                : 12
+TRUE                 : 13
+TRUTH_VALUES         : 
+VARIABLE             : 5 8
+error                : 
+
+Nonterminals, with rules where they appear
+
+annotation           : 1
+assignment           : 2
+expression           : 3 4 5 6 7 9 9 10 17
+factor               : 12 14 15
+statement            : 0
+term                 : 6 7 10 11 12 14
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . statement
+    (1) statement -> . annotation
+    (2) statement -> . assignment
+    (3) statement -> . expression
+    (4) annotation -> . ANNOTATION expression
+    (5) assignment -> . VARIABLE ASSIGNMENT expression
+    (6) expression -> . expression COMPARATOR term
+    (7) expression -> . expression BOOLEAN_OPERATOR term
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS term
+    (11) expression -> . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    ANNOTATION      shift and go to state 5
+    VARIABLE        shift and go to state 6
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    statement                      shift and go to state 1
+    annotation                     shift and go to state 2
+    assignment                     shift and go to state 3
+    expression                     shift and go to state 4
+    term                           shift and go to state 7
+    factor                         shift and go to state 8
+
+state 1
+
+    (0) S' -> statement .
+
+
+
+state 2
+
+    (1) statement -> annotation .
+
+    $end            reduce using rule 1 (statement -> annotation .)
+
+
+state 3
+
+    (2) statement -> assignment .
+
+    $end            reduce using rule 2 (statement -> assignment .)
+
+
+state 4
+
+    (3) statement -> expression .
+    (6) expression -> expression . COMPARATOR term
+    (7) expression -> expression . BOOLEAN_OPERATOR term
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS term
+
+    $end            reduce using rule 3 (statement -> expression .)
+    COMPARATOR      shift and go to state 12
+    BOOLEAN_OPERATOR shift and go to state 13
+    PLUS            shift and go to state 14
+    MINUS           shift and go to state 15
+
+
+state 5
+
+    (4) annotation -> ANNOTATION . expression
+    (6) expression -> . expression COMPARATOR term
+    (7) expression -> . expression BOOLEAN_OPERATOR term
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS term
+    (11) expression -> . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    expression                     shift and go to state 16
+    term                           shift and go to state 7
+    factor                         shift and go to state 8
+
+state 6
+
+    (5) assignment -> VARIABLE . ASSIGNMENT expression
+    (8) term -> VARIABLE .
+
+    ASSIGNMENT      shift and go to state 18
+    TIMES           reduce using rule 8 (term -> VARIABLE .)
+    DIVIDE          reduce using rule 8 (term -> VARIABLE .)
+    COMPARATOR      reduce using rule 8 (term -> VARIABLE .)
+    BOOLEAN_OPERATOR reduce using rule 8 (term -> VARIABLE .)
+    PLUS            reduce using rule 8 (term -> VARIABLE .)
+    MINUS           reduce using rule 8 (term -> VARIABLE .)
+    $end            reduce using rule 8 (term -> VARIABLE .)
+
+
+state 7
+
+    (11) expression -> term .
+    (12) term -> term . TIMES factor
+    (14) term -> term . DIVIDE factor
+
+    COMPARATOR      reduce using rule 11 (expression -> term .)
+    BOOLEAN_OPERATOR reduce using rule 11 (expression -> term .)
+    PLUS            reduce using rule 11 (expression -> term .)
+    MINUS           reduce using rule 11 (expression -> term .)
+    $end            reduce using rule 11 (expression -> term .)
+    RPAREN          reduce using rule 11 (expression -> term .)
+    TIMES           shift and go to state 19
+    DIVIDE          shift and go to state 20
+
+
+state 8
+
+    (15) term -> factor .
+
+    TIMES           reduce using rule 15 (term -> factor .)
+    DIVIDE          reduce using rule 15 (term -> factor .)
+    COMPARATOR      reduce using rule 15 (term -> factor .)
+    BOOLEAN_OPERATOR reduce using rule 15 (term -> factor .)
+    PLUS            reduce using rule 15 (term -> factor .)
+    MINUS           reduce using rule 15 (term -> factor .)
+    $end            reduce using rule 15 (term -> factor .)
+    RPAREN          reduce using rule 15 (term -> factor .)
+
+
+state 9
+
+    (13) term -> TRUE .
+
+    TIMES           reduce using rule 13 (term -> TRUE .)
+    DIVIDE          reduce using rule 13 (term -> TRUE .)
+    COMPARATOR      reduce using rule 13 (term -> TRUE .)
+    BOOLEAN_OPERATOR reduce using rule 13 (term -> TRUE .)
+    PLUS            reduce using rule 13 (term -> TRUE .)
+    MINUS           reduce using rule 13 (term -> TRUE .)
+    $end            reduce using rule 13 (term -> TRUE .)
+    RPAREN          reduce using rule 13 (term -> TRUE .)
+
+
+state 10
+
+    (16) factor -> NUMBER .
+
+    TIMES           reduce using rule 16 (factor -> NUMBER .)
+    DIVIDE          reduce using rule 16 (factor -> NUMBER .)
+    COMPARATOR      reduce using rule 16 (factor -> NUMBER .)
+    BOOLEAN_OPERATOR reduce using rule 16 (factor -> NUMBER .)
+    PLUS            reduce using rule 16 (factor -> NUMBER .)
+    MINUS           reduce using rule 16 (factor -> NUMBER .)
+    $end            reduce using rule 16 (factor -> NUMBER .)
+    RPAREN          reduce using rule 16 (factor -> NUMBER .)
+
+
+state 11
+
+    (17) factor -> LPAREN . expression RPAREN
+    (6) expression -> . expression COMPARATOR term
+    (7) expression -> . expression BOOLEAN_OPERATOR term
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS term
+    (11) expression -> . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    expression                     shift and go to state 21
+    term                           shift and go to state 7
+    factor                         shift and go to state 8
+
+state 12
+
+    (6) expression -> expression COMPARATOR . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    term                           shift and go to state 22
+    factor                         shift and go to state 8
+
+state 13
+
+    (7) expression -> expression BOOLEAN_OPERATOR . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    term                           shift and go to state 23
+    factor                         shift and go to state 8
+
+state 14
+
+    (9) expression -> expression PLUS . expression
+    (6) expression -> . expression COMPARATOR term
+    (7) expression -> . expression BOOLEAN_OPERATOR term
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS term
+    (11) expression -> . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    expression                     shift and go to state 24
+    term                           shift and go to state 7
+    factor                         shift and go to state 8
+
+state 15
+
+    (10) expression -> expression MINUS . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    term                           shift and go to state 25
+    factor                         shift and go to state 8
+
+state 16
+
+    (4) annotation -> ANNOTATION expression .
+    (6) expression -> expression . COMPARATOR term
+    (7) expression -> expression . BOOLEAN_OPERATOR term
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS term
+
+    $end            reduce using rule 4 (annotation -> ANNOTATION expression .)
+    COMPARATOR      shift and go to state 12
+    BOOLEAN_OPERATOR shift and go to state 13
+    PLUS            shift and go to state 14
+    MINUS           shift and go to state 15
+
+
+state 17
+
+    (8) term -> VARIABLE .
+
+    TIMES           reduce using rule 8 (term -> VARIABLE .)
+    DIVIDE          reduce using rule 8 (term -> VARIABLE .)
+    COMPARATOR      reduce using rule 8 (term -> VARIABLE .)
+    BOOLEAN_OPERATOR reduce using rule 8 (term -> VARIABLE .)
+    PLUS            reduce using rule 8 (term -> VARIABLE .)
+    MINUS           reduce using rule 8 (term -> VARIABLE .)
+    $end            reduce using rule 8 (term -> VARIABLE .)
+    RPAREN          reduce using rule 8 (term -> VARIABLE .)
+
+
+state 18
+
+    (5) assignment -> VARIABLE ASSIGNMENT . expression
+    (6) expression -> . expression COMPARATOR term
+    (7) expression -> . expression BOOLEAN_OPERATOR term
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS term
+    (11) expression -> . term
+    (8) term -> . VARIABLE
+    (12) term -> . term TIMES factor
+    (13) term -> . TRUE
+    (14) term -> . term DIVIDE factor
+    (15) term -> . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    VARIABLE        shift and go to state 17
+    TRUE            shift and go to state 9
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    expression                     shift and go to state 26
+    term                           shift and go to state 7
+    factor                         shift and go to state 8
+
+state 19
+
+    (12) term -> term TIMES . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    factor                         shift and go to state 27
+
+state 20
+
+    (14) term -> term DIVIDE . factor
+    (16) factor -> . NUMBER
+    (17) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 10
+    LPAREN          shift and go to state 11
+
+    factor                         shift and go to state 28
+
+state 21
+
+    (17) factor -> LPAREN expression . RPAREN
+    (6) expression -> expression . COMPARATOR term
+    (7) expression -> expression . BOOLEAN_OPERATOR term
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS term
+
+    RPAREN          shift and go to state 29
+    COMPARATOR      shift and go to state 12
+    BOOLEAN_OPERATOR shift and go to state 13
+    PLUS            shift and go to state 14
+    MINUS           shift and go to state 15
+
+
+state 22
+
+    (6) expression -> expression COMPARATOR term .
+    (12) term -> term . TIMES factor
+    (14) term -> term . DIVIDE factor
+
+    COMPARATOR      reduce using rule 6 (expression -> expression COMPARATOR term .)
+    BOOLEAN_OPERATOR reduce using rule 6 (expression -> expression COMPARATOR term .)
+    PLUS            reduce using rule 6 (expression -> expression COMPARATOR term .)
+    MINUS           reduce using rule 6 (expression -> expression COMPARATOR term .)
+    $end            reduce using rule 6 (expression -> expression COMPARATOR term .)
+    RPAREN          reduce using rule 6 (expression -> expression COMPARATOR term .)
+    TIMES           shift and go to state 19
+    DIVIDE          shift and go to state 20
+
+
+state 23
+
+    (7) expression -> expression BOOLEAN_OPERATOR term .
+    (12) term -> term . TIMES factor
+    (14) term -> term . DIVIDE factor
+
+    COMPARATOR      reduce using rule 7 (expression -> expression BOOLEAN_OPERATOR term .)
+    BOOLEAN_OPERATOR reduce using rule 7 (expression -> expression BOOLEAN_OPERATOR term .)
+    PLUS            reduce using rule 7 (expression -> expression BOOLEAN_OPERATOR term .)
+    MINUS           reduce using rule 7 (expression -> expression BOOLEAN_OPERATOR term .)
+    $end            reduce using rule 7 (expression -> expression BOOLEAN_OPERATOR term .)
+    RPAREN          reduce using rule 7 (expression -> expression BOOLEAN_OPERATOR term .)
+    TIMES           shift and go to state 19
+    DIVIDE          shift and go to state 20
+
+
+state 24
+
+    (9) expression -> expression PLUS expression .
+    (6) expression -> expression . COMPARATOR term
+    (7) expression -> expression . BOOLEAN_OPERATOR term
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS term
+
+  ! shift/reduce conflict for COMPARATOR resolved as shift
+  ! shift/reduce conflict for BOOLEAN_OPERATOR resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    $end            reduce using rule 9 (expression -> expression PLUS expression .)
+    RPAREN          reduce using rule 9 (expression -> expression PLUS expression .)
+    COMPARATOR      shift and go to state 12
+    BOOLEAN_OPERATOR shift and go to state 13
+    PLUS            shift and go to state 14
+    MINUS           shift and go to state 15
+
+  ! COMPARATOR      [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+  ! BOOLEAN_OPERATOR [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+  ! PLUS            [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+  ! MINUS           [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+
+
+state 25
+
+    (10) expression -> expression MINUS term .
+    (12) term -> term . TIMES factor
+    (14) term -> term . DIVIDE factor
+
+    COMPARATOR      reduce using rule 10 (expression -> expression MINUS term .)
+    BOOLEAN_OPERATOR reduce using rule 10 (expression -> expression MINUS term .)
+    PLUS            reduce using rule 10 (expression -> expression MINUS term .)
+    MINUS           reduce using rule 10 (expression -> expression MINUS term .)
+    $end            reduce using rule 10 (expression -> expression MINUS term .)
+    RPAREN          reduce using rule 10 (expression -> expression MINUS term .)
+    TIMES           shift and go to state 19
+    DIVIDE          shift and go to state 20
+
+
+state 26
+
+    (5) assignment -> VARIABLE ASSIGNMENT expression .
+    (6) expression -> expression . COMPARATOR term
+    (7) expression -> expression . BOOLEAN_OPERATOR term
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS term
+
+    $end            reduce using rule 5 (assignment -> VARIABLE ASSIGNMENT expression .)
+    COMPARATOR      shift and go to state 12
+    BOOLEAN_OPERATOR shift and go to state 13
+    PLUS            shift and go to state 14
+    MINUS           shift and go to state 15
+
+
+state 27
+
+    (12) term -> term TIMES factor .
+
+    TIMES           reduce using rule 12 (term -> term TIMES factor .)
+    DIVIDE          reduce using rule 12 (term -> term TIMES factor .)
+    COMPARATOR      reduce using rule 12 (term -> term TIMES factor .)
+    BOOLEAN_OPERATOR reduce using rule 12 (term -> term TIMES factor .)
+    PLUS            reduce using rule 12 (term -> term TIMES factor .)
+    MINUS           reduce using rule 12 (term -> term TIMES factor .)
+    $end            reduce using rule 12 (term -> term TIMES factor .)
+    RPAREN          reduce using rule 12 (term -> term TIMES factor .)
+
+
+state 28
+
+    (14) term -> term DIVIDE factor .
+
+    TIMES           reduce using rule 14 (term -> term DIVIDE factor .)
+    DIVIDE          reduce using rule 14 (term -> term DIVIDE factor .)
+    COMPARATOR      reduce using rule 14 (term -> term DIVIDE factor .)
+    BOOLEAN_OPERATOR reduce using rule 14 (term -> term DIVIDE factor .)
+    PLUS            reduce using rule 14 (term -> term DIVIDE factor .)
+    MINUS           reduce using rule 14 (term -> term DIVIDE factor .)
+    $end            reduce using rule 14 (term -> term DIVIDE factor .)
+    RPAREN          reduce using rule 14 (term -> term DIVIDE factor .)
+
+
+state 29
+
+    (17) factor -> LPAREN expression RPAREN .
+
+    TIMES           reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    COMPARATOR      reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    BOOLEAN_OPERATOR reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    $end            reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 17 (factor -> LPAREN expression RPAREN .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for COMPARATOR in state 24 resolved as shift
+WARNING: shift/reduce conflict for BOOLEAN_OPERATOR in state 24 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 24 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 24 resolved as shift
