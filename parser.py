@@ -19,7 +19,7 @@ def p_annotation(p):
 
 def p_assignment(p):
     'assignment : VARIABLE ASSIGNMENT expression'
-    p[0] = ('Assignment', p[1], p[2], p[3])
+    p[0] = ('assignment', p[1], p[2], p[3])
 
 def p_comparison(p):
     'expression : expression COMPARATOR term'
@@ -77,11 +77,51 @@ def p_error(p):
 # Build the parser
 parser = yacc.yacc()
 
-while True:
-   try:
-       s = input('calc > ')
-   except EOFError:
-       break
-   if not s: continue
-   result = parser.parse(s)
-   print(result)
+# while True:
+#    try:
+#        s = input('calc > ')
+#    except EOFError:
+#        break
+#    if not s: continue
+#    result = parser.parse(s)
+#    print(result)
+
+def gen_new_symbol(symbol):
+    return symbol + ''
+
+with open('code.tms') as f:
+    statements = []
+    for line in f.readlines():
+        statements.append(parser.parse(line))
+    conditions = []
+    body = []
+    for statement in statements:
+        statement_type = statement[0]
+        if statement_type == "annotation":
+            conditions.append(statement)
+        elif statement_type == "assignment":
+            body.append(statement)
+        else:
+            raise Exception("Not covered", statement_type)
+    body = body[::-1] # Reverse
+    variables = {} # Variable -> statement
+    substitutions = {} # Variable -> New Variable
+    for statement in body: # Assume body all has assignments
+        variable = statement[0]
+        rhs_expr = statement[3]
+        new_variable = gen_new_symbol(variable)
+        variables[new_variable] = rhs_expr
+        # substitute in my post-cond
+        substitutions[variable] = new_variable
+        pass
+
+
+def subst(tree, mapping):
+    if tree is None:
+        return
+    if isinstance(tree, list):
+        for node in tree:
+            if node[0] == "variables":
+                node[1] = mapping[node[1]]
+            else:
+                subst(node, tree)
