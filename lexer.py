@@ -10,7 +10,7 @@ tokens = [
    'PLUS',
    'MINUS',
    'TIMES',
-   'DIVIDE',
+   # 'DIVIDE',
    'LPAREN',
    'RPAREN',
    'ANNOTATION',
@@ -29,7 +29,7 @@ tokens = [
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
-t_DIVIDE  = r'/'
+# t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 # t_BOOLEAN = r'(TRUE|FALSE)'
@@ -38,6 +38,7 @@ t_RPAREN  = r'\)'
 # t_GREATER_THAN = r'>'
 # t_GREATER_THAN_EQUAL = r'>='
 t_ASSIGNMENT = r':='
+
 
 
 def t_TRUTH_VALUES(t):
