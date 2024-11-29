@@ -3,6 +3,9 @@ import ply.lex as lex
 reserved = {
    'TRUE' : 'TRUE',
    'FALSE' : 'FALSE',
+   "INT" : "INT_TYPE",
+   "BOOL" : "BOOL_TYPE"
+
 }
 # List of token names.   This is always required
 tokens = [
@@ -22,7 +25,9 @@ tokens = [
 #    'GREATER_THAN',
 #    'GREATER_THAN_EQUAL',
    'ASSIGNMENT',
-   'TRUTH_VALUES'
+   'TRUTH_VALUES',
+   # 'INT_TYPE',
+   # 'BOOL_TYPE'
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -32,6 +37,8 @@ t_TIMES   = r'\*'
 # t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
+# t_BOOL_TYPE = r'\bBOOL\b'
+# t_INT_TYPE = r'\bINT\b'
 # t_BOOLEAN = r'(TRUE|FALSE)'
 # t_LESSER_THAN = r'<'
 # t_LESSER_THAN_EQUAL = r'<='
@@ -71,6 +78,7 @@ def t_ANNOTATION(t):
 
 def t_VARIABLE(t):
     r'\w+'
+    t.type = reserved.get(t.value, 'VARIABLE')
     return t
 
 
@@ -86,18 +94,16 @@ def t_error(t):
 lexer = lex.lex()
 
 # LexToken(self.type, self.value, self.lineno, self.lexpos)
-data = '''
-@x<5
-x:=10
-@x>=10
-'''
-
-# Give the lexer some input
-lexer.input(data)
-
-# Tokenize
-while True:
-    tok = lexer.token()
-    if not tok:
-        break      # No more input
-    print(tok)
+# data = '''
+# INT x
+# '''
+#
+# # Give the lexer some input
+# lexer.input(data)
+#
+# # Tokenize
+# while True:
+#     tok = lexer.token()
+#     if not tok:
+#         break      # No more input
+#     print(tok)

@@ -1,122 +1,204 @@
 from lexer import tokens
 import ply.yacc as yacc
+from Node import Node
 
+# Modified code from PLY tutorial
+# https://ply.readthedocs.io/en/latest/ply.html#ast-construction
 
-class Node:
-    def __init__(self,symbol,op,left,right):
-        self.left = left
-        self.right = right
-        self.op = op
-        self.symbol = symbol
+# annotation : ANNOTATION formula
+#
+# assignment : ID ASSIGNMENT expression
+#
+# formula : expression COMPARATOR expression
+#           | formula BOOLEAN_OPERATOR formula
+#           | LPAREN expression RPAREN
+#           | VARIABLE
+#
+# declaration: INT_TYPE VARIABLE
+#            | BOOL_TYPE VARIABLE
+#
+#
+# expression : expression PLUS expression                 # level = 2, left
+#            | expression MINUS expression                # level = 2, left
+#            | expression TIMES expression                # level = 3, left
+#            | expression DIVIDE expression               # level = 3, left
+#            | UMINUS expression                          # level = 4, right
+#            | LPAREN expression RPAREN
+#            | NUMBER
+#            | VARIABLE
 
-    def print_node_rec(self):
-        if (self.left is not None) and (self.right is not None):
-            if isinstance(self.left, Node) and isinstance(self.right, Node):
-                return "(" + self.symbol + "," + self.left.print_node_rec() + " " + self.right.print_node_rec() + ")"
-            elif isinstance(self.left, Node):
-                return "(" + self.symbol + "," + self.left.print_node_rec() + " " + str(self.right) + ")"
-            elif isinstance(self.right, Node):
-                return "(" + self.symbol + "," + str(self.left) + " " + self.right.print_node_rec() + ")"
-            else:
-                return "(" + self.symbol + "," + str(self.left)  + " " + str(self.right) + ")"
-        elif self.left is not None:
-            if isinstance(self.left, Node):
-                return "(" + self.symbol + "," + self.left.print_node_rec() + ")"
-            else:
-                return "(" + self.symbol + "," + str(self.left) + ")"
+variables = {}
 
-    def subst(self, mapping):
-        if self is None:
-            return
-        if isinstance(self, Node):
-            if self.symbol == "variables" and self.left in mapping:
-                return mapping[self.left]
-            else:
-                if isinstance(self.left, Node) and isinstance(self.right, Node):
-                    return Node(self.symbol, self.op, self.left.subst(mapping), self.right.subst(mapping))
-                elif isinstance(self.left, Node):
-                    return Node(self.symbol, self.op, self.left.subst(mapping), self.right)
-                elif isinstance(self.right, Node):
-                    return Node(self.symbol, self.op, self.left, self.right.subst(mapping))
-                else:
-                    return Node(self.symbol, self.op, self.left, self.right)
+class ParseError(Exception):
+    pass
 
-
-
-
-
-
-def p_statement_annotation(p):
-    'statement : annotation'
+def p_start(p):
+    '''start : assignment
+             | expression
+             | annotation
+             | formula
+             | declaration'''
     p[0] = p[1]
 
-def p_statement_assignment(p):
-    'statement : assignment'
-    p[0] = p[1]
 
-def p_statement_expression(p):
-    'statement : expression'
-    p[0] = p[1]
+def p_bool_declaration(p):
+    'declaration : BOOL_TYPE VARIABLE'
+    if p[2] in variables:
+        parser.errorfunc()
+    else:
+        variables[p[2]] = "BOOL"
+        p[0] = Node("bool_declaration",None,p[2],None)
+
+def p_int_declaration(p):
+    'declaration : INT_TYPE VARIABLE'
+    if p[2] in variables:
+        parser.errorfunc()
+    else:
+        variables[p[2]] = "INT"
+        p[0] = Node("int_declaration",None,p[2],None)
+
 
 def p_annotation(p):
-    'annotation : ANNOTATION expression'
+    'annotation : ANNOTATION formula'
     p[0] = Node('annotation',p[1], p[2], None)
+
 
 def p_assignment(p):
     'assignment : VARIABLE ASSIGNMENT expression'
     p[0] = Node('assignment',  p[2], p[1], p[3])
 
-def p_comparison(p):
-    'expression : expression COMPARATOR term'
-    p[0] = Node('comparison', p[2], p[1], p[3])
-
-def p_logic_op(p):
-    'expression : expression BOOLEAN_OPERATOR term'
-    p[0] = ('boolean', p[2], p[1], p[3])
-
-def p_term_variable(p):
-    'term : VARIABLE'
-    p[0] = Node('variables',None, p[1],None)
 
 def p_expression_plus(p):
     'expression : expression PLUS expression'
     p[0] = Node('plus', p[2], p[1], p[3])
 
 def p_expression_minus(p):
-    'expression : expression MINUS term'
+    'expression : expression MINUS expression'
     p[0] = Node('minus', p[2], p[1], p[3])
 
-def p_expression_term(p):
-    'expression : term'
-    p[0] = p[1]
-
-def p_term_times(p):
-    'term : term TIMES factor'
+def p_expression_times(p):
+    'expression : expression TIMES expression'
     p[0] = Node('times', p[2], p[1], p[3])
 
-def p_term_boolean(p):
-    'term : TRUE'
-    p[0] = Node('Boolean', None,p[1],None)
+def p_parenthesis_expr(p):
+    'expression : LPAREN expression RPAREN'
+    p[0] = p[2]
 
-# def p_term_div(p):
-#     'term : term DIVIDE factor'
-#     p[0] = p[1] / p[3]
-
-def p_term_factor(p):
-    'term : factor'
-    p[0] = p[1]
-
-def p_factor_num(p):
-    'factor : NUMBER'
+def p_expression_num(p):
+    'expression : NUMBER'
     p[0] = Node('NUMBER',None, p[1], None)
 
-def p_factor_expr(p):
-    'factor : LPAREN expression RPAREN'
+def p_expression_variable(p):
+    'expression : VARIABLE'
+    if not p[1] in variables or variables[p[1]] != "INT":
+        raise ParseError("variable not defined or invalid operation")
+    p[0] = Node('variables',None, p[1],None)
+
+def p_expr_uminus(p):
+    'expression : MINUS expression %prec UMINUS'
+    p[0] = Node("unary minus",p[1],-p[2],None)
+
+
+def p_formula_comparison(p):
+    'formula : expression COMPARATOR expression'
+    p[0] = Node('comparison', p[2], p[1], p[3])
+
+def p_formula_logic_op(p):
+    'formula : formula BOOLEAN_OPERATOR formula'
+    p[0] = Node('boolean', p[2], p[1], p[3])
+
+def p_formula_variable(p):
+    'formula : VARIABLE'
+    if not p[1] in variables or variables[p[1]] != "BOOL":
+        raise ParseError("variable not defined or invalid operation")
+    p[0] = Node('variables',None, p[1], None)
+
+def p_formula_expr(p):
+    'formula : LPAREN formula RPAREN'
     p[0] = p[2]
+
+
+
+precedence = (
+    ('nonassoc', 'COMPARATOR'),
+    ('left', 'BOOLEAN_OPERATOR'),
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'TIMES'),
+    ('right', 'UMINUS'),
+)
+
+# def p_statement_annotation(p):
+#     'statement : annotation'
+#     p[0] = p[1]
+#
+# def p_statement_assignment(p):
+#     'statement : assignment'
+#     p[0] = p[1]
+#
+# def p_statement_expression(p):
+#     'statement : expression'
+#     p[0] = p[1]
+#
+# def p_annotation(p):
+#     'annotation : ANNOTATION expression'
+#     p[0] = Node('annotation',p[1], p[2], None)
+#
+# def p_assignment(p):
+#     'assignment : VARIABLE ASSIGNMENT expression'
+#     p[0] = Node('assignment',  p[2], p[1], p[3])
+#
+# def p_comparison(p):
+#     'expression : expression COMPARATOR term'
+#     p[0] = Node('comparison', p[2], p[1], p[3])
+#
+# def p_logic_op(p):
+#     'expression : expression BOOLEAN_OPERATOR term'
+#     p[0] = ('boolean', p[2], p[1], p[3])
+#
+# def p_term_variable(p):
+#     'term : VARIABLE'
+#     p[0] = Node('variables',None, p[1],None)
+#
+# def p_expression_plus(p):
+#     'expression : expression PLUS expression'
+#     p[0] = Node('plus', p[2], p[1], p[3])
+#
+# def p_expression_minus(p):
+#     'expression : expression MINUS term'
+#     p[0] = Node('minus', p[2], p[1], p[3])
+#
+# def p_expression_term(p):
+#     'expression : term'
+#     p[0] = p[1]
+#
+# def p_term_times(p):
+#     'term : term TIMES factor'
+#     p[0] = Node('times', p[2], p[1], p[3])
+#
+# def p_term_boolean(p):
+#     'term : TRUE'
+#     p[0] = Node('Boolean', None,p[1],None)
+#
+# # def p_term_div(p):
+# #     'term : term DIVIDE factor'
+# #     p[0] = p[1] / p[3]
+#
+# def p_term_factor(p):
+#     'term : factor'
+#     p[0] = p[1]
+#
+# def p_factor_num(p):
+#     'factor : NUMBER'
+#     p[0] = Node('NUMBER',None, p[1], None)
+#
+# def p_factor_expr(p):
+#     'factor : LPAREN expression RPAREN'
+#     p[0] = p[2]
 
 # Error rule for syntax errors
 def p_error(p):
-    print("Syntax error in input!")
+    # print("Syntax error in input!")
+    raise ParseError("Syntax error in input!")
 
 
 
