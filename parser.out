@@ -1,11 +1,5 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    FALSE
-    TRUE
-    TRUTH_VALUES
-
 Grammar
 
 Rule 0     S' -> start
@@ -30,7 +24,7 @@ Rule 18    formula -> formula BOOLEAN_OPERATOR formula
 Rule 19    formula -> VARIABLE
 Rule 20    formula -> LPAREN formula RPAREN
 Rule 21    formula -> formula IMPLIES formula
-Rule 22    formula -> IF formula THEN formula ELSE formula
+Rule 22    formula -> IF formula THEN assignment ELSE assignment
 
 Terminals, with rules where they appear
 
@@ -40,7 +34,6 @@ BOOLEAN_OPERATOR     : 18
 BOOL_TYPE            : 6
 COMPARATOR           : 17
 ELSE                 : 22
-FALSE                : 
 IF                   : 22
 IMPLIES              : 21
 INT_TYPE             : 7
@@ -51,18 +44,16 @@ PLUS                 : 10
 RPAREN               : 13 20
 THEN                 : 22
 TIMES                : 12
-TRUE                 : 
-TRUTH_VALUES         : 
 VARIABLE             : 6 7 9 15 19
 error                : 
 
 Nonterminals, with rules where they appear
 
 annotation           : 3
-assignment           : 1
+assignment           : 1 22 22
 declaration          : 5
 expression           : 2 9 10 10 11 11 12 12 13 16 17 17
-formula              : 4 8 18 18 20 21 21 22 22 22
+formula              : 4 8 18 18 20 21 21 22
 start                : 0
 
 Parsing method: LALR
@@ -89,7 +80,7 @@ state 0
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
     (6) declaration -> . BOOL_TYPE VARIABLE
     (7) declaration -> . INT_TYPE VARIABLE
 
@@ -215,7 +206,7 @@ state 9
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
 
     LPAREN          shift and go to state 9
     NUMBER          shift and go to state 10
@@ -250,7 +241,7 @@ state 11
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
     (10) expression -> . expression PLUS expression
     (11) expression -> . expression MINUS expression
     (12) expression -> . expression TIMES expression
@@ -270,13 +261,13 @@ state 11
 
 state 12
 
-    (22) formula -> IF . formula THEN formula ELSE formula
+    (22) formula -> IF . formula THEN assignment ELSE assignment
     (17) formula -> . expression COMPARATOR expression
     (18) formula -> . formula BOOLEAN_OPERATOR formula
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
     (10) expression -> . expression PLUS expression
     (11) expression -> . expression MINUS expression
     (12) expression -> . expression TIMES expression
@@ -388,7 +379,7 @@ state 19
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
     (10) expression -> . expression PLUS expression
     (11) expression -> . expression MINUS expression
     (12) expression -> . expression TIMES expression
@@ -414,7 +405,7 @@ state 20
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
     (10) expression -> . expression PLUS expression
     (11) expression -> . expression MINUS expression
     (12) expression -> . expression TIMES expression
@@ -584,7 +575,6 @@ state 30
     IMPLIES         reduce using rule 19 (formula -> VARIABLE .)
     $end            reduce using rule 19 (formula -> VARIABLE .)
     THEN            reduce using rule 19 (formula -> VARIABLE .)
-    ELSE            reduce using rule 19 (formula -> VARIABLE .)
     COMPARATOR      reduce using rule 15 (expression -> VARIABLE .)
     PLUS            reduce using rule 15 (expression -> VARIABLE .)
     MINUS           reduce using rule 15 (expression -> VARIABLE .)
@@ -603,7 +593,7 @@ state 31
     (19) formula -> . VARIABLE
     (20) formula -> . LPAREN formula RPAREN
     (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
+    (22) formula -> . IF formula THEN assignment ELSE assignment
     (10) expression -> . expression PLUS expression
     (11) expression -> . expression MINUS expression
     (12) expression -> . expression TIMES expression
@@ -623,7 +613,7 @@ state 31
 
 state 32
 
-    (22) formula -> IF formula . THEN formula ELSE formula
+    (22) formula -> IF formula . THEN assignment ELSE assignment
     (18) formula -> formula . BOOLEAN_OPERATOR formula
     (21) formula -> formula . IMPLIES formula
 
@@ -727,7 +717,6 @@ state 38
     $end            reduce using rule 17 (formula -> expression COMPARATOR expression .)
     RPAREN          reduce using rule 17 (formula -> expression COMPARATOR expression .)
     THEN            reduce using rule 17 (formula -> expression COMPARATOR expression .)
-    ELSE            reduce using rule 17 (formula -> expression COMPARATOR expression .)
     PLUS            shift and go to state 15
     MINUS           shift and go to state 16
     TIMES           shift and go to state 17
@@ -744,7 +733,6 @@ state 39
     $end            reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
     RPAREN          reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
     THEN            reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
-    ELSE            reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
 
   ! BOOLEAN_OPERATOR [ shift and go to state 19 ]
   ! IMPLIES         [ shift and go to state 20 ]
@@ -761,7 +749,6 @@ state 40
     $end            reduce using rule 21 (formula -> formula IMPLIES formula .)
     RPAREN          reduce using rule 21 (formula -> formula IMPLIES formula .)
     THEN            reduce using rule 21 (formula -> formula IMPLIES formula .)
-    ELSE            reduce using rule 21 (formula -> formula IMPLIES formula .)
     BOOLEAN_OPERATOR shift and go to state 19
     IMPLIES         shift and go to state 20
 
@@ -777,6 +764,11 @@ state 41
     (12) expression -> expression . TIMES expression
 
     $end            reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
+    ELSE            reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
+    BOOLEAN_OPERATOR reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
+    IMPLIES         reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
+    RPAREN          reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
+    THEN            reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
     PLUS            shift and go to state 15
     MINUS           shift and go to state 16
     TIMES           shift and go to state 17
@@ -820,7 +812,6 @@ state 44
     $end            reduce using rule 20 (formula -> LPAREN formula RPAREN .)
     RPAREN          reduce using rule 20 (formula -> LPAREN formula RPAREN .)
     THEN            reduce using rule 20 (formula -> LPAREN formula RPAREN .)
-    ELSE            reduce using rule 20 (formula -> LPAREN formula RPAREN .)
 
 
 state 45
@@ -840,92 +831,51 @@ state 45
 
 state 46
 
-    (22) formula -> IF formula THEN . formula ELSE formula
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (22) formula -> IF formula THEN . assignment ELSE assignment
+    (9) assignment -> . VARIABLE ASSIGNMENT expression
 
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
+    VARIABLE        shift and go to state 48
 
-    formula                        shift and go to state 47
-    expression                     shift and go to state 29
+    assignment                     shift and go to state 47
 
 state 47
 
-    (22) formula -> IF formula THEN formula . ELSE formula
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (22) formula -> IF formula THEN assignment . ELSE assignment
 
-    ELSE            shift and go to state 48
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
+    ELSE            shift and go to state 49
 
 
 state 48
 
-    (22) formula -> IF formula THEN formula ELSE . formula
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN formula ELSE formula
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (9) assignment -> VARIABLE . ASSIGNMENT expression
 
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
+    ASSIGNMENT      shift and go to state 21
 
-    formula                        shift and go to state 49
-    expression                     shift and go to state 29
 
 state 49
 
-    (22) formula -> IF formula THEN formula ELSE formula .
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (22) formula -> IF formula THEN assignment ELSE . assignment
+    (9) assignment -> . VARIABLE ASSIGNMENT expression
 
-  ! shift/reduce conflict for BOOLEAN_OPERATOR resolved as shift
-  ! shift/reduce conflict for IMPLIES resolved as shift
-    $end            reduce using rule 22 (formula -> IF formula THEN formula ELSE formula .)
-    RPAREN          reduce using rule 22 (formula -> IF formula THEN formula ELSE formula .)
-    THEN            reduce using rule 22 (formula -> IF formula THEN formula ELSE formula .)
-    ELSE            reduce using rule 22 (formula -> IF formula THEN formula ELSE formula .)
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
+    VARIABLE        shift and go to state 48
 
-  ! BOOLEAN_OPERATOR [ reduce using rule 22 (formula -> IF formula THEN formula ELSE formula .) ]
-  ! IMPLIES         [ reduce using rule 22 (formula -> IF formula THEN formula ELSE formula .) ]
+    assignment                     shift and go to state 50
+
+state 50
+
+    (22) formula -> IF formula THEN assignment ELSE assignment .
+
+    BOOLEAN_OPERATOR reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
+    IMPLIES         reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
+    $end            reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
+    RPAREN          reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
+    THEN            reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
 WARNING: shift/reduce conflict for BOOLEAN_OPERATOR in state 40 resolved as shift
 WARNING: shift/reduce conflict for IMPLIES in state 40 resolved as shift
-WARNING: shift/reduce conflict for BOOLEAN_OPERATOR in state 49 resolved as shift
-WARNING: shift/reduce conflict for IMPLIES in state 49 resolved as shift
 WARNING: reduce/reduce conflict in state 7 resolved using rule (expression -> VARIABLE)
 WARNING: rejected rule (formula -> VARIABLE) in state 7
 WARNING: reduce/reduce conflict in state 27 resolved using rule (expression -> VARIABLE)

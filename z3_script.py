@@ -3,12 +3,12 @@ import sys
 from time import time
 import json
 
-timeout = int(sys.argv[1])
+timeout = sys.argv[1]
 x = Int('x')
+y = Int('y')
 z = Bool('z')
-formula =  (And( z, ( ( x +  1) >  3)))
+formula =  (And( z,))
 solver = Solver()
-print("----> Timeout: ", timeout)
-solver.set('timeout', timeout * 1000)
+solver.set('timeout', int(timeout * 1000))
 solver.add(formula)
 print(solver.check())

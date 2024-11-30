@@ -57,9 +57,11 @@ def generate_formula(tree:Node):
         formula += f" (Or({generate_formula(tree.left)},{generate_formula(tree.right)}))"
     elif tree.symbol == "boolean" and tree.op == "=>":
         formula += f" (Implies({generate_formula(tree.left)},{generate_formula(tree.right)}))"
-    elif tree.symbol == 'if_else':
+    elif tree.symbol == 'if_then_else':
         condition, then_body, else_body = tree.left
         formula += f"If({generate_formula(condition)}, {generate_formula(then_body)}, {generate_formula(else_body)})"
+
+
 
     return formula
 
