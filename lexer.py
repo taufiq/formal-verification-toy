@@ -4,8 +4,10 @@ reserved = {
    'TRUE' : 'TRUE',
    'FALSE' : 'FALSE',
    "INT" : "INT_TYPE",
-   "BOOL" : "BOOL_TYPE"
-
+   "BOOL" : "BOOL_TYPE",
+   'IF': 'IF',
+   'THEN': 'THEN',
+   'ELSE': 'ELSE',
 }
 # List of token names.   This is always required
 tokens = [
@@ -27,7 +29,8 @@ tokens = [
    'ASSIGNMENT',
    'TRUTH_VALUES',
    # 'INT_TYPE',
-   # 'BOOL_TYPE'
+   # 'BOOL_TYPE',
+   'IMPLIES',
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -45,6 +48,7 @@ t_RPAREN  = r'\)'
 # t_GREATER_THAN = r'>'
 # t_GREATER_THAN_EQUAL = r'>='
 t_ASSIGNMENT = r':='
+t_IMPLIES = r'=>'
 
 
 

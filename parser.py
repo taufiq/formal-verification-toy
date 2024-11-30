@@ -27,6 +27,15 @@ from Node import Node
 #            | NUMBER
 #            | VARIABLE
 
+### Precedence rules to avoid resolve conflicts
+precedence = (
+    ('nonassoc', 'COMPARATOR'),  # Comparison operators
+    ('left', 'BOOLEAN_OPERATOR'),  # Logical operators
+    ('left', 'PLUS', 'MINUS'),  # Arithmetic operators
+    ('left', 'TIMES'),  # Multiplication
+    ('right', 'UMINUS'),  # Unary minus
+)
+
 variables = {}
 
 class ParseError(Exception):
@@ -90,9 +99,13 @@ def p_expression_num(p):
 
 def p_expression_variable(p):
     'expression : VARIABLE'
-    if not p[1] in variables or variables[p[1]] != "INT":
-        raise ParseError("variable not defined or invalid operation")
-    p[0] = Node('variables',None, p[1],None)
+    # if not p[1] in variables or variables[p[1]] != "INT":
+    #     raise ParseError("variable not defined or invalid operation")
+    # p[0] = Node('variables',None, p[1],None)
+    if variables.get(p[1]) == "INT":
+        p[0] = Node('variables', None, p[1], None)
+    else:
+        raise ParseError(f"Variable {p[1]} is not an integer!")
 
 def p_expr_uminus(p):
     'expression : MINUS expression %prec UMINUS'
@@ -109,14 +122,25 @@ def p_formula_logic_op(p):
 
 def p_formula_variable(p):
     'formula : VARIABLE'
-    if not p[1] in variables or variables[p[1]] != "BOOL":
-        raise ParseError("variable not defined or invalid operation")
-    p[0] = Node('variables',None, p[1], None)
+    # if not p[1] in variables or variables[p[1]] != "BOOL":
+    #     raise ParseError("variable not defined or invalid operation")
+    # p[0] = Node('variables',None, p[1], None)
+    if variables.get(p[1]) == "BOOL":
+        p[0] = Node('variables', None, p[1], None)
+    else:
+        raise ParseError(f"Variable {p[1]} is not a boolean!")
 
 def p_formula_expr(p):
     'formula : LPAREN formula RPAREN'
     p[0] = p[2]
 
+def p_formula_implies(p):
+    'formula : formula IMPLIES formula'
+    p[0] = Node('implies', p[2], p[1], p[3]) # p[2] is the operator, p[1] is the left, p[3] is the right
+
+def p_if_then_else(p):
+    'formula : IF formula THEN formula ELSE formula'
+    p[0] = Node('if_then_else', None, (p[2], p[4], p[6]), None) # p[2]=condition, p[4]=body then, p[6]=body else
 
 
 precedence = (

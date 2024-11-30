@@ -1,5 +1,6 @@
 INT x
+INT y
 BOOL z
-@ x > 2
+@ (x > 2 => y > 3)
 x := x + 1
-@ z ^ x > 3
+@ z ^ ((x > 3) => (y > 5))

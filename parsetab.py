@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ANNOTATION ASSIGNMENT BOOLEAN_OPERATOR COMPARATOR DIVIDE FALSE LPAREN MINUS NUMBER PLUS RPAREN TIMES TRUE TRUTH_VALUES VARIABLEstatement : annotationstatement : assignmentstatement : expressionannotation : ANNOTATION expressionassignment : VARIABLE ASSIGNMENT expressionexpression : expression COMPARATOR termexpression : expression BOOLEAN_OPERATOR termterm : VARIABLEexpression : expression PLUS expressionexpression : expression MINUS termexpression : termterm : term TIMES factorterm : TRUEterm : term DIVIDE factorterm : factorfactor : NUMBERfactor : LPAREN expression RPAREN'
+_lr_signature = 'nonassocCOMPARATORleftBOOLEAN_OPERATORleftPLUSMINUSleftTIMESrightUMINUSANNOTATION ASSIGNMENT BOOLEAN_OPERATOR BOOL_TYPE COMPARATOR ELSE FALSE IF IMPLIES INT_TYPE LPAREN MINUS NUMBER PLUS RPAREN THEN TIMES TRUE TRUTH_VALUES VARIABLEstart : assignment\n             | expression\n             | annotation\n             | formula\n             | declarationdeclaration : BOOL_TYPE VARIABLEdeclaration : INT_TYPE VARIABLEannotation : ANNOTATION formulaassignment : VARIABLE ASSIGNMENT expressionexpression : expression PLUS expressionexpression : expression MINUS expressionexpression : expression TIMES expressionexpression : LPAREN expression RPARENexpression : NUMBERexpression : VARIABLEexpression : MINUS expression %prec UMINUSformula : expression COMPARATOR expressionformula : formula BOOLEAN_OPERATOR formulaformula : VARIABLEformula : LPAREN formula RPARENformula : formula IMPLIES formulaformula : IF formula THEN formula ELSE formula'
     
-_lr_action_items = {'ANNOTATION':([0,],[5,]),'VARIABLE':([0,5,11,12,13,14,15,18,],[6,17,17,17,17,17,17,17,]),'TRUE':([0,5,11,12,13,14,15,18,],[9,9,9,9,9,9,9,9,]),'NUMBER':([0,5,11,12,13,14,15,18,19,20,],[10,10,10,10,10,10,10,10,10,10,]),'LPAREN':([0,5,11,12,13,14,15,18,19,20,],[11,11,11,11,11,11,11,11,11,11,]),'$end':([1,2,3,4,6,7,8,9,10,16,17,22,23,24,25,26,27,28,29,],[0,-1,-2,-3,-8,-11,-15,-13,-16,-4,-8,-6,-7,-9,-10,-5,-12,-14,-17,]),'COMPARATOR':([4,6,7,8,9,10,16,17,21,22,23,24,25,26,27,28,29,],[12,-8,-11,-15,-13,-16,12,-8,12,-6,-7,12,-10,12,-12,-14,-17,]),'BOOLEAN_OPERATOR':([4,6,7,8,9,10,16,17,21,22,23,24,25,26,27,28,29,],[13,-8,-11,-15,-13,-16,13,-8,13,-6,-7,13,-10,13,-12,-14,-17,]),'PLUS':([4,6,7,8,9,10,16,17,21,22,23,24,25,26,27,28,29,],[14,-8,-11,-15,-13,-16,14,-8,14,-6,-7,14,-10,14,-12,-14,-17,]),'MINUS':([4,6,7,8,9,10,16,17,21,22,23,24,25,26,27,28,29,],[15,-8,-11,-15,-13,-16,15,-8,15,-6,-7,15,-10,15,-12,-14,-17,]),'ASSIGNMENT':([6,],[18,]),'TIMES':([6,7,8,9,10,17,22,23,25,27,28,29,],[-8,19,-15,-13,-16,-8,19,19,19,-12,-14,-17,]),'DIVIDE':([6,7,8,9,10,17,22,23,25,27,28,29,],[-8,20,-15,-13,-16,-8,20,20,20,-12,-14,-17,]),'RPAREN':([7,8,9,10,17,21,22,23,24,25,27,28,29,],[-11,-15,-13,-16,-8,29,-6,-7,-9,-10,-12,-14,-17,]),}
+_lr_action_items = {'VARIABLE':([0,8,9,11,12,13,14,15,16,17,18,19,20,21,23,31,46,48,],[7,24,27,30,30,33,34,24,24,24,24,30,30,24,24,30,30,30,]),'LPAREN':([0,8,9,11,12,15,16,17,18,19,20,21,23,31,46,48,],[9,23,9,31,31,23,23,23,23,31,31,23,23,31,31,31,]),'NUMBER':([0,8,9,11,12,15,16,17,18,19,20,21,23,31,46,48,],[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,]),'MINUS':([0,3,7,8,9,10,11,12,15,16,17,18,19,20,21,22,23,24,25,27,29,30,31,35,36,37,38,41,42,43,45,46,48,],[8,16,-15,8,8,-14,8,8,8,8,8,8,8,8,8,-16,8,-15,16,-15,16,-15,8,-10,-11,-12,16,16,16,-13,16,8,8,]),'ANNOTATION':([0,],[11,]),'IF':([0,9,11,12,19,20,31,46,48,],[12,12,12,12,12,12,12,12,12,]),'BOOL_TYPE':([0,],[13,]),'INT_TYPE':([0,],[14,]),'$end':([1,2,3,4,5,6,7,10,22,24,28,30,33,34,35,36,37,38,39,40,41,43,44,49,],[0,-1,-2,-3,-4,-5,-15,-14,-16,-15,-8,-19,-6,-7,-10,-11,-12,-17,-18,-21,-9,-13,-20,-22,]),'PLUS':([3,7,10,22,24,25,27,29,30,35,36,37,38,41,42,43,45,],[15,-15,-14,-16,-15,15,-15,15,-15,-10,-11,-12,15,15,15,-13,15,]),'TIMES':([3,7,10,22,24,25,27,29,30,35,36,37,38,41,42,43,45,],[17,-15,-14,-16,-15,17,-15,17,-15,17,17,-12,17,17,17,-13,17,]),'COMPARATOR':([3,7,10,22,24,25,27,29,30,35,36,37,43,45,],[18,-15,-14,-16,-15,18,-15,18,-15,-10,-11,-12,-13,18,]),'BOOLEAN_OPERATOR':([5,7,10,22,24,26,27,28,30,32,35,36,37,38,39,40,43,44,47,49,],[19,-19,-14,-16,-15,19,-19,19,-19,19,-10,-11,-12,-17,-18,19,-13,-20,19,19,]),'IMPLIES':([5,7,10,22,24,26,27,28,30,32,35,36,37,38,39,40,43,44,47,49,],[20,-19,-14,-16,-15,20,-19,20,-19,20,-10,-11,-12,-17,-18,20,-13,-20,20,20,]),'ASSIGNMENT':([7,],[21,]),'RPAREN':([10,22,24,25,26,27,30,35,36,37,38,39,40,42,43,44,45,49,],[-14,-16,-15,43,44,-15,-15,-10,-11,-12,-17,-18,-21,43,-13,-20,43,-22,]),'THEN':([10,22,24,30,32,35,36,37,38,39,40,43,44,49,],[-14,-16,-15,-19,46,-10,-11,-12,-17,-18,-21,-13,-20,-22,]),'ELSE':([10,22,24,30,35,36,37,38,39,40,43,44,47,49,],[-14,-16,-15,-19,-10,-11,-12,-17,-18,-21,-13,-20,48,-22,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,],[1,]),'annotation':([0,],[2,]),'assignment':([0,],[3,]),'expression':([0,5,11,14,18,],[4,16,21,24,26,]),'term':([0,5,11,12,13,14,15,18,],[7,7,7,22,23,7,25,7,]),'factor':([0,5,11,12,13,14,15,18,19,20,],[8,8,8,8,8,8,8,8,27,28,]),}
+_lr_goto_items = {'start':([0,],[1,]),'assignment':([0,],[2,]),'expression':([0,8,9,11,12,15,16,17,18,19,20,21,23,31,46,48,],[3,22,25,29,29,35,36,37,38,29,29,41,42,45,29,29,]),'annotation':([0,],[4,]),'formula':([0,9,11,12,19,20,31,46,48,],[5,26,28,32,39,40,26,47,49,]),'declaration':([0,],[6,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,22 +26,27 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> statement","S'",1,None,None,None),
-  ('statement -> annotation','statement',1,'p_statement_annotation','parser.py',5),
-  ('statement -> assignment','statement',1,'p_statement_assignment','parser.py',9),
-  ('statement -> expression','statement',1,'p_statement_expression','parser.py',13),
-  ('annotation -> ANNOTATION expression','annotation',2,'p_annotation','parser.py',17),
-  ('assignment -> VARIABLE ASSIGNMENT expression','assignment',3,'p_assignment','parser.py',21),
-  ('expression -> expression COMPARATOR term','expression',3,'p_comparison','parser.py',25),
-  ('expression -> expression BOOLEAN_OPERATOR term','expression',3,'p_logic_op','parser.py',29),
-  ('term -> VARIABLE','term',1,'p_term_variable','parser.py',33),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_plus','parser.py',37),
-  ('expression -> expression MINUS term','expression',3,'p_expression_minus','parser.py',41),
-  ('expression -> term','expression',1,'p_expression_term','parser.py',45),
-  ('term -> term TIMES factor','term',3,'p_term_times','parser.py',49),
-  ('term -> TRUE','term',1,'p_term_boolean','parser.py',53),
-  ('term -> term DIVIDE factor','term',3,'p_term_div','parser.py',57),
-  ('term -> factor','term',1,'p_term_factor','parser.py',61),
-  ('factor -> NUMBER','factor',1,'p_factor_num','parser.py',65),
-  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','parser.py',69),
+  ("S' -> start","S'",1,None,None,None),
+  ('start -> assignment','start',1,'p_start','parser.py',44),
+  ('start -> expression','start',1,'p_start','parser.py',45),
+  ('start -> annotation','start',1,'p_start','parser.py',46),
+  ('start -> formula','start',1,'p_start','parser.py',47),
+  ('start -> declaration','start',1,'p_start','parser.py',48),
+  ('declaration -> BOOL_TYPE VARIABLE','declaration',2,'p_bool_declaration','parser.py',53),
+  ('declaration -> INT_TYPE VARIABLE','declaration',2,'p_int_declaration','parser.py',61),
+  ('annotation -> ANNOTATION formula','annotation',2,'p_annotation','parser.py',70),
+  ('assignment -> VARIABLE ASSIGNMENT expression','assignment',3,'p_assignment','parser.py',75),
+  ('expression -> expression PLUS expression','expression',3,'p_expression_plus','parser.py',80),
+  ('expression -> expression MINUS expression','expression',3,'p_expression_minus','parser.py',84),
+  ('expression -> expression TIMES expression','expression',3,'p_expression_times','parser.py',88),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_parenthesis_expr','parser.py',92),
+  ('expression -> NUMBER','expression',1,'p_expression_num','parser.py',96),
+  ('expression -> VARIABLE','expression',1,'p_expression_variable','parser.py',100),
+  ('expression -> MINUS expression','expression',2,'p_expr_uminus','parser.py',106),
+  ('formula -> expression COMPARATOR expression','formula',3,'p_formula_comparison','parser.py',111),
+  ('formula -> formula BOOLEAN_OPERATOR formula','formula',3,'p_formula_logic_op','parser.py',115),
+  ('formula -> VARIABLE','formula',1,'p_formula_variable','parser.py',119),
+  ('formula -> LPAREN formula RPAREN','formula',3,'p_formula_expr','parser.py',125),
+  ('formula -> formula IMPLIES formula','formula',3,'p_formula_implies','parser.py',129),
+  ('formula -> IF formula THEN formula ELSE formula','formula',6,'p_if_then_else','parser.py',133),
 ]

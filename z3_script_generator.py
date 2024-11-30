@@ -43,8 +43,6 @@ def generate_formula(tree:Node):
         formula += f" ({generate_formula(tree.left)} - {generate_formula(tree.right)})"
     elif tree.symbol == "times":
         formula += f" ({generate_formula(tree.left)} * {generate_formula(tree.right)})"
-    elif tree.symbol == "plus":
-        formula += f" ({generate_formula(tree.left)} + {generate_formula(tree.right)})"
     elif tree.symbol == "NUMBER":
         formula += f" {tree.left}"
     elif tree.symbol == "variables":
@@ -57,6 +55,11 @@ def generate_formula(tree:Node):
         formula += f" (And({generate_formula(tree.left)},{generate_formula(tree.right)}))"
     elif tree.symbol == "boolean" and tree.op == "v":
         formula += f" (Or({generate_formula(tree.left)},{generate_formula(tree.right)}))"
+    elif tree.symbol == "boolean" and tree.op == "=>":
+        formula += f" (Implies({generate_formula(tree.left)},{generate_formula(tree.right)}))"
+    elif tree.symbol == 'if_else':
+        condition, then_body, else_body = tree.left
+        formula += f"If({generate_formula(condition)}, {generate_formula(then_body)}, {generate_formula(else_body)})"
 
     return formula
 
