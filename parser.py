@@ -208,34 +208,36 @@ parser = yacc.yacc()
 def gen_new_symbol(symbol):
     return symbol + ''
 
-with open('code.tms') as f:
-    statements = []
-    for line in f.readlines():
-        statements.append(parser.parse(line))
-        # print(parser.parse(line).print_node_rec())
-    conditions = []
-    body = []
-    for statement in statements:
-        statement_type = statement.symbol
-        if statement_type == "annotation":
-            conditions.append(statement)
-        elif statement_type == "assignment":
-            body.append(statement)
-        else:
-            # if already parsed and it is not an assignment or annotation
-            # then it is a correct statement with no effect
-            continue
-            # raise Exception("Not covered", statement_type)
-    body = body[::-1] # Reverse
-    variables = {} # Variable -> statement
-    substitutions = {} # Variable -> New Variable
-    for statement in body: # Assume body all has assignments
-        variable = statement.left
-        rhs_expr = statement.right
-        new_variable = gen_new_symbol(variable)
-        variables[new_variable] = rhs_expr
-        # substitute in my post-cond
-        conditions[-1] = conditions[-1].subst({variable: rhs_expr})
-        # substitutions[variable] = new_variable
-    print(conditions[-1].print_node_rec())
+def generate_vc():
+    with open('code.tms') as f:
+        statements = []
+        for line in f.readlines():
+            statements.append(parser.parse(line))
+            # print(parser.parse(line).print_node_rec())
+        conditions = []
+        body = []
+        for statement in statements:
+            statement_type = statement.symbol
+            if statement_type == "annotation":
+                conditions.append(statement)
+            elif statement_type == "assignment":
+                body.append(statement)
+            else:
+                # if already parsed and it is not an assignment or annotation
+                # then it is a correct statement with no effect
+                continue
+                # raise Exception("Not covered", statement_type)
+        body = body[::-1] # Reverse
+        variables = {} # Variable -> statement
+        substitutions = {} # Variable -> New Variable
+        for statement in body: # Assume body all has assignments
+            variable = statement.left
+            rhs_expr = statement.right
+            new_variable = gen_new_symbol(variable)
+            variables[new_variable] = rhs_expr
+            # substitute in my post-cond
+            conditions[-1] = conditions[-1].subst({variable: rhs_expr})
+            # substitutions[variable] = new_variable
+        print(conditions[-1].print_node_rec())
+        return conditions[-1]
 
