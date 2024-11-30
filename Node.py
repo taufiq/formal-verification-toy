@@ -1,11 +1,12 @@
 
 
 class Node:
-    def __init__(self,symbol,op,left,right):
+    def __init__(self,symbol,op,left,right, eval_type):
         self.left = left
         self.right = right
         self.op = op
         self.symbol = symbol
+        self.eval_type = eval_type
 
     def print_node_rec(self):
         if self.symbol == 'if_then_else':

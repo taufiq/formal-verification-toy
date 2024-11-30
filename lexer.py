@@ -30,6 +30,7 @@ tokens = [
    'TRUTH_VALUES',
    # 'INT_TYPE',
    # 'BOOL_TYPE',
+   'ASSUME',
    'IMPLIES',
 ] + list(reserved.values())
 
@@ -55,6 +56,10 @@ t_IMPLIES = r'=>'
 def t_TRUTH_VALUES(t):
     r'(TRUE|FALSE)'
     t.type = reserved.get(t.value,'TRUTH_VALUES')
+    return t
+
+def t_ASSUME(t):
+    r'assume'
     return t
 
 def t_COMPARATOR(t):

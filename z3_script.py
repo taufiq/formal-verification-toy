@@ -3,7 +3,7 @@ import sys
 from time import time
 import json
 
-timeout = sys.argv[1]
+timeout = 100
 x = Int('x')
 y = Int('y')
 z = Bool('z')
