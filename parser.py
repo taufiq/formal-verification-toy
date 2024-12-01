@@ -195,7 +195,7 @@ def generate_vc():
         for line in f.readlines():
             # statements.append(parser.parse(line))
             print(parser.parse(line).print_node_rec())
-        # conditions = []
+        # type: ignore # conditions = []
         # body = []
         # for statement in statements:
         #     statement_type = statement.symbol
