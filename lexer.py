@@ -1,13 +1,16 @@
 import ply.lex as lex
 
 reserved = {
-   'TRUE' : 'TRUE',
-   'FALSE' : 'FALSE',
+#   'TRUE' : 'TRUE',
+#   'FALSE' : 'FALSE',
    "INT" : "INT_TYPE",
    "BOOL" : "BOOL_TYPE",
    'IF': 'IF',
    'THEN': 'THEN',
    'ELSE': 'ELSE',
+   'WHILE': 'WHILE',
+   'DO': 'DO',
+   'STOP': 'STOP'
 }
 # List of token names.   This is always required
 tokens = [
@@ -27,7 +30,7 @@ tokens = [
 #    'GREATER_THAN',
 #    'GREATER_THAN_EQUAL',
    'ASSIGNMENT',
-   'TRUTH_VALUES',
+#   'TRUTH_VALUES',
    # 'INT_TYPE',
    # 'BOOL_TYPE',
    'ASSUME',
@@ -50,8 +53,6 @@ t_RPAREN  = r'\)'
 # t_GREATER_THAN_EQUAL = r'>='
 t_ASSIGNMENT = r':='
 t_IMPLIES = r'=>'
-
-
 
 def t_TRUTH_VALUES(t):
     r'(TRUE|FALSE)'

@@ -167,6 +167,13 @@ def p_if_then_else(p):
     else:
         raise ParseError('Invalid guard expression')
 
+def p_while_loop(p):
+    'expression : WHILE expression DO assignment STOP'
+    if p[2].eval_type == "bool":
+        p[0] = Node('while_loop', None, (p[2], p[4]), None, None)
+    else:
+        raise ParseError("Invalid guard expression")
+
 
 precedence = (
     ('nonassoc', 'COMPARATOR'),
@@ -176,11 +183,11 @@ precedence = (
     ('right', 'UMINUS'),
 )
 
+
 # Error rule for syntax errors
 def p_error(p):
     # print("Syntax error in input!")
     raise ParseError("Syntax error in input!")
-
 
 
 # Build the parser

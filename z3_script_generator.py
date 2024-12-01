@@ -1,5 +1,5 @@
 from Node import Node
-from parser import variables, generate_vc
+from parser import variables, generate_vc # type: ignore
 from z3_config import Z3INT, Z3BOOL
 
 import subprocess
@@ -62,7 +62,9 @@ def generate_formula(tree:Node):
     elif tree.symbol == 'if_then_else':
         condition, then_body, else_body = tree.left
         formula += f"If({generate_formula(condition)}, {generate_formula(then_body)}, {generate_formula(else_body)})"
-
+    elif tree.symbol == 'while_loop':
+        condition, body = tree.left
+        formula += f"While({generate_formula(condition)}, {generate_formula(body)})"
 
 
     return formula
