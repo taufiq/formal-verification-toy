@@ -35,7 +35,9 @@ def generate_solver():
 
 def generate_formula(tree:Node):
     formula = ""
-    if tree.symbol == "annotation":
+    if tree is None:
+        return ""
+    elif tree.symbol == "annotation":
         formula += f"formula = {generate_formula(tree.left)}\n"
     elif tree.symbol == "plus":
         formula += f" ({generate_formula(tree.left)} + {generate_formula(tree.right)})"

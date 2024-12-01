@@ -4,4 +4,4 @@ BOOL z
 assume x > 3
 y := x + y
 z := x < y
-@ z
+@ z ^ (x < y)
