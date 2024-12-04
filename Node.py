@@ -38,15 +38,24 @@ class Node:
                 new_condition = condition.subst(mapping) if isinstance(condition, Node) else condition
                 new_then = then_body.subst(mapping) if isinstance(then_body, Node) else then_body
                 new_else = else_body.subst(mapping) if isinstance(else_body, Node) else else_body
-                return Node("if_then_else", None, (new_condition, new_then, new_else), None)
+                return Node("if_then_else", None, (new_condition, new_then, new_else), None, self.eval_type)
             else:
                 if isinstance(self.left, Node) and isinstance(self.right, Node):
-                    return Node(self.symbol, self.op, self.left.subst(mapping), self.right.subst(mapping))
+                    return Node(self.symbol, self.op, self.left.subst(mapping), self.right.subst(mapping), self.eval_type)
                 elif isinstance(self.left, Node):
-                    return Node(self.symbol, self.op, self.left.subst(mapping), self.right)
+                    return Node(self.symbol, self.op, self.left.subst(mapping), self.right, self.eval_type)
                 elif isinstance(self.right, Node):
-                    return Node(self.symbol, self.op, self.left, self.right.subst(mapping))
+                    return Node(self.symbol, self.op, self.left, self.right.subst(mapping), self.eval_type)
                 else:
-                    return Node(self.symbol, self.op, self.left, self.right)
+                    return Node(self.symbol, self.op, self.left, self.right, self.eval_type)
 
+    def add_implication(self,implication_left):
+        if implication_left.eval_type != "bool":
+            raise Exception("Implication must be of type bool")
+        if self.symbol != "annotation":
+            raise Exception("Implication can be applied only to an annotation")
+
+        result = Node("annotation", "@", Node("implies", "=>",
+                                              implication_left,self.left,"bool"),"None","bool")
+        return result
 

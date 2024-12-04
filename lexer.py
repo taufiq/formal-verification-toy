@@ -41,15 +41,10 @@ t_TIMES   = r'\*'
 # t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
-# t_BOOL_TYPE = r'\bBOOL\b'
-# t_INT_TYPE = r'\bINT\b'
-# t_BOOLEAN = r'(TRUE|FALSE)'
-# t_LESSER_THAN = r'<'
-# t_LESSER_THAN_EQUAL = r'<='
-# t_GREATER_THAN = r'>'
-# t_GREATER_THAN_EQUAL = r'>='
 t_ASSIGNMENT = r':='
 t_IMPLIES = r'=>'
+
+
 
 
 

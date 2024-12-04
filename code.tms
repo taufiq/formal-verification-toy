@@ -1,7 +1,8 @@
 INT x
 INT y
 BOOL z
-assume x > 3
+@ z
 y := x + y
 z := x < y
+IF x < 3 THEN x:=x+2  ELSE x:=x+3
 @ z

@@ -1,5 +1,5 @@
 from Node import Node
-from parser import variables, generate_vc
+from parser import variables
 from z3_config import Z3INT, Z3BOOL
 
 import subprocess
@@ -36,7 +36,7 @@ def generate_solver():
 def generate_formula(tree:Node):
     formula = ""
     if tree.symbol == "annotation":
-        formula += f"formula = {generate_formula(tree.left)}\n"
+        formula += f"{generate_formula(tree.left)}"
     elif tree.symbol == "plus":
         formula += f" ({generate_formula(tree.left)} + {generate_formula(tree.right)})"
     elif tree.symbol == "minus":
@@ -55,7 +55,7 @@ def generate_formula(tree:Node):
         formula += f" (And({generate_formula(tree.left)},{generate_formula(tree.right)}))"
     elif tree.symbol == "boolean" and tree.op == "v":
         formula += f" (Or({generate_formula(tree.left)},{generate_formula(tree.right)}))"
-    elif tree.symbol == "boolean" and tree.op == "=>":
+    elif tree.symbol == "implies" and tree.op == "=>":
         formula += f" (Implies({generate_formula(tree.left)},{generate_formula(tree.right)}))"
     elif tree.symbol == 'if_then_else':
         condition, then_body, else_body = tree.left
@@ -65,6 +65,12 @@ def generate_formula(tree:Node):
 
     return formula
 
+def generate_formulas(trees):
+    formulas = []
+    for tree in trees:
+        formulas.append(generate_formula(tree))
+    formulas = ",\n".join(formulas)
+    return f'formula = (And {formulas})\n'
 
 def run_z3pyscript(output_path, timeout=10800):
     process = subprocess.run(["python3", output_path, f'{timeout}'], stderr=PIPE, stdout=PIPE)
@@ -77,12 +83,12 @@ def export_z3pyscript(out_path, script):
     with open(out_path, 'w') as z:
         z.writelines(script)
 
-def generate_z3_script(tree:Node):
+def generate_z3_script(trees):
     script = ""
     script += generate_imports()
     script += generate_arguments()
     script += generate_variables()
-    script += generate_formula(tree)
+    script += generate_formulas(trees)
     script += generate_solver()
     return script
 
