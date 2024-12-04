@@ -92,11 +92,8 @@ def generate_basic_paths_helper(statements,conditions,body):
 
 def generate_basic_paths():
     with open('code.tms') as f:
-        statements = []
-        for line in f.readlines():
-            statements.append(parser.parse(line))
-            # print(parser.parse(line).print_node_rec())
-
+        input = f.read()
+        statements = parser.parse(input)
         # check if last statement is an annotation
         if statements[-1].symbol != "annotation":
             raise PostConditionError

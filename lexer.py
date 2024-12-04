@@ -8,6 +8,7 @@ reserved = {
    'IF': 'IF',
    'THEN': 'THEN',
    'ELSE': 'ELSE',
+   "FUNCTION": "FUNCTION"
 }
 # List of token names.   This is always required
 tokens = [
@@ -18,6 +19,9 @@ tokens = [
    # 'DIVIDE',
    'LPAREN',
    'RPAREN',
+   'LBRACE',
+   'RBRACE',
+   'COMMA',
    'ANNOTATION',
    'VARIABLE',
    'COMPARATOR',
@@ -31,6 +35,7 @@ tokens = [
    # 'INT_TYPE',
    # 'BOOL_TYPE',
    'ASSUME',
+   'RETURN',
    'IMPLIES',
 ] + list(reserved.values())
 
@@ -41,9 +46,11 @@ t_TIMES   = r'\*'
 # t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
+t_LBRACE  = r'\{'
+t_RBRACE  = r'\}'
 t_ASSIGNMENT = r':='
 t_IMPLIES = r'=>'
-
+t_COMMA = r','
 
 
 
@@ -55,6 +62,10 @@ def t_TRUTH_VALUES(t):
 
 def t_ASSUME(t):
     r'assume'
+    return t
+
+def t_RETURN(t):
+    r'return'
     return t
 
 def t_COMPARATOR(t):

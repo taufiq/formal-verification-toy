@@ -5,6 +5,18 @@ from Node import Node
 # Modified code from PLY tutorial
 # https://ply.readthedocs.io/en/latest/ply.html#ast-construction
 
+
+# program : statement_list
+#
+# statement_list : statement
+#               | statement statement_list
+#
+# statement : annotation
+#           | assignment
+#           | declaration
+#           | expression
+#           | assignment
+#
 # annotation : ANNOTATION formula
 #
 # assignment : ID ASSIGNMENT expression
@@ -26,22 +38,45 @@ from Node import Node
 #            | NUMBER
 #            | VARIABLE
 
-### Precedence rules to avoid resolve conflicts
-precedence = (
-    ('nonassoc', 'COMPARATOR'),  # Comparison operators
-    ('left', 'BOOLEAN_OPERATOR'),  # Logical operators
-    ('left', 'PLUS', 'MINUS'),  # Arithmetic operators
-    ('left', 'TIMES'),  # Multiplication
-    ('right', 'UMINUS'),  # Unary minus
-)
+# precedence = (
+#     ('left', 'BOOLEAN_OPERATOR'),  # Logical operators
+#     ('nonassoc', 'COMPARATOR'),  # Comparison operators
+#     ('left', 'PLUS', 'MINUS'),  # Arithmetic operators
+#     ('left', 'TIMES'),  # Multiplication
+#     ('right', 'UMINUS'),  # Unary minus
+# )
 
 variables = {}
+functions = {}
 
 class ParseError(Exception):
     pass
 
-def p_start(p):
-    '''start : assignment
+# def p_start(p):
+#     '''start : assignment
+#              | expression
+#              | annotation
+#              | assumption
+#              | declaration
+#              | return_statement
+#              | function_declaration'''
+#     p[0] = p[1]
+
+
+def p_program(p):
+    '''program : statement_list'''
+    p[0] = p[1]
+
+def p_statement_list(p):
+    '''statement_list : statement
+                    | statement statement_list'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    elif len(p) == 3:
+        p[0] = [p[1]] + p[2]
+
+def p_statement(p):
+    '''statement : assignment
              | expression
              | annotation
              | assumption
@@ -165,11 +200,43 @@ def p_if_then_else(p):
         p[0] = Node('if_then_else', None, (p[2], p[4], p[6]), None,None)
     else:
         raise ParseError('Invalid guard expression')
+#
+# def p_function_declaration(p):
+#     '''function_declaration : FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE expression_list RBRACE'''
+#     functions[p[2]] = {'params': p[4], 'body': p[7]}
+#
+# def p_parameter_list(p):
+#     '''parameter_list : declaration
+#                       | declaration COMMA parameter_list
+#                       '''
+#
+#     if len(p) == 2:
+#         Node("parameter_list",None,[p[1]],None,None)
+#     else:
+#         Node("parameter_list",None,[p[1]] + p[3],None,None)
+
+
+# def p_expression_list(p):
+#     '''expression_list : expression
+#                       | expression expression_list
+#                       | empty'''
+#     if len(p) == 2:
+#         p[0] = [p[1]]
+#     else:
+#         p[0] = [p[1]] + p[2]
+#
+# def p_return_statement(p):
+#     'return_statement : RETURN expression'
+#     p[0] = ('return', p[2])
+#
+# def p_empty(p):
+#     '''empty :'''
+#     p[0] = None
 
 
 precedence = (
-    ('nonassoc', 'COMPARATOR'),
     ('left', 'BOOLEAN_OPERATOR'),
+    ('nonassoc', 'COMPARATOR'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES'),
     ('right', 'UMINUS'),
@@ -183,7 +250,7 @@ def p_error(p):
 
 
 # Build the parser
-parser = yacc.yacc()
+parser = yacc.yacc(debug=True)
 
 def gen_new_symbol(symbol):
     return symbol + ''
