@@ -200,6 +200,15 @@ def p_if_then_else(p):
         p[0] = Node('if_then_else', None, (p[2], p[4], p[6]), None,None)
     else:
         raise ParseError('Invalid guard expression')
+
+def p_while_loop(p):
+    'expression : WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE'
+    if p[3].eval_type != "bool":
+        raise ParseError('Invalid while loop')
+    p[0] = Node("while_loop", None, [p[3]] +  p[6], None,None)
+
+
+
 #
 # def p_function_declaration(p):
 #     '''function_declaration : FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE expression_list RBRACE'''

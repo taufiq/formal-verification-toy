@@ -2,6 +2,8 @@ import copy
 
 from parser import *
 from Node import *
+from typing import Union
+from project_config import DEBUG, get_debug
 
 
 class AnnotationOrderError(Exception):
@@ -12,7 +14,13 @@ class PostConditionError(Exception):
     def __init__(self, message="Post condition required."):
         super().__init__(message)
 
+class AnnotationWithNoWhileLoop(Exception):
+    def __init__(self, message="Annotation with no while loop following it."):
+        super().__init__(message)
 
+class WhileLoopWithNoAnnotation(Exception):
+    def __init__(self, message="While loop without annotation."):
+        super().__init__(message)
 
 verification_conditions= []
 
@@ -63,13 +71,22 @@ def negate_expression(expression:Node):
                             negate_expression(expression.right), "bool")
 
 def generate_basic_paths_helper(statements,conditions,body):
+    last_statement_annotation = False
+    last_annotation = None
     while statements:
         statement = statements.pop(0)
         statement_type = statement.symbol
+
+        if not statement_type == "while_loop" and len(conditions) > 1:
+            raise AnnotationWithNoWhileLoop
+
         if statement_type == "annotation":
             conditions.append(statement)
+            last_statement_annotation = True
+            last_annotation = statement
         elif statement_type == "assignment" or statement_type == "assumption":
             body.append(statement)
+            last_statement_annotation = False
         elif statement_type == "if_then_else":
             body2 = copy.deepcopy(body)
             conditions2 = copy.deepcopy(conditions)
@@ -85,6 +102,29 @@ def generate_basic_paths_helper(statements,conditions,body):
             body2.append(else_statement)
 
             generate_basic_paths_helper(statements2,conditions2,body2)
+            last_statement_annotation = False
+        elif statement_type == "while_loop":
+            if not last_statement_annotation:
+                raise WhileLoopWithNoAnnotation()
+            verification_conditions.append(generate_vc(conditions, body))
+
+            while_guard = statement.left[0]
+            while_body = statement.left[1:]
+
+            while_guard_assumption = Node("assumption",None, while_guard, None, "bool")
+            not_while_guard_assumption = negate_expression(statement.left[0])
+
+            body = [while_guard_assumption] +  while_body
+            body2 = [not_while_guard_assumption]
+
+            conditions = [last_annotation]
+            conditions2 = copy.deepcopy(conditions)
+
+            statements2 = copy.deepcopy(statements)
+
+            generate_basic_paths_helper(statements2,conditions2,body2)
+
+            last_statement_annotation = False
         else:
             raise Exception("Invalid expression, or expression with no effect", statement_type)
     verification_conditions.append(generate_vc(conditions,body))
@@ -94,6 +134,12 @@ def generate_basic_paths():
     with open('code.tms') as f:
         input = f.read()
         statements = parser.parse(input)
+
+        if get_debug():
+            for statement in statements:
+                print(statement.print_node_rec())
+            return
+
         # check if last statement is an annotation
         if statements[-1].symbol != "annotation":
             raise PostConditionError

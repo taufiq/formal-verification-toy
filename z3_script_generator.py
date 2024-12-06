@@ -1,6 +1,6 @@
 from Node import Node
 from parser import variables
-from z3_config import Z3INT, Z3BOOL
+from project_config import Z3INT, Z3BOOL
 
 import subprocess
 from subprocess import PIPE
@@ -30,7 +30,8 @@ def generate_solver():
     solver = "solver = Solver()\n"
     solver += f"solver.set('timeout', int(timeout * 1000))\n"
     solver += f"solver.add(formula)\n"
-    solver += f"print(solver.check())"
+    solver += f"print(solver.check())\n"
+    solver += f"if solver.check() == sat: \n \t print(solver.model)\n"
     return solver
 
 def generate_formula(tree:Node):
@@ -62,7 +63,6 @@ def generate_formula(tree:Node):
         formula += f"If({generate_formula(condition)}, {generate_formula(then_body)}, {generate_formula(else_body)})"
 
 
-
     return formula
 
 def generate_formulas(trees):
@@ -70,14 +70,14 @@ def generate_formulas(trees):
     for tree in trees:
         formulas.append(generate_formula(tree))
     formulas = ",\n".join(formulas)
-    return f'formula = (And {formulas})\n'
+    return f'formula = ForAll([{",".join(variables)}],(And {formulas}))\n'
 
 def run_z3pyscript(output_path, timeout=10800):
     process = subprocess.run(["python3", output_path, f'{timeout}'], stderr=PIPE, stdout=PIPE)
     if process.stderr:
         print(f"{process.stderr.decode()}")
         raise Exception(f'Cannot run file {output_path}')
-
+    print(process.stdout.decode())
 
 def export_z3pyscript(out_path, script):
     with open(out_path, 'w') as z:

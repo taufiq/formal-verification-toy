@@ -34,11 +34,21 @@ class Node:
         elif left == 0 and right == 0:
             return "(" + print_symbol + ")"
 
+    def printWhileLoopBody(self, loop_body):
+        loop_body_string = ""
+        for statement in loop_body:
+            loop_body_string += statement.print_node_rec()
+        return loop_body_string
+
 
     def print_node_rec(self):
         if self.symbol == 'if_then_else':
             condition, then_body, else_body = self.left
             return f"(if {condition.print_node_rec()} then {then_body.print_node_rec()} else {else_body.print_node_rec()})"
+        if self.symbol == 'while_loop':
+            guard = self.left[0]
+            body = self.left[1:]
+            return f"while_loop({guard.print_node_rec()}, {self.printWhileLoopBody(body)})"
         if (self.left is not None) and (self.right is not None):
             if isinstance(self.left, Node) and isinstance(self.right, Node):
                 # return "(" + self.symbol + "," + self.left.print_node_rec() + " " + self.right.print_node_rec() + ")"
