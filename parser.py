@@ -37,6 +37,7 @@ from Node import Node
 #            | ASSUME expression
 #            | NUMBER
 #            | VARIABLE
+#            | BOOLEAN
 
 # precedence = (
 #     ('left', 'BOOLEAN_OPERATOR'),  # Logical operators
@@ -154,6 +155,12 @@ def p_parenthesis_expr(p):
 def p_expression_num(p):
     'expression : NUMBER'
     p[0] = Node('NUMBER',None, p[1], None, "int")
+
+def p_expression_bool(p):
+    '''expression : TRUE
+                | FALSE'''
+    p[0] = Node('BOOLEAN',None, p[1], None, "bool")
+
 
 def p_expression_variable(p):
     'expression : VARIABLE'

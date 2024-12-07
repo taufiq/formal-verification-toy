@@ -5,6 +5,12 @@ from project_config import Z3INT, Z3BOOL
 import subprocess
 from subprocess import PIPE
 
+
+class Z3GenerateFormulaError(Exception):
+    def __init__(self, message="invalid formula."):
+        super().__init__(message)
+
+
 def generate_imports():
     imports = f'from z3 import *\n' \
               f'import sys\n' \
@@ -29,9 +35,15 @@ def generate_variables():
 def generate_solver():
     solver = "solver = Solver()\n"
     solver += f"solver.set('timeout', int(timeout * 1000))\n"
-    solver += f"solver.add(formula)\n"
-    solver += f"print(solver.check())\n"
-    solver += f"if solver.check() == sat: \n \t print(solver.model)\n"
+    solver += f"solver.add(formula_for_all)\n"
+
+    solver += f"print(solver.check())\n\
+if solver.check() == unsat:\n\
+    solver = Solver()\n\
+    solver.add(Not(formula))\n\
+    solver.check()\n\
+    print('counter example:')\n\
+    print(solver.model())\n"
     return solver
 
 def generate_formula(tree:Node):
@@ -61,8 +73,13 @@ def generate_formula(tree:Node):
     elif tree.symbol == 'if_then_else':
         condition, then_body, else_body = tree.left
         formula += f"If({generate_formula(condition)}, {generate_formula(then_body)}, {generate_formula(else_body)})"
-
-
+    elif tree.symbol == "BOOLEAN":
+        if tree.left == "TRUE":
+            formula += f"True"
+        elif tree.left == "FALSE":
+            formula += f"False"
+    else:
+        raise Z3GenerateFormulaError()
     return formula
 
 def generate_formulas(trees):
@@ -70,7 +87,9 @@ def generate_formulas(trees):
     for tree in trees:
         formulas.append(generate_formula(tree))
     formulas = ",\n".join(formulas)
-    return f'formula = ForAll([{",".join(variables)}],(And {formulas}))\n'
+    formulas =  f'formula = And({formulas})\n'
+    formulas += f'formula_for_all = ForAll([{",".join(variables)}], formula)\n'
+    return formulas
 
 def run_z3pyscript(output_path, timeout=10800):
     process = subprocess.run(["python3", output_path, f'{timeout}'], stderr=PIPE, stdout=PIPE)

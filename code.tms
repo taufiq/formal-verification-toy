@@ -1,11 +1,10 @@
 INT x
 INT y
 BOOL z
-@ z
-y := 3
-@ y <= 5
-WHILE (y < 5) {
+@ TRUE
+y := 6
+@ y <= 6
+WHILE (y < 7) {
     y := y+1
-    z := z ^ z
 }
-@ z ^ x > y
+@ y < 8

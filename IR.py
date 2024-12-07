@@ -112,7 +112,7 @@ def generate_basic_paths_helper(statements,conditions,body):
             while_body = statement.left[1:]
 
             while_guard_assumption = Node("assumption",None, while_guard, None, "bool")
-            not_while_guard_assumption = negate_expression(statement.left[0])
+            not_while_guard_assumption = Node("assumption", None, negate_expression(statement.left[0]), None, "bool")
 
             body = [while_guard_assumption] +  while_body
             body2 = [not_while_guard_assumption]
