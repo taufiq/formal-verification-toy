@@ -6,5 +6,6 @@ y := 6
 @ y <= 6
 WHILE (y < 7) {
     y := y+1
+    IF x > 1 THEN x:=2 ELSE x:=3
 }
 @ y < 8

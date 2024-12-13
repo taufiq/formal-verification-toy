@@ -7,12 +7,18 @@ timeout = sys.argv[1]
 x = Int('x')
 y = Int('y')
 z = Bool('z')
-formula = ForAll([x,y,z],(And  (Implies( z, ( 3 <=  5))),
- (Implies( ( y <=  5), (And( z, ( x >  y))))),
- (Implies( ( y <=  5), (Implies( ( y <  5), (And( (And( z, z)), ( x >  ( y +  1))))))))))
+formula = And( (Implies(True, ( 6 <=  6))),
+ (Implies( ( y <=  6), (Implies( ( y <  7), (Implies( ( x <=  1), ( ( y +  1) <  8))))))),
+ (Implies( ( y <=  6), (Implies( ( y <  7), (Implies( ( x >  1), ( ( y +  1) <  8))))))),
+ (Implies( ( y <=  6), (Implies( ( y >=  7), ( y <  8))))))
+formula_for_all = ForAll([x,y,z], formula)
 solver = Solver()
 solver.set('timeout', int(timeout * 1000))
-solver.add(formula)
+solver.add(formula_for_all)
 print(solver.check())
-if solver.check() == sat: 
- 	 print(solver.model)
+if solver.check() == unsat:
+    solver = Solver()
+    solver.add(Not(formula))
+    solver.check()
+    print('counter example:')
+    print(solver.model())
