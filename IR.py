@@ -83,6 +83,8 @@ def generate_basic_paths_helper(statements, conditions, body, generated_by=None)
 
     last_statement_annotation = False
     last_annotation = None
+    parent_loop_invariant = None
+
     global index
 
 
@@ -157,10 +159,12 @@ def generate_basic_paths_helper(statements, conditions, body, generated_by=None)
             body2 = [while_guard_assumption]
             body = [not_while_guard_assumption]
 
-            conditions = [last_annotation]
+            parent_loop_invariant = copy.deepcopy(conditions[0])
+            conditions = [copy.deepcopy(last_annotation)]
+
             conditions2 = copy.deepcopy(conditions)
 
-            statements2 = copy.deepcopy(while_body) + copy.deepcopy(statements)
+            statements2 = copy.deepcopy(while_body)
 
             index += 1
             generated_by = ["while_loop", index-1, body[0]]
@@ -172,9 +176,17 @@ def generate_basic_paths_helper(statements, conditions, body, generated_by=None)
         else:
             raise Exception("Invalid expression, or expression with no effect", statement_type)
     if generated_by:
+        if generated_by[0] == "while_loop" and len(conditions) == 1 and parent_loop_invariant is not None:
+            conditions.append(copy.deepcopy(parent_loop_invariant))
+        elif generated_by[0] == "while_loop" and len(conditions) == 1:
+            conditions.append(copy.deepcopy(conditions[0]))
+
         basic_paths.append(
             Basic_path(copy.deepcopy(generated_by[2]), copy.deepcopy(body[body.index(generated_by[2]):]), copy.deepcopy(conditions[-1]),
                        copy.deepcopy(generated_by), index))
+
+
+
     else:
         basic_paths.append(
             Basic_path(copy.deepcopy(conditions[0]), copy.deepcopy(body), copy.deepcopy(conditions[-1]),
