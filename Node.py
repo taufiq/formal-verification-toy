@@ -1,3 +1,4 @@
+from constants import *
 class Node:
     """
     Represents a node in an abstract syntax tree
@@ -65,10 +66,10 @@ class Node:
 
 
     def print_node_rec(self):
-        if self.symbol == "if_then_else":
+        if self.symbol == TERMINAL_IF_THEN_ELSE:
             condition, then_body, else_body = self.left
             return f"(if {condition.print_node_rec()} then {then_body.print_node_rec()} else {else_body.print_node_rec()})"
-        if self.symbol == "while_loop":
+        if self.symbol == TERMINAL_WHILE_LOOP:
             guard, *body = self.left
             return f"while_loop({guard.print_node_rec()}, {self.printWhileLoopBody(body)})"
         
@@ -102,11 +103,11 @@ class Node:
         def apply_subst(node):
             return node.subst(mapping) if isinstance(node, Node) else node
         
-        if self.symbol == "variables" and self.left in mapping:
+        if self.symbol == TERMINAL_VARIABLES and self.left in mapping:
             return mapping[self.left]
-        elif self.symbol == "if_then_else":
+        elif self.symbol == TERMINAL_IF_THEN_ELSE:
             condition, then_body, else_body = self.left
-            return Node("if_then_else", None, 
+            return Node(TERMINAL_IF_THEN_ELSE, None, 
                         (apply_subst(condition), apply_subst(then_body), apply_subst(else_body)),
                         None, self.eval_type)
         else:
@@ -134,12 +135,12 @@ class Node:
         #             return Node(self.symbol, self.op, self.left, self.right, self.eval_type)
 
     def validate_implication(self, implication_left):
-        if implication_left.eval_type != "bool":
+        if implication_left.eval_type != TERMINAL_BOOL:
             raise TypeError("Implication must be of type bool")
-        if self.symbol != "annotation":
+        if self.symbol != TERMINAL_ANNOTATION:
             raise ValueError("Implication can only be applied to an annotation")
 
     def add_implication(self, implication_left):
         self.validate_implication(implication_left)
-        return Node("annotation", "@", Node("implies", "=>", implication_left, self.left, "bool"), None, "bool")
+        return Node(TERMINAL_ANNOTATION, "@", Node(TERMINAL_IMPLIES, "=>", implication_left, self.left, TERMINAL_BOOL), None, TERMINAL_BOOL)
 
