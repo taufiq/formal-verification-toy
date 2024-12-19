@@ -23,7 +23,10 @@ tokens = [
    'LBRACE',
    'RBRACE',
    'COMMA',
+   'PRE_ANNOTATION',
+   'POST_ANNOTATION',
    'ANNOTATION',
+   'LOOP_ANNOTATION',
    'VARIABLE',
    'COMPARATOR',
    'BOOLEAN_OPERATOR',
@@ -70,7 +73,7 @@ def t_RETURN(t):
     return t
 
 def t_COMPARATOR(t):
-    r'(>=|<=|<|>)'
+    r'(>=|<=|<|>|==)'
     return t
 
 def t_BOOLEAN_OPERATOR(t):
@@ -87,6 +90,18 @@ def t_NUMBER(t):
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+
+def t_PRE_ANNOTATION(t):
+    r'\@Pre'
+    return t
+
+def t_POST_ANNOTATION(t):
+    r'\@Post'
+    return t
+
+def t_LOOP_ANNOTATION(t):
+    r'\@Loop'
+    return t
 
 def t_ANNOTATION(t):
     r'\@'

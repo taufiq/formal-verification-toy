@@ -1,0 +1,8 @@
+@Pre True
+@Post b >= a
+FUNCTION lmao(INT a, INT b) {
+    @Loop True
+    WHILE (a <= 5) {
+        b := b + 1
+    }
+}

@@ -1,884 +1,2323 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
+Unused terminals:
+
+    THEN
+    TRUTH_VALUES
+
 Grammar
 
-Rule 0     S' -> start
-Rule 1     start -> assignment
-Rule 2     start -> expression
-Rule 3     start -> annotation
-Rule 4     start -> formula
-Rule 5     start -> declaration
-Rule 6     declaration -> BOOL_TYPE VARIABLE
-Rule 7     declaration -> INT_TYPE VARIABLE
-Rule 8     annotation -> ANNOTATION formula
-Rule 9     assignment -> VARIABLE ASSIGNMENT expression
-Rule 10    expression -> expression PLUS expression
-Rule 11    expression -> expression MINUS expression
-Rule 12    expression -> expression TIMES expression
-Rule 13    expression -> LPAREN expression RPAREN
-Rule 14    expression -> NUMBER
-Rule 15    expression -> VARIABLE
-Rule 16    expression -> MINUS expression
-Rule 17    formula -> expression COMPARATOR expression
-Rule 18    formula -> formula BOOLEAN_OPERATOR formula
-Rule 19    formula -> VARIABLE
-Rule 20    formula -> LPAREN formula RPAREN
-Rule 21    formula -> formula IMPLIES formula
-Rule 22    formula -> IF formula THEN assignment ELSE assignment
+Rule 0     S' -> program
+Rule 1     program -> statement_list
+Rule 2     statement_list -> statement
+Rule 3     statement_list -> statement statement_list
+Rule 4     statement -> assignment
+Rule 5     statement -> expression
+Rule 6     statement -> annotation
+Rule 7     statement -> while_loop
+Rule 8     statement -> if_then_else
+Rule 9     statement -> assumption
+Rule 10    statement -> declaration
+Rule 11    statement -> function_declaration
+Rule 12    statement -> return_statement
+Rule 13    function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+Rule 14    return_statement -> RETURN expression
+Rule 15    parameter_list -> declaration
+Rule 16    parameter_list -> declaration COMMA parameter_list
+Rule 17    while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+Rule 18    declaration -> BOOL_TYPE VARIABLE
+Rule 19    declaration -> INT_TYPE VARIABLE
+Rule 20    annotation -> PRE_ANNOTATION expression
+Rule 21    annotation -> POST_ANNOTATION expression
+Rule 22    annotation -> ANNOTATION expression
+Rule 23    annotation -> LOOP_ANNOTATION expression
+Rule 24    assumption -> ASSUME expression
+Rule 25    assignment -> VARIABLE ASSIGNMENT expression
+Rule 26    expression -> expression PLUS expression
+Rule 27    expression -> expression MINUS expression
+Rule 28    expression -> expression TIMES expression
+Rule 29    expression -> LPAREN expression RPAREN
+Rule 30    expression -> NUMBER
+Rule 31    expression -> TRUE
+Rule 32    expression -> FALSE
+Rule 33    expression -> VARIABLE
+Rule 34    expression -> MINUS expression
+Rule 35    expression -> expression COMPARATOR expression
+Rule 36    expression -> expression BOOLEAN_OPERATOR expression
+Rule 37    expression -> expression IMPLIES expression
+Rule 38    if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
 
 Terminals, with rules where they appear
 
-ANNOTATION           : 8
-ASSIGNMENT           : 9
-BOOLEAN_OPERATOR     : 18
-BOOL_TYPE            : 6
-COMPARATOR           : 17
-ELSE                 : 22
-IF                   : 22
-IMPLIES              : 21
-INT_TYPE             : 7
-LPAREN               : 13 20
-MINUS                : 11 16
-NUMBER               : 14
-PLUS                 : 10
-RPAREN               : 13 20
-THEN                 : 22
-TIMES                : 12
-VARIABLE             : 6 7 9 15 19
+ANNOTATION           : 22
+ASSIGNMENT           : 25
+ASSUME               : 24
+BOOLEAN_OPERATOR     : 36
+BOOL_TYPE            : 18
+COMMA                : 16
+COMPARATOR           : 35
+ELSE                 : 38
+FALSE                : 32
+FUNCTION             : 13
+IF                   : 38
+IMPLIES              : 37
+INT_TYPE             : 19
+LBRACE               : 13 17 38 38
+LOOP_ANNOTATION      : 23
+LPAREN               : 13 17 29 38
+MINUS                : 27 34
+NUMBER               : 30
+PLUS                 : 26
+POST_ANNOTATION      : 21
+PRE_ANNOTATION       : 20
+RBRACE               : 13 17 38 38
+RETURN               : 14
+RPAREN               : 13 17 29 38
+THEN                 : 
+TIMES                : 28
+TRUE                 : 31
+TRUTH_VALUES         : 
+VARIABLE             : 13 18 19 25 33
+WHILE                : 17
 error                : 
 
 Nonterminals, with rules where they appear
 
-annotation           : 3
-assignment           : 1 22 22
-declaration          : 5
-expression           : 2 9 10 10 11 11 12 12 13 16 17 17
-formula              : 4 8 18 18 20 21 21 22
-start                : 0
+annotation           : 6
+assignment           : 4
+assumption           : 9
+declaration          : 10 15 16
+expression           : 5 14 17 20 21 22 23 24 25 26 26 27 27 28 28 29 34 35 35 36 36 37 37 38
+function_declaration : 11
+if_then_else         : 8
+parameter_list       : 13 16
+program              : 0
+return_statement     : 12
+statement            : 2 3
+statement_list       : 1 3 13 17 38 38
+while_loop           : 7
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . start
-    (1) start -> . assignment
-    (2) start -> . expression
-    (3) start -> . annotation
-    (4) start -> . formula
-    (5) start -> . declaration
-    (9) assignment -> . VARIABLE ASSIGNMENT expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-    (8) annotation -> . ANNOTATION formula
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
-    (6) declaration -> . BOOL_TYPE VARIABLE
-    (7) declaration -> . INT_TYPE VARIABLE
+    (0) S' -> . program
+    (1) program -> . statement_list
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement statement_list
+    (4) statement -> . assignment
+    (5) statement -> . expression
+    (6) statement -> . annotation
+    (7) statement -> . while_loop
+    (8) statement -> . if_then_else
+    (9) statement -> . assumption
+    (10) statement -> . declaration
+    (11) statement -> . function_declaration
+    (12) statement -> . return_statement
+    (25) assignment -> . VARIABLE ASSIGNMENT expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+    (20) annotation -> . PRE_ANNOTATION expression
+    (21) annotation -> . POST_ANNOTATION expression
+    (22) annotation -> . ANNOTATION expression
+    (23) annotation -> . LOOP_ANNOTATION expression
+    (17) while_loop -> . WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+    (38) if_then_else -> . IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (24) assumption -> . ASSUME expression
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+    (13) function_declaration -> . FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+    (14) return_statement -> . RETURN expression
 
-    VARIABLE        shift and go to state 7
-    LPAREN          shift and go to state 9
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
-    ANNOTATION      shift and go to state 11
-    IF              shift and go to state 12
-    BOOL_TYPE       shift and go to state 13
-    INT_TYPE        shift and go to state 14
+    VARIABLE        shift and go to state 13
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    MINUS           shift and go to state 14
+    PRE_ANNOTATION  shift and go to state 19
+    POST_ANNOTATION shift and go to state 20
+    ANNOTATION      shift and go to state 21
+    LOOP_ANNOTATION shift and go to state 22
+    WHILE           shift and go to state 23
+    IF              shift and go to state 24
+    ASSUME          shift and go to state 25
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+    FUNCTION        shift and go to state 28
+    RETURN          shift and go to state 29
 
-    start                          shift and go to state 1
-    assignment                     shift and go to state 2
-    expression                     shift and go to state 3
-    annotation                     shift and go to state 4
-    formula                        shift and go to state 5
-    declaration                    shift and go to state 6
+    program                        shift and go to state 1
+    statement_list                 shift and go to state 2
+    statement                      shift and go to state 3
+    assignment                     shift and go to state 4
+    expression                     shift and go to state 5
+    annotation                     shift and go to state 6
+    while_loop                     shift and go to state 7
+    if_then_else                   shift and go to state 8
+    assumption                     shift and go to state 9
+    declaration                    shift and go to state 10
+    function_declaration           shift and go to state 11
+    return_statement               shift and go to state 12
 
 state 1
 
-    (0) S' -> start .
+    (0) S' -> program .
 
 
 
 state 2
 
-    (1) start -> assignment .
+    (1) program -> statement_list .
 
-    $end            reduce using rule 1 (start -> assignment .)
+    $end            reduce using rule 1 (program -> statement_list .)
 
 
 state 3
 
-    (2) start -> expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
-    (17) formula -> expression . COMPARATOR expression
+    (2) statement_list -> statement .
+    (3) statement_list -> statement . statement_list
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement statement_list
+    (4) statement -> . assignment
+    (5) statement -> . expression
+    (6) statement -> . annotation
+    (7) statement -> . while_loop
+    (8) statement -> . if_then_else
+    (9) statement -> . assumption
+    (10) statement -> . declaration
+    (11) statement -> . function_declaration
+    (12) statement -> . return_statement
+    (25) assignment -> . VARIABLE ASSIGNMENT expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+    (20) annotation -> . PRE_ANNOTATION expression
+    (21) annotation -> . POST_ANNOTATION expression
+    (22) annotation -> . ANNOTATION expression
+    (23) annotation -> . LOOP_ANNOTATION expression
+    (17) while_loop -> . WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+    (38) if_then_else -> . IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (24) assumption -> . ASSUME expression
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+    (13) function_declaration -> . FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+    (14) return_statement -> . RETURN expression
 
-    $end            reduce using rule 2 (start -> expression .)
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
-    COMPARATOR      shift and go to state 18
+    $end            reduce using rule 2 (statement_list -> statement .)
+    RBRACE          reduce using rule 2 (statement_list -> statement .)
+    VARIABLE        shift and go to state 13
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    MINUS           shift and go to state 14
+    PRE_ANNOTATION  shift and go to state 19
+    POST_ANNOTATION shift and go to state 20
+    ANNOTATION      shift and go to state 21
+    LOOP_ANNOTATION shift and go to state 22
+    WHILE           shift and go to state 23
+    IF              shift and go to state 24
+    ASSUME          shift and go to state 25
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+    FUNCTION        shift and go to state 28
+    RETURN          shift and go to state 29
 
+    statement                      shift and go to state 3
+    statement_list                 shift and go to state 30
+    assignment                     shift and go to state 4
+    expression                     shift and go to state 5
+    annotation                     shift and go to state 6
+    while_loop                     shift and go to state 7
+    if_then_else                   shift and go to state 8
+    assumption                     shift and go to state 9
+    declaration                    shift and go to state 10
+    function_declaration           shift and go to state 11
+    return_statement               shift and go to state 12
 
 state 4
 
-    (3) start -> annotation .
+    (4) statement -> assignment .
 
-    $end            reduce using rule 3 (start -> annotation .)
+    VARIABLE        reduce using rule 4 (statement -> assignment .)
+    LPAREN          reduce using rule 4 (statement -> assignment .)
+    NUMBER          reduce using rule 4 (statement -> assignment .)
+    TRUE            reduce using rule 4 (statement -> assignment .)
+    FALSE           reduce using rule 4 (statement -> assignment .)
+    MINUS           reduce using rule 4 (statement -> assignment .)
+    PRE_ANNOTATION  reduce using rule 4 (statement -> assignment .)
+    POST_ANNOTATION reduce using rule 4 (statement -> assignment .)
+    ANNOTATION      reduce using rule 4 (statement -> assignment .)
+    LOOP_ANNOTATION reduce using rule 4 (statement -> assignment .)
+    WHILE           reduce using rule 4 (statement -> assignment .)
+    IF              reduce using rule 4 (statement -> assignment .)
+    ASSUME          reduce using rule 4 (statement -> assignment .)
+    BOOL_TYPE       reduce using rule 4 (statement -> assignment .)
+    INT_TYPE        reduce using rule 4 (statement -> assignment .)
+    FUNCTION        reduce using rule 4 (statement -> assignment .)
+    RETURN          reduce using rule 4 (statement -> assignment .)
+    $end            reduce using rule 4 (statement -> assignment .)
+    RBRACE          reduce using rule 4 (statement -> assignment .)
 
 
 state 5
 
-    (4) start -> formula .
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (5) statement -> expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    $end            reduce using rule 4 (start -> formula .)
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 5 (statement -> expression .)
+    LPAREN          reduce using rule 5 (statement -> expression .)
+    NUMBER          reduce using rule 5 (statement -> expression .)
+    TRUE            reduce using rule 5 (statement -> expression .)
+    FALSE           reduce using rule 5 (statement -> expression .)
+    PRE_ANNOTATION  reduce using rule 5 (statement -> expression .)
+    POST_ANNOTATION reduce using rule 5 (statement -> expression .)
+    ANNOTATION      reduce using rule 5 (statement -> expression .)
+    LOOP_ANNOTATION reduce using rule 5 (statement -> expression .)
+    WHILE           reduce using rule 5 (statement -> expression .)
+    IF              reduce using rule 5 (statement -> expression .)
+    ASSUME          reduce using rule 5 (statement -> expression .)
+    BOOL_TYPE       reduce using rule 5 (statement -> expression .)
+    INT_TYPE        reduce using rule 5 (statement -> expression .)
+    FUNCTION        reduce using rule 5 (statement -> expression .)
+    RETURN          reduce using rule 5 (statement -> expression .)
+    $end            reduce using rule 5 (statement -> expression .)
+    RBRACE          reduce using rule 5 (statement -> expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 5 (statement -> expression .) ]
 
 
 state 6
 
-    (5) start -> declaration .
+    (6) statement -> annotation .
 
-    $end            reduce using rule 5 (start -> declaration .)
+    VARIABLE        reduce using rule 6 (statement -> annotation .)
+    LPAREN          reduce using rule 6 (statement -> annotation .)
+    NUMBER          reduce using rule 6 (statement -> annotation .)
+    TRUE            reduce using rule 6 (statement -> annotation .)
+    FALSE           reduce using rule 6 (statement -> annotation .)
+    MINUS           reduce using rule 6 (statement -> annotation .)
+    PRE_ANNOTATION  reduce using rule 6 (statement -> annotation .)
+    POST_ANNOTATION reduce using rule 6 (statement -> annotation .)
+    ANNOTATION      reduce using rule 6 (statement -> annotation .)
+    LOOP_ANNOTATION reduce using rule 6 (statement -> annotation .)
+    WHILE           reduce using rule 6 (statement -> annotation .)
+    IF              reduce using rule 6 (statement -> annotation .)
+    ASSUME          reduce using rule 6 (statement -> annotation .)
+    BOOL_TYPE       reduce using rule 6 (statement -> annotation .)
+    INT_TYPE        reduce using rule 6 (statement -> annotation .)
+    FUNCTION        reduce using rule 6 (statement -> annotation .)
+    RETURN          reduce using rule 6 (statement -> annotation .)
+    $end            reduce using rule 6 (statement -> annotation .)
+    RBRACE          reduce using rule 6 (statement -> annotation .)
 
 
 state 7
 
-    (9) assignment -> VARIABLE . ASSIGNMENT expression
-    (15) expression -> VARIABLE .
-    (19) formula -> VARIABLE .
+    (7) statement -> while_loop .
 
-  ! reduce/reduce conflict for $end resolved using rule 15 (expression -> VARIABLE .)
-    ASSIGNMENT      shift and go to state 21
-    PLUS            reduce using rule 15 (expression -> VARIABLE .)
-    MINUS           reduce using rule 15 (expression -> VARIABLE .)
-    TIMES           reduce using rule 15 (expression -> VARIABLE .)
-    COMPARATOR      reduce using rule 15 (expression -> VARIABLE .)
-    $end            reduce using rule 15 (expression -> VARIABLE .)
-    BOOLEAN_OPERATOR reduce using rule 19 (formula -> VARIABLE .)
-    IMPLIES         reduce using rule 19 (formula -> VARIABLE .)
-
-  ! $end            [ reduce using rule 19 (formula -> VARIABLE .) ]
+    VARIABLE        reduce using rule 7 (statement -> while_loop .)
+    LPAREN          reduce using rule 7 (statement -> while_loop .)
+    NUMBER          reduce using rule 7 (statement -> while_loop .)
+    TRUE            reduce using rule 7 (statement -> while_loop .)
+    FALSE           reduce using rule 7 (statement -> while_loop .)
+    MINUS           reduce using rule 7 (statement -> while_loop .)
+    PRE_ANNOTATION  reduce using rule 7 (statement -> while_loop .)
+    POST_ANNOTATION reduce using rule 7 (statement -> while_loop .)
+    ANNOTATION      reduce using rule 7 (statement -> while_loop .)
+    LOOP_ANNOTATION reduce using rule 7 (statement -> while_loop .)
+    WHILE           reduce using rule 7 (statement -> while_loop .)
+    IF              reduce using rule 7 (statement -> while_loop .)
+    ASSUME          reduce using rule 7 (statement -> while_loop .)
+    BOOL_TYPE       reduce using rule 7 (statement -> while_loop .)
+    INT_TYPE        reduce using rule 7 (statement -> while_loop .)
+    FUNCTION        reduce using rule 7 (statement -> while_loop .)
+    RETURN          reduce using rule 7 (statement -> while_loop .)
+    $end            reduce using rule 7 (statement -> while_loop .)
+    RBRACE          reduce using rule 7 (statement -> while_loop .)
 
 
 state 8
 
-    (16) expression -> MINUS . expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (8) statement -> if_then_else .
 
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
+    VARIABLE        reduce using rule 8 (statement -> if_then_else .)
+    LPAREN          reduce using rule 8 (statement -> if_then_else .)
+    NUMBER          reduce using rule 8 (statement -> if_then_else .)
+    TRUE            reduce using rule 8 (statement -> if_then_else .)
+    FALSE           reduce using rule 8 (statement -> if_then_else .)
+    MINUS           reduce using rule 8 (statement -> if_then_else .)
+    PRE_ANNOTATION  reduce using rule 8 (statement -> if_then_else .)
+    POST_ANNOTATION reduce using rule 8 (statement -> if_then_else .)
+    ANNOTATION      reduce using rule 8 (statement -> if_then_else .)
+    LOOP_ANNOTATION reduce using rule 8 (statement -> if_then_else .)
+    WHILE           reduce using rule 8 (statement -> if_then_else .)
+    IF              reduce using rule 8 (statement -> if_then_else .)
+    ASSUME          reduce using rule 8 (statement -> if_then_else .)
+    BOOL_TYPE       reduce using rule 8 (statement -> if_then_else .)
+    INT_TYPE        reduce using rule 8 (statement -> if_then_else .)
+    FUNCTION        reduce using rule 8 (statement -> if_then_else .)
+    RETURN          reduce using rule 8 (statement -> if_then_else .)
+    $end            reduce using rule 8 (statement -> if_then_else .)
+    RBRACE          reduce using rule 8 (statement -> if_then_else .)
 
-    expression                     shift and go to state 22
 
 state 9
 
-    (13) expression -> LPAREN . expression RPAREN
-    (20) formula -> LPAREN . formula RPAREN
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
+    (9) statement -> assumption .
 
-    LPAREN          shift and go to state 9
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 27
-    MINUS           shift and go to state 8
-    IF              shift and go to state 12
+    VARIABLE        reduce using rule 9 (statement -> assumption .)
+    LPAREN          reduce using rule 9 (statement -> assumption .)
+    NUMBER          reduce using rule 9 (statement -> assumption .)
+    TRUE            reduce using rule 9 (statement -> assumption .)
+    FALSE           reduce using rule 9 (statement -> assumption .)
+    MINUS           reduce using rule 9 (statement -> assumption .)
+    PRE_ANNOTATION  reduce using rule 9 (statement -> assumption .)
+    POST_ANNOTATION reduce using rule 9 (statement -> assumption .)
+    ANNOTATION      reduce using rule 9 (statement -> assumption .)
+    LOOP_ANNOTATION reduce using rule 9 (statement -> assumption .)
+    WHILE           reduce using rule 9 (statement -> assumption .)
+    IF              reduce using rule 9 (statement -> assumption .)
+    ASSUME          reduce using rule 9 (statement -> assumption .)
+    BOOL_TYPE       reduce using rule 9 (statement -> assumption .)
+    INT_TYPE        reduce using rule 9 (statement -> assumption .)
+    FUNCTION        reduce using rule 9 (statement -> assumption .)
+    RETURN          reduce using rule 9 (statement -> assumption .)
+    $end            reduce using rule 9 (statement -> assumption .)
+    RBRACE          reduce using rule 9 (statement -> assumption .)
 
-    expression                     shift and go to state 25
-    formula                        shift and go to state 26
 
 state 10
 
-    (14) expression -> NUMBER .
+    (10) statement -> declaration .
 
-    PLUS            reduce using rule 14 (expression -> NUMBER .)
-    MINUS           reduce using rule 14 (expression -> NUMBER .)
-    TIMES           reduce using rule 14 (expression -> NUMBER .)
-    COMPARATOR      reduce using rule 14 (expression -> NUMBER .)
-    $end            reduce using rule 14 (expression -> NUMBER .)
-    RPAREN          reduce using rule 14 (expression -> NUMBER .)
-    BOOLEAN_OPERATOR reduce using rule 14 (expression -> NUMBER .)
-    IMPLIES         reduce using rule 14 (expression -> NUMBER .)
-    THEN            reduce using rule 14 (expression -> NUMBER .)
-    ELSE            reduce using rule 14 (expression -> NUMBER .)
+    VARIABLE        reduce using rule 10 (statement -> declaration .)
+    LPAREN          reduce using rule 10 (statement -> declaration .)
+    NUMBER          reduce using rule 10 (statement -> declaration .)
+    TRUE            reduce using rule 10 (statement -> declaration .)
+    FALSE           reduce using rule 10 (statement -> declaration .)
+    MINUS           reduce using rule 10 (statement -> declaration .)
+    PRE_ANNOTATION  reduce using rule 10 (statement -> declaration .)
+    POST_ANNOTATION reduce using rule 10 (statement -> declaration .)
+    ANNOTATION      reduce using rule 10 (statement -> declaration .)
+    LOOP_ANNOTATION reduce using rule 10 (statement -> declaration .)
+    WHILE           reduce using rule 10 (statement -> declaration .)
+    IF              reduce using rule 10 (statement -> declaration .)
+    ASSUME          reduce using rule 10 (statement -> declaration .)
+    BOOL_TYPE       reduce using rule 10 (statement -> declaration .)
+    INT_TYPE        reduce using rule 10 (statement -> declaration .)
+    FUNCTION        reduce using rule 10 (statement -> declaration .)
+    RETURN          reduce using rule 10 (statement -> declaration .)
+    $end            reduce using rule 10 (statement -> declaration .)
+    RBRACE          reduce using rule 10 (statement -> declaration .)
 
 
 state 11
 
-    (8) annotation -> ANNOTATION . formula
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (11) statement -> function_declaration .
 
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
+    VARIABLE        reduce using rule 11 (statement -> function_declaration .)
+    LPAREN          reduce using rule 11 (statement -> function_declaration .)
+    NUMBER          reduce using rule 11 (statement -> function_declaration .)
+    TRUE            reduce using rule 11 (statement -> function_declaration .)
+    FALSE           reduce using rule 11 (statement -> function_declaration .)
+    MINUS           reduce using rule 11 (statement -> function_declaration .)
+    PRE_ANNOTATION  reduce using rule 11 (statement -> function_declaration .)
+    POST_ANNOTATION reduce using rule 11 (statement -> function_declaration .)
+    ANNOTATION      reduce using rule 11 (statement -> function_declaration .)
+    LOOP_ANNOTATION reduce using rule 11 (statement -> function_declaration .)
+    WHILE           reduce using rule 11 (statement -> function_declaration .)
+    IF              reduce using rule 11 (statement -> function_declaration .)
+    ASSUME          reduce using rule 11 (statement -> function_declaration .)
+    BOOL_TYPE       reduce using rule 11 (statement -> function_declaration .)
+    INT_TYPE        reduce using rule 11 (statement -> function_declaration .)
+    FUNCTION        reduce using rule 11 (statement -> function_declaration .)
+    RETURN          reduce using rule 11 (statement -> function_declaration .)
+    $end            reduce using rule 11 (statement -> function_declaration .)
+    RBRACE          reduce using rule 11 (statement -> function_declaration .)
 
-    formula                        shift and go to state 28
-    expression                     shift and go to state 29
 
 state 12
 
-    (22) formula -> IF . formula THEN assignment ELSE assignment
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (12) statement -> return_statement .
 
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
+    VARIABLE        reduce using rule 12 (statement -> return_statement .)
+    LPAREN          reduce using rule 12 (statement -> return_statement .)
+    NUMBER          reduce using rule 12 (statement -> return_statement .)
+    TRUE            reduce using rule 12 (statement -> return_statement .)
+    FALSE           reduce using rule 12 (statement -> return_statement .)
+    MINUS           reduce using rule 12 (statement -> return_statement .)
+    PRE_ANNOTATION  reduce using rule 12 (statement -> return_statement .)
+    POST_ANNOTATION reduce using rule 12 (statement -> return_statement .)
+    ANNOTATION      reduce using rule 12 (statement -> return_statement .)
+    LOOP_ANNOTATION reduce using rule 12 (statement -> return_statement .)
+    WHILE           reduce using rule 12 (statement -> return_statement .)
+    IF              reduce using rule 12 (statement -> return_statement .)
+    ASSUME          reduce using rule 12 (statement -> return_statement .)
+    BOOL_TYPE       reduce using rule 12 (statement -> return_statement .)
+    INT_TYPE        reduce using rule 12 (statement -> return_statement .)
+    FUNCTION        reduce using rule 12 (statement -> return_statement .)
+    RETURN          reduce using rule 12 (statement -> return_statement .)
+    $end            reduce using rule 12 (statement -> return_statement .)
+    RBRACE          reduce using rule 12 (statement -> return_statement .)
 
-    formula                        shift and go to state 32
-    expression                     shift and go to state 29
 
 state 13
 
-    (6) declaration -> BOOL_TYPE . VARIABLE
+    (25) assignment -> VARIABLE . ASSIGNMENT expression
+    (33) expression -> VARIABLE .
 
-    VARIABLE        shift and go to state 33
+    ASSIGNMENT      shift and go to state 37
+    PLUS            reduce using rule 33 (expression -> VARIABLE .)
+    MINUS           reduce using rule 33 (expression -> VARIABLE .)
+    TIMES           reduce using rule 33 (expression -> VARIABLE .)
+    COMPARATOR      reduce using rule 33 (expression -> VARIABLE .)
+    BOOLEAN_OPERATOR reduce using rule 33 (expression -> VARIABLE .)
+    IMPLIES         reduce using rule 33 (expression -> VARIABLE .)
+    VARIABLE        reduce using rule 33 (expression -> VARIABLE .)
+    LPAREN          reduce using rule 33 (expression -> VARIABLE .)
+    NUMBER          reduce using rule 33 (expression -> VARIABLE .)
+    TRUE            reduce using rule 33 (expression -> VARIABLE .)
+    FALSE           reduce using rule 33 (expression -> VARIABLE .)
+    PRE_ANNOTATION  reduce using rule 33 (expression -> VARIABLE .)
+    POST_ANNOTATION reduce using rule 33 (expression -> VARIABLE .)
+    ANNOTATION      reduce using rule 33 (expression -> VARIABLE .)
+    LOOP_ANNOTATION reduce using rule 33 (expression -> VARIABLE .)
+    WHILE           reduce using rule 33 (expression -> VARIABLE .)
+    IF              reduce using rule 33 (expression -> VARIABLE .)
+    ASSUME          reduce using rule 33 (expression -> VARIABLE .)
+    BOOL_TYPE       reduce using rule 33 (expression -> VARIABLE .)
+    INT_TYPE        reduce using rule 33 (expression -> VARIABLE .)
+    FUNCTION        reduce using rule 33 (expression -> VARIABLE .)
+    RETURN          reduce using rule 33 (expression -> VARIABLE .)
+    $end            reduce using rule 33 (expression -> VARIABLE .)
+    RBRACE          reduce using rule 33 (expression -> VARIABLE .)
 
 
 state 14
 
-    (7) declaration -> INT_TYPE . VARIABLE
+    (34) expression -> MINUS . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    VARIABLE        shift and go to state 34
-
-
-state 15
-
-    (10) expression -> expression PLUS . expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
-
-    expression                     shift and go to state 35
-
-state 16
-
-    (11) expression -> expression MINUS . expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
-
-    expression                     shift and go to state 36
-
-state 17
-
-    (12) expression -> expression TIMES . expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
-
-    expression                     shift and go to state 37
-
-state 18
-
-    (17) formula -> expression COMPARATOR . expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
     expression                     shift and go to state 38
 
+state 15
+
+    (29) expression -> LPAREN . expression RPAREN
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
+
+    expression                     shift and go to state 40
+
+state 16
+
+    (30) expression -> NUMBER .
+
+    PLUS            reduce using rule 30 (expression -> NUMBER .)
+    MINUS           reduce using rule 30 (expression -> NUMBER .)
+    TIMES           reduce using rule 30 (expression -> NUMBER .)
+    COMPARATOR      reduce using rule 30 (expression -> NUMBER .)
+    BOOLEAN_OPERATOR reduce using rule 30 (expression -> NUMBER .)
+    IMPLIES         reduce using rule 30 (expression -> NUMBER .)
+    VARIABLE        reduce using rule 30 (expression -> NUMBER .)
+    LPAREN          reduce using rule 30 (expression -> NUMBER .)
+    NUMBER          reduce using rule 30 (expression -> NUMBER .)
+    TRUE            reduce using rule 30 (expression -> NUMBER .)
+    FALSE           reduce using rule 30 (expression -> NUMBER .)
+    PRE_ANNOTATION  reduce using rule 30 (expression -> NUMBER .)
+    POST_ANNOTATION reduce using rule 30 (expression -> NUMBER .)
+    ANNOTATION      reduce using rule 30 (expression -> NUMBER .)
+    LOOP_ANNOTATION reduce using rule 30 (expression -> NUMBER .)
+    WHILE           reduce using rule 30 (expression -> NUMBER .)
+    IF              reduce using rule 30 (expression -> NUMBER .)
+    ASSUME          reduce using rule 30 (expression -> NUMBER .)
+    BOOL_TYPE       reduce using rule 30 (expression -> NUMBER .)
+    INT_TYPE        reduce using rule 30 (expression -> NUMBER .)
+    FUNCTION        reduce using rule 30 (expression -> NUMBER .)
+    RETURN          reduce using rule 30 (expression -> NUMBER .)
+    $end            reduce using rule 30 (expression -> NUMBER .)
+    RBRACE          reduce using rule 30 (expression -> NUMBER .)
+    RPAREN          reduce using rule 30 (expression -> NUMBER .)
+
+
+state 17
+
+    (31) expression -> TRUE .
+
+    PLUS            reduce using rule 31 (expression -> TRUE .)
+    MINUS           reduce using rule 31 (expression -> TRUE .)
+    TIMES           reduce using rule 31 (expression -> TRUE .)
+    COMPARATOR      reduce using rule 31 (expression -> TRUE .)
+    BOOLEAN_OPERATOR reduce using rule 31 (expression -> TRUE .)
+    IMPLIES         reduce using rule 31 (expression -> TRUE .)
+    VARIABLE        reduce using rule 31 (expression -> TRUE .)
+    LPAREN          reduce using rule 31 (expression -> TRUE .)
+    NUMBER          reduce using rule 31 (expression -> TRUE .)
+    TRUE            reduce using rule 31 (expression -> TRUE .)
+    FALSE           reduce using rule 31 (expression -> TRUE .)
+    PRE_ANNOTATION  reduce using rule 31 (expression -> TRUE .)
+    POST_ANNOTATION reduce using rule 31 (expression -> TRUE .)
+    ANNOTATION      reduce using rule 31 (expression -> TRUE .)
+    LOOP_ANNOTATION reduce using rule 31 (expression -> TRUE .)
+    WHILE           reduce using rule 31 (expression -> TRUE .)
+    IF              reduce using rule 31 (expression -> TRUE .)
+    ASSUME          reduce using rule 31 (expression -> TRUE .)
+    BOOL_TYPE       reduce using rule 31 (expression -> TRUE .)
+    INT_TYPE        reduce using rule 31 (expression -> TRUE .)
+    FUNCTION        reduce using rule 31 (expression -> TRUE .)
+    RETURN          reduce using rule 31 (expression -> TRUE .)
+    $end            reduce using rule 31 (expression -> TRUE .)
+    RBRACE          reduce using rule 31 (expression -> TRUE .)
+    RPAREN          reduce using rule 31 (expression -> TRUE .)
+
+
+state 18
+
+    (32) expression -> FALSE .
+
+    PLUS            reduce using rule 32 (expression -> FALSE .)
+    MINUS           reduce using rule 32 (expression -> FALSE .)
+    TIMES           reduce using rule 32 (expression -> FALSE .)
+    COMPARATOR      reduce using rule 32 (expression -> FALSE .)
+    BOOLEAN_OPERATOR reduce using rule 32 (expression -> FALSE .)
+    IMPLIES         reduce using rule 32 (expression -> FALSE .)
+    VARIABLE        reduce using rule 32 (expression -> FALSE .)
+    LPAREN          reduce using rule 32 (expression -> FALSE .)
+    NUMBER          reduce using rule 32 (expression -> FALSE .)
+    TRUE            reduce using rule 32 (expression -> FALSE .)
+    FALSE           reduce using rule 32 (expression -> FALSE .)
+    PRE_ANNOTATION  reduce using rule 32 (expression -> FALSE .)
+    POST_ANNOTATION reduce using rule 32 (expression -> FALSE .)
+    ANNOTATION      reduce using rule 32 (expression -> FALSE .)
+    LOOP_ANNOTATION reduce using rule 32 (expression -> FALSE .)
+    WHILE           reduce using rule 32 (expression -> FALSE .)
+    IF              reduce using rule 32 (expression -> FALSE .)
+    ASSUME          reduce using rule 32 (expression -> FALSE .)
+    BOOL_TYPE       reduce using rule 32 (expression -> FALSE .)
+    INT_TYPE        reduce using rule 32 (expression -> FALSE .)
+    FUNCTION        reduce using rule 32 (expression -> FALSE .)
+    RETURN          reduce using rule 32 (expression -> FALSE .)
+    $end            reduce using rule 32 (expression -> FALSE .)
+    RBRACE          reduce using rule 32 (expression -> FALSE .)
+    RPAREN          reduce using rule 32 (expression -> FALSE .)
+
+
 state 19
 
-    (18) formula -> formula BOOLEAN_OPERATOR . formula
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (20) annotation -> PRE_ANNOTATION . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
-
-    formula                        shift and go to state 39
-    expression                     shift and go to state 29
-
-state 20
-
-    (21) formula -> formula IMPLIES . formula
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
-
-    formula                        shift and go to state 40
-    expression                     shift and go to state 29
-
-state 21
-
-    (9) assignment -> VARIABLE ASSIGNMENT . expression
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
     expression                     shift and go to state 41
 
-state 22
+state 20
 
-    (16) expression -> MINUS expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (21) annotation -> POST_ANNOTATION . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    PLUS            reduce using rule 16 (expression -> MINUS expression .)
-    MINUS           reduce using rule 16 (expression -> MINUS expression .)
-    TIMES           reduce using rule 16 (expression -> MINUS expression .)
-    COMPARATOR      reduce using rule 16 (expression -> MINUS expression .)
-    $end            reduce using rule 16 (expression -> MINUS expression .)
-    RPAREN          reduce using rule 16 (expression -> MINUS expression .)
-    BOOLEAN_OPERATOR reduce using rule 16 (expression -> MINUS expression .)
-    IMPLIES         reduce using rule 16 (expression -> MINUS expression .)
-    THEN            reduce using rule 16 (expression -> MINUS expression .)
-    ELSE            reduce using rule 16 (expression -> MINUS expression .)
-
-  ! PLUS            [ shift and go to state 15 ]
-  ! MINUS           [ shift and go to state 16 ]
-  ! TIMES           [ shift and go to state 17 ]
-
-
-state 23
-
-    (13) expression -> LPAREN . expression RPAREN
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
-
-    LPAREN          shift and go to state 23
-    NUMBER          shift and go to state 10
-    VARIABLE        shift and go to state 24
-    MINUS           shift and go to state 8
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
     expression                     shift and go to state 42
 
+state 21
+
+    (22) annotation -> ANNOTATION . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
+
+    expression                     shift and go to state 43
+
+state 22
+
+    (23) annotation -> LOOP_ANNOTATION . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
+
+    expression                     shift and go to state 44
+
+state 23
+
+    (17) while_loop -> WHILE . LPAREN expression RPAREN LBRACE statement_list RBRACE
+
+    LPAREN          shift and go to state 45
+
+
 state 24
 
-    (15) expression -> VARIABLE .
+    (38) if_then_else -> IF . LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
 
-    PLUS            reduce using rule 15 (expression -> VARIABLE .)
-    MINUS           reduce using rule 15 (expression -> VARIABLE .)
-    TIMES           reduce using rule 15 (expression -> VARIABLE .)
-    COMPARATOR      reduce using rule 15 (expression -> VARIABLE .)
-    $end            reduce using rule 15 (expression -> VARIABLE .)
-    RPAREN          reduce using rule 15 (expression -> VARIABLE .)
-    BOOLEAN_OPERATOR reduce using rule 15 (expression -> VARIABLE .)
-    IMPLIES         reduce using rule 15 (expression -> VARIABLE .)
-    THEN            reduce using rule 15 (expression -> VARIABLE .)
-    ELSE            reduce using rule 15 (expression -> VARIABLE .)
+    LPAREN          shift and go to state 46
 
 
 state 25
 
-    (13) expression -> LPAREN expression . RPAREN
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
-    (17) formula -> expression . COMPARATOR expression
+    (24) assumption -> ASSUME . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    RPAREN          shift and go to state 43
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
-    COMPARATOR      shift and go to state 18
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
+    expression                     shift and go to state 47
 
 state 26
 
-    (20) formula -> LPAREN formula . RPAREN
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (18) declaration -> BOOL_TYPE . VARIABLE
 
-    RPAREN          shift and go to state 44
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
+    VARIABLE        shift and go to state 48
 
 
 state 27
 
-    (15) expression -> VARIABLE .
-    (19) formula -> VARIABLE .
+    (19) declaration -> INT_TYPE . VARIABLE
 
-  ! reduce/reduce conflict for RPAREN resolved using rule 15 (expression -> VARIABLE .)
-    RPAREN          reduce using rule 15 (expression -> VARIABLE .)
-    PLUS            reduce using rule 15 (expression -> VARIABLE .)
-    MINUS           reduce using rule 15 (expression -> VARIABLE .)
-    TIMES           reduce using rule 15 (expression -> VARIABLE .)
-    COMPARATOR      reduce using rule 15 (expression -> VARIABLE .)
-    BOOLEAN_OPERATOR reduce using rule 19 (formula -> VARIABLE .)
-    IMPLIES         reduce using rule 19 (formula -> VARIABLE .)
-
-  ! RPAREN          [ reduce using rule 19 (formula -> VARIABLE .) ]
+    VARIABLE        shift and go to state 49
 
 
 state 28
 
-    (8) annotation -> ANNOTATION formula .
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (13) function_declaration -> FUNCTION . VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
 
-    $end            reduce using rule 8 (annotation -> ANNOTATION formula .)
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
+    VARIABLE        shift and go to state 50
 
 
 state 29
 
-    (17) formula -> expression . COMPARATOR expression
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (14) return_statement -> RETURN . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    COMPARATOR      shift and go to state 18
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
+    expression                     shift and go to state 51
 
 state 30
 
-    (19) formula -> VARIABLE .
-    (15) expression -> VARIABLE .
+    (3) statement_list -> statement statement_list .
 
-  ! reduce/reduce conflict for RPAREN resolved using rule 15 (expression -> VARIABLE .)
-    BOOLEAN_OPERATOR reduce using rule 19 (formula -> VARIABLE .)
-    IMPLIES         reduce using rule 19 (formula -> VARIABLE .)
-    $end            reduce using rule 19 (formula -> VARIABLE .)
-    THEN            reduce using rule 19 (formula -> VARIABLE .)
-    COMPARATOR      reduce using rule 15 (expression -> VARIABLE .)
-    PLUS            reduce using rule 15 (expression -> VARIABLE .)
-    MINUS           reduce using rule 15 (expression -> VARIABLE .)
-    TIMES           reduce using rule 15 (expression -> VARIABLE .)
-    RPAREN          reduce using rule 15 (expression -> VARIABLE .)
-
-  ! RPAREN          [ reduce using rule 19 (formula -> VARIABLE .) ]
+    $end            reduce using rule 3 (statement_list -> statement statement_list .)
+    RBRACE          reduce using rule 3 (statement_list -> statement statement_list .)
 
 
 state 31
 
-    (20) formula -> LPAREN . formula RPAREN
-    (13) expression -> LPAREN . expression RPAREN
-    (17) formula -> . expression COMPARATOR expression
-    (18) formula -> . formula BOOLEAN_OPERATOR formula
-    (19) formula -> . VARIABLE
-    (20) formula -> . LPAREN formula RPAREN
-    (21) formula -> . formula IMPLIES formula
-    (22) formula -> . IF formula THEN assignment ELSE assignment
-    (10) expression -> . expression PLUS expression
-    (11) expression -> . expression MINUS expression
-    (12) expression -> . expression TIMES expression
-    (13) expression -> . LPAREN expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-    (16) expression -> . MINUS expression
+    (26) expression -> expression PLUS . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    VARIABLE        shift and go to state 30
-    LPAREN          shift and go to state 31
-    IF              shift and go to state 12
-    NUMBER          shift and go to state 10
-    MINUS           shift and go to state 8
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
-    formula                        shift and go to state 26
-    expression                     shift and go to state 45
+    expression                     shift and go to state 52
 
 state 32
 
-    (22) formula -> IF formula . THEN assignment ELSE assignment
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (27) expression -> expression MINUS . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    THEN            shift and go to state 46
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
+    expression                     shift and go to state 53
 
 state 33
 
-    (6) declaration -> BOOL_TYPE VARIABLE .
+    (28) expression -> expression TIMES . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    $end            reduce using rule 6 (declaration -> BOOL_TYPE VARIABLE .)
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
+    expression                     shift and go to state 54
 
 state 34
 
-    (7) declaration -> INT_TYPE VARIABLE .
+    (35) expression -> expression COMPARATOR . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    $end            reduce using rule 7 (declaration -> INT_TYPE VARIABLE .)
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
+    expression                     shift and go to state 55
 
 state 35
 
-    (10) expression -> expression PLUS expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (36) expression -> expression BOOLEAN_OPERATOR . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    PLUS            reduce using rule 10 (expression -> expression PLUS expression .)
-    MINUS           reduce using rule 10 (expression -> expression PLUS expression .)
-    COMPARATOR      reduce using rule 10 (expression -> expression PLUS expression .)
-    $end            reduce using rule 10 (expression -> expression PLUS expression .)
-    RPAREN          reduce using rule 10 (expression -> expression PLUS expression .)
-    BOOLEAN_OPERATOR reduce using rule 10 (expression -> expression PLUS expression .)
-    IMPLIES         reduce using rule 10 (expression -> expression PLUS expression .)
-    THEN            reduce using rule 10 (expression -> expression PLUS expression .)
-    ELSE            reduce using rule 10 (expression -> expression PLUS expression .)
-    TIMES           shift and go to state 17
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
-  ! TIMES           [ reduce using rule 10 (expression -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 15 ]
-  ! MINUS           [ shift and go to state 16 ]
-
+    expression                     shift and go to state 56
 
 state 36
 
-    (11) expression -> expression MINUS expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (37) expression -> expression IMPLIES . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    PLUS            reduce using rule 11 (expression -> expression MINUS expression .)
-    MINUS           reduce using rule 11 (expression -> expression MINUS expression .)
-    COMPARATOR      reduce using rule 11 (expression -> expression MINUS expression .)
-    $end            reduce using rule 11 (expression -> expression MINUS expression .)
-    RPAREN          reduce using rule 11 (expression -> expression MINUS expression .)
-    BOOLEAN_OPERATOR reduce using rule 11 (expression -> expression MINUS expression .)
-    IMPLIES         reduce using rule 11 (expression -> expression MINUS expression .)
-    THEN            reduce using rule 11 (expression -> expression MINUS expression .)
-    ELSE            reduce using rule 11 (expression -> expression MINUS expression .)
-    TIMES           shift and go to state 17
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
-  ! TIMES           [ reduce using rule 11 (expression -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 15 ]
-  ! MINUS           [ shift and go to state 16 ]
-
+    expression                     shift and go to state 57
 
 state 37
 
-    (12) expression -> expression TIMES expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (25) assignment -> VARIABLE ASSIGNMENT . expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    PLUS            reduce using rule 12 (expression -> expression TIMES expression .)
-    MINUS           reduce using rule 12 (expression -> expression TIMES expression .)
-    TIMES           reduce using rule 12 (expression -> expression TIMES expression .)
-    COMPARATOR      reduce using rule 12 (expression -> expression TIMES expression .)
-    $end            reduce using rule 12 (expression -> expression TIMES expression .)
-    RPAREN          reduce using rule 12 (expression -> expression TIMES expression .)
-    BOOLEAN_OPERATOR reduce using rule 12 (expression -> expression TIMES expression .)
-    IMPLIES         reduce using rule 12 (expression -> expression TIMES expression .)
-    THEN            reduce using rule 12 (expression -> expression TIMES expression .)
-    ELSE            reduce using rule 12 (expression -> expression TIMES expression .)
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
-  ! PLUS            [ shift and go to state 15 ]
-  ! MINUS           [ shift and go to state 16 ]
-  ! TIMES           [ shift and go to state 17 ]
-
+    expression                     shift and go to state 58
 
 state 38
 
-    (17) formula -> expression COMPARATOR expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (34) expression -> MINUS expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    BOOLEAN_OPERATOR reduce using rule 17 (formula -> expression COMPARATOR expression .)
-    IMPLIES         reduce using rule 17 (formula -> expression COMPARATOR expression .)
-    $end            reduce using rule 17 (formula -> expression COMPARATOR expression .)
-    RPAREN          reduce using rule 17 (formula -> expression COMPARATOR expression .)
-    THEN            reduce using rule 17 (formula -> expression COMPARATOR expression .)
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
+    PLUS            reduce using rule 34 (expression -> MINUS expression .)
+    MINUS           reduce using rule 34 (expression -> MINUS expression .)
+    TIMES           reduce using rule 34 (expression -> MINUS expression .)
+    COMPARATOR      reduce using rule 34 (expression -> MINUS expression .)
+    BOOLEAN_OPERATOR reduce using rule 34 (expression -> MINUS expression .)
+    IMPLIES         reduce using rule 34 (expression -> MINUS expression .)
+    VARIABLE        reduce using rule 34 (expression -> MINUS expression .)
+    LPAREN          reduce using rule 34 (expression -> MINUS expression .)
+    NUMBER          reduce using rule 34 (expression -> MINUS expression .)
+    TRUE            reduce using rule 34 (expression -> MINUS expression .)
+    FALSE           reduce using rule 34 (expression -> MINUS expression .)
+    PRE_ANNOTATION  reduce using rule 34 (expression -> MINUS expression .)
+    POST_ANNOTATION reduce using rule 34 (expression -> MINUS expression .)
+    ANNOTATION      reduce using rule 34 (expression -> MINUS expression .)
+    LOOP_ANNOTATION reduce using rule 34 (expression -> MINUS expression .)
+    WHILE           reduce using rule 34 (expression -> MINUS expression .)
+    IF              reduce using rule 34 (expression -> MINUS expression .)
+    ASSUME          reduce using rule 34 (expression -> MINUS expression .)
+    BOOL_TYPE       reduce using rule 34 (expression -> MINUS expression .)
+    INT_TYPE        reduce using rule 34 (expression -> MINUS expression .)
+    FUNCTION        reduce using rule 34 (expression -> MINUS expression .)
+    RETURN          reduce using rule 34 (expression -> MINUS expression .)
+    $end            reduce using rule 34 (expression -> MINUS expression .)
+    RBRACE          reduce using rule 34 (expression -> MINUS expression .)
+    RPAREN          reduce using rule 34 (expression -> MINUS expression .)
+
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 32 ]
+  ! TIMES           [ shift and go to state 33 ]
+  ! COMPARATOR      [ shift and go to state 34 ]
+  ! BOOLEAN_OPERATOR [ shift and go to state 35 ]
+  ! IMPLIES         [ shift and go to state 36 ]
 
 
 state 39
 
-    (18) formula -> formula BOOLEAN_OPERATOR formula .
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (33) expression -> VARIABLE .
 
-    BOOLEAN_OPERATOR reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
-    IMPLIES         reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
-    $end            reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
-    RPAREN          reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
-    THEN            reduce using rule 18 (formula -> formula BOOLEAN_OPERATOR formula .)
-
-  ! BOOLEAN_OPERATOR [ shift and go to state 19 ]
-  ! IMPLIES         [ shift and go to state 20 ]
+    PLUS            reduce using rule 33 (expression -> VARIABLE .)
+    MINUS           reduce using rule 33 (expression -> VARIABLE .)
+    TIMES           reduce using rule 33 (expression -> VARIABLE .)
+    COMPARATOR      reduce using rule 33 (expression -> VARIABLE .)
+    BOOLEAN_OPERATOR reduce using rule 33 (expression -> VARIABLE .)
+    IMPLIES         reduce using rule 33 (expression -> VARIABLE .)
+    VARIABLE        reduce using rule 33 (expression -> VARIABLE .)
+    LPAREN          reduce using rule 33 (expression -> VARIABLE .)
+    NUMBER          reduce using rule 33 (expression -> VARIABLE .)
+    TRUE            reduce using rule 33 (expression -> VARIABLE .)
+    FALSE           reduce using rule 33 (expression -> VARIABLE .)
+    PRE_ANNOTATION  reduce using rule 33 (expression -> VARIABLE .)
+    POST_ANNOTATION reduce using rule 33 (expression -> VARIABLE .)
+    ANNOTATION      reduce using rule 33 (expression -> VARIABLE .)
+    LOOP_ANNOTATION reduce using rule 33 (expression -> VARIABLE .)
+    WHILE           reduce using rule 33 (expression -> VARIABLE .)
+    IF              reduce using rule 33 (expression -> VARIABLE .)
+    ASSUME          reduce using rule 33 (expression -> VARIABLE .)
+    BOOL_TYPE       reduce using rule 33 (expression -> VARIABLE .)
+    INT_TYPE        reduce using rule 33 (expression -> VARIABLE .)
+    FUNCTION        reduce using rule 33 (expression -> VARIABLE .)
+    RETURN          reduce using rule 33 (expression -> VARIABLE .)
+    $end            reduce using rule 33 (expression -> VARIABLE .)
+    RBRACE          reduce using rule 33 (expression -> VARIABLE .)
+    RPAREN          reduce using rule 33 (expression -> VARIABLE .)
 
 
 state 40
 
-    (21) formula -> formula IMPLIES formula .
-    (18) formula -> formula . BOOLEAN_OPERATOR formula
-    (21) formula -> formula . IMPLIES formula
+    (29) expression -> LPAREN expression . RPAREN
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-  ! shift/reduce conflict for BOOLEAN_OPERATOR resolved as shift
-  ! shift/reduce conflict for IMPLIES resolved as shift
-    $end            reduce using rule 21 (formula -> formula IMPLIES formula .)
-    RPAREN          reduce using rule 21 (formula -> formula IMPLIES formula .)
-    THEN            reduce using rule 21 (formula -> formula IMPLIES formula .)
-    BOOLEAN_OPERATOR shift and go to state 19
-    IMPLIES         shift and go to state 20
-
-  ! BOOLEAN_OPERATOR [ reduce using rule 21 (formula -> formula IMPLIES formula .) ]
-  ! IMPLIES         [ reduce using rule 21 (formula -> formula IMPLIES formula .) ]
+    RPAREN          shift and go to state 59
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
 
 
 state 41
 
-    (9) assignment -> VARIABLE ASSIGNMENT expression .
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (20) annotation -> PRE_ANNOTATION expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    $end            reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
-    ELSE            reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
-    BOOLEAN_OPERATOR reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
-    IMPLIES         reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
-    RPAREN          reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
-    THEN            reduce using rule 9 (assignment -> VARIABLE ASSIGNMENT expression .)
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    LPAREN          reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    NUMBER          reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    TRUE            reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    FALSE           reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    PRE_ANNOTATION  reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    POST_ANNOTATION reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    ANNOTATION      reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    LOOP_ANNOTATION reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    WHILE           reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    IF              reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    ASSUME          reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    BOOL_TYPE       reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    INT_TYPE        reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    FUNCTION        reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    RETURN          reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    $end            reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    RBRACE          reduce using rule 20 (annotation -> PRE_ANNOTATION expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 20 (annotation -> PRE_ANNOTATION expression .) ]
 
 
 state 42
 
-    (13) expression -> LPAREN expression . RPAREN
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (21) annotation -> POST_ANNOTATION expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    RPAREN          shift and go to state 43
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    LPAREN          reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    NUMBER          reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    TRUE            reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    FALSE           reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    PRE_ANNOTATION  reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    POST_ANNOTATION reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    ANNOTATION      reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    LOOP_ANNOTATION reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    WHILE           reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    IF              reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    ASSUME          reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    BOOL_TYPE       reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    INT_TYPE        reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    FUNCTION        reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    RETURN          reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    $end            reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    RBRACE          reduce using rule 21 (annotation -> POST_ANNOTATION expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 21 (annotation -> POST_ANNOTATION expression .) ]
 
 
 state 43
 
-    (13) expression -> LPAREN expression RPAREN .
+    (22) annotation -> ANNOTATION expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    PLUS            reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    TIMES           reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    COMPARATOR      reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    $end            reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    BOOLEAN_OPERATOR reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    IMPLIES         reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    THEN            reduce using rule 13 (expression -> LPAREN expression RPAREN .)
-    ELSE            reduce using rule 13 (expression -> LPAREN expression RPAREN .)
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 22 (annotation -> ANNOTATION expression .)
+    LPAREN          reduce using rule 22 (annotation -> ANNOTATION expression .)
+    NUMBER          reduce using rule 22 (annotation -> ANNOTATION expression .)
+    TRUE            reduce using rule 22 (annotation -> ANNOTATION expression .)
+    FALSE           reduce using rule 22 (annotation -> ANNOTATION expression .)
+    PRE_ANNOTATION  reduce using rule 22 (annotation -> ANNOTATION expression .)
+    POST_ANNOTATION reduce using rule 22 (annotation -> ANNOTATION expression .)
+    ANNOTATION      reduce using rule 22 (annotation -> ANNOTATION expression .)
+    LOOP_ANNOTATION reduce using rule 22 (annotation -> ANNOTATION expression .)
+    WHILE           reduce using rule 22 (annotation -> ANNOTATION expression .)
+    IF              reduce using rule 22 (annotation -> ANNOTATION expression .)
+    ASSUME          reduce using rule 22 (annotation -> ANNOTATION expression .)
+    BOOL_TYPE       reduce using rule 22 (annotation -> ANNOTATION expression .)
+    INT_TYPE        reduce using rule 22 (annotation -> ANNOTATION expression .)
+    FUNCTION        reduce using rule 22 (annotation -> ANNOTATION expression .)
+    RETURN          reduce using rule 22 (annotation -> ANNOTATION expression .)
+    $end            reduce using rule 22 (annotation -> ANNOTATION expression .)
+    RBRACE          reduce using rule 22 (annotation -> ANNOTATION expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 22 (annotation -> ANNOTATION expression .) ]
 
 
 state 44
 
-    (20) formula -> LPAREN formula RPAREN .
+    (23) annotation -> LOOP_ANNOTATION expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    BOOLEAN_OPERATOR reduce using rule 20 (formula -> LPAREN formula RPAREN .)
-    IMPLIES         reduce using rule 20 (formula -> LPAREN formula RPAREN .)
-    $end            reduce using rule 20 (formula -> LPAREN formula RPAREN .)
-    RPAREN          reduce using rule 20 (formula -> LPAREN formula RPAREN .)
-    THEN            reduce using rule 20 (formula -> LPAREN formula RPAREN .)
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    LPAREN          reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    NUMBER          reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    TRUE            reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    FALSE           reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    PRE_ANNOTATION  reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    POST_ANNOTATION reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    ANNOTATION      reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    LOOP_ANNOTATION reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    WHILE           reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    IF              reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    ASSUME          reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    BOOL_TYPE       reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    INT_TYPE        reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    FUNCTION        reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    RETURN          reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    $end            reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    RBRACE          reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 23 (annotation -> LOOP_ANNOTATION expression .) ]
 
 
 state 45
 
-    (13) expression -> LPAREN expression . RPAREN
-    (17) formula -> expression . COMPARATOR expression
-    (10) expression -> expression . PLUS expression
-    (11) expression -> expression . MINUS expression
-    (12) expression -> expression . TIMES expression
+    (17) while_loop -> WHILE LPAREN . expression RPAREN LBRACE statement_list RBRACE
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    RPAREN          shift and go to state 43
-    COMPARATOR      shift and go to state 18
-    PLUS            shift and go to state 15
-    MINUS           shift and go to state 16
-    TIMES           shift and go to state 17
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
+    expression                     shift and go to state 60
 
 state 46
 
-    (22) formula -> IF formula THEN . assignment ELSE assignment
-    (9) assignment -> . VARIABLE ASSIGNMENT expression
+    (38) if_then_else -> IF LPAREN . expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
 
-    VARIABLE        shift and go to state 48
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    VARIABLE        shift and go to state 39
+    MINUS           shift and go to state 14
 
-    assignment                     shift and go to state 47
+    expression                     shift and go to state 61
 
 state 47
 
-    (22) formula -> IF formula THEN assignment . ELSE assignment
+    (24) assumption -> ASSUME expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
 
-    ELSE            shift and go to state 49
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 24 (assumption -> ASSUME expression .)
+    LPAREN          reduce using rule 24 (assumption -> ASSUME expression .)
+    NUMBER          reduce using rule 24 (assumption -> ASSUME expression .)
+    TRUE            reduce using rule 24 (assumption -> ASSUME expression .)
+    FALSE           reduce using rule 24 (assumption -> ASSUME expression .)
+    PRE_ANNOTATION  reduce using rule 24 (assumption -> ASSUME expression .)
+    POST_ANNOTATION reduce using rule 24 (assumption -> ASSUME expression .)
+    ANNOTATION      reduce using rule 24 (assumption -> ASSUME expression .)
+    LOOP_ANNOTATION reduce using rule 24 (assumption -> ASSUME expression .)
+    WHILE           reduce using rule 24 (assumption -> ASSUME expression .)
+    IF              reduce using rule 24 (assumption -> ASSUME expression .)
+    ASSUME          reduce using rule 24 (assumption -> ASSUME expression .)
+    BOOL_TYPE       reduce using rule 24 (assumption -> ASSUME expression .)
+    INT_TYPE        reduce using rule 24 (assumption -> ASSUME expression .)
+    FUNCTION        reduce using rule 24 (assumption -> ASSUME expression .)
+    RETURN          reduce using rule 24 (assumption -> ASSUME expression .)
+    $end            reduce using rule 24 (assumption -> ASSUME expression .)
+    RBRACE          reduce using rule 24 (assumption -> ASSUME expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 24 (assumption -> ASSUME expression .) ]
 
 
 state 48
 
-    (9) assignment -> VARIABLE . ASSIGNMENT expression
+    (18) declaration -> BOOL_TYPE VARIABLE .
 
-    ASSIGNMENT      shift and go to state 21
+    VARIABLE        reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    LPAREN          reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    NUMBER          reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    TRUE            reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    FALSE           reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    MINUS           reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    PRE_ANNOTATION  reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    POST_ANNOTATION reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    ANNOTATION      reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    LOOP_ANNOTATION reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    WHILE           reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    IF              reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    ASSUME          reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    BOOL_TYPE       reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    INT_TYPE        reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    FUNCTION        reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    RETURN          reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    $end            reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    RBRACE          reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    COMMA           reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
+    RPAREN          reduce using rule 18 (declaration -> BOOL_TYPE VARIABLE .)
 
 
 state 49
 
-    (22) formula -> IF formula THEN assignment ELSE . assignment
-    (9) assignment -> . VARIABLE ASSIGNMENT expression
+    (19) declaration -> INT_TYPE VARIABLE .
 
-    VARIABLE        shift and go to state 48
+    VARIABLE        reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    LPAREN          reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    NUMBER          reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    TRUE            reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    FALSE           reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    MINUS           reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    PRE_ANNOTATION  reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    POST_ANNOTATION reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    ANNOTATION      reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    LOOP_ANNOTATION reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    WHILE           reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    IF              reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    ASSUME          reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    BOOL_TYPE       reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    INT_TYPE        reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    FUNCTION        reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    RETURN          reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    $end            reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    RBRACE          reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    COMMA           reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
+    RPAREN          reduce using rule 19 (declaration -> INT_TYPE VARIABLE .)
 
-    assignment                     shift and go to state 50
 
 state 50
 
-    (22) formula -> IF formula THEN assignment ELSE assignment .
+    (13) function_declaration -> FUNCTION VARIABLE . LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
 
-    BOOLEAN_OPERATOR reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
-    IMPLIES         reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
-    $end            reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
-    RPAREN          reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
-    THEN            reduce using rule 22 (formula -> IF formula THEN assignment ELSE assignment .)
+    LPAREN          shift and go to state 62
+
+
+state 51
+
+    (14) return_statement -> RETURN expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+  ! shift/reduce conflict for MINUS resolved as shift
+    VARIABLE        reduce using rule 14 (return_statement -> RETURN expression .)
+    LPAREN          reduce using rule 14 (return_statement -> RETURN expression .)
+    NUMBER          reduce using rule 14 (return_statement -> RETURN expression .)
+    TRUE            reduce using rule 14 (return_statement -> RETURN expression .)
+    FALSE           reduce using rule 14 (return_statement -> RETURN expression .)
+    PRE_ANNOTATION  reduce using rule 14 (return_statement -> RETURN expression .)
+    POST_ANNOTATION reduce using rule 14 (return_statement -> RETURN expression .)
+    ANNOTATION      reduce using rule 14 (return_statement -> RETURN expression .)
+    LOOP_ANNOTATION reduce using rule 14 (return_statement -> RETURN expression .)
+    WHILE           reduce using rule 14 (return_statement -> RETURN expression .)
+    IF              reduce using rule 14 (return_statement -> RETURN expression .)
+    ASSUME          reduce using rule 14 (return_statement -> RETURN expression .)
+    BOOL_TYPE       reduce using rule 14 (return_statement -> RETURN expression .)
+    INT_TYPE        reduce using rule 14 (return_statement -> RETURN expression .)
+    FUNCTION        reduce using rule 14 (return_statement -> RETURN expression .)
+    RETURN          reduce using rule 14 (return_statement -> RETURN expression .)
+    $end            reduce using rule 14 (return_statement -> RETURN expression .)
+    RBRACE          reduce using rule 14 (return_statement -> RETURN expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 14 (return_statement -> RETURN expression .) ]
+
+
+state 52
+
+    (26) expression -> expression PLUS expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    PLUS            reduce using rule 26 (expression -> expression PLUS expression .)
+    MINUS           reduce using rule 26 (expression -> expression PLUS expression .)
+    COMPARATOR      reduce using rule 26 (expression -> expression PLUS expression .)
+    BOOLEAN_OPERATOR reduce using rule 26 (expression -> expression PLUS expression .)
+    IMPLIES         reduce using rule 26 (expression -> expression PLUS expression .)
+    VARIABLE        reduce using rule 26 (expression -> expression PLUS expression .)
+    LPAREN          reduce using rule 26 (expression -> expression PLUS expression .)
+    NUMBER          reduce using rule 26 (expression -> expression PLUS expression .)
+    TRUE            reduce using rule 26 (expression -> expression PLUS expression .)
+    FALSE           reduce using rule 26 (expression -> expression PLUS expression .)
+    PRE_ANNOTATION  reduce using rule 26 (expression -> expression PLUS expression .)
+    POST_ANNOTATION reduce using rule 26 (expression -> expression PLUS expression .)
+    ANNOTATION      reduce using rule 26 (expression -> expression PLUS expression .)
+    LOOP_ANNOTATION reduce using rule 26 (expression -> expression PLUS expression .)
+    WHILE           reduce using rule 26 (expression -> expression PLUS expression .)
+    IF              reduce using rule 26 (expression -> expression PLUS expression .)
+    ASSUME          reduce using rule 26 (expression -> expression PLUS expression .)
+    BOOL_TYPE       reduce using rule 26 (expression -> expression PLUS expression .)
+    INT_TYPE        reduce using rule 26 (expression -> expression PLUS expression .)
+    FUNCTION        reduce using rule 26 (expression -> expression PLUS expression .)
+    RETURN          reduce using rule 26 (expression -> expression PLUS expression .)
+    $end            reduce using rule 26 (expression -> expression PLUS expression .)
+    RBRACE          reduce using rule 26 (expression -> expression PLUS expression .)
+    RPAREN          reduce using rule 26 (expression -> expression PLUS expression .)
+    TIMES           shift and go to state 33
+
+  ! TIMES           [ reduce using rule 26 (expression -> expression PLUS expression .) ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 32 ]
+  ! COMPARATOR      [ shift and go to state 34 ]
+  ! BOOLEAN_OPERATOR [ shift and go to state 35 ]
+  ! IMPLIES         [ shift and go to state 36 ]
+
+
+state 53
+
+    (27) expression -> expression MINUS expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    PLUS            reduce using rule 27 (expression -> expression MINUS expression .)
+    MINUS           reduce using rule 27 (expression -> expression MINUS expression .)
+    COMPARATOR      reduce using rule 27 (expression -> expression MINUS expression .)
+    BOOLEAN_OPERATOR reduce using rule 27 (expression -> expression MINUS expression .)
+    IMPLIES         reduce using rule 27 (expression -> expression MINUS expression .)
+    VARIABLE        reduce using rule 27 (expression -> expression MINUS expression .)
+    LPAREN          reduce using rule 27 (expression -> expression MINUS expression .)
+    NUMBER          reduce using rule 27 (expression -> expression MINUS expression .)
+    TRUE            reduce using rule 27 (expression -> expression MINUS expression .)
+    FALSE           reduce using rule 27 (expression -> expression MINUS expression .)
+    PRE_ANNOTATION  reduce using rule 27 (expression -> expression MINUS expression .)
+    POST_ANNOTATION reduce using rule 27 (expression -> expression MINUS expression .)
+    ANNOTATION      reduce using rule 27 (expression -> expression MINUS expression .)
+    LOOP_ANNOTATION reduce using rule 27 (expression -> expression MINUS expression .)
+    WHILE           reduce using rule 27 (expression -> expression MINUS expression .)
+    IF              reduce using rule 27 (expression -> expression MINUS expression .)
+    ASSUME          reduce using rule 27 (expression -> expression MINUS expression .)
+    BOOL_TYPE       reduce using rule 27 (expression -> expression MINUS expression .)
+    INT_TYPE        reduce using rule 27 (expression -> expression MINUS expression .)
+    FUNCTION        reduce using rule 27 (expression -> expression MINUS expression .)
+    RETURN          reduce using rule 27 (expression -> expression MINUS expression .)
+    $end            reduce using rule 27 (expression -> expression MINUS expression .)
+    RBRACE          reduce using rule 27 (expression -> expression MINUS expression .)
+    RPAREN          reduce using rule 27 (expression -> expression MINUS expression .)
+    TIMES           shift and go to state 33
+
+  ! TIMES           [ reduce using rule 27 (expression -> expression MINUS expression .) ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 32 ]
+  ! COMPARATOR      [ shift and go to state 34 ]
+  ! BOOLEAN_OPERATOR [ shift and go to state 35 ]
+  ! IMPLIES         [ shift and go to state 36 ]
+
+
+state 54
+
+    (28) expression -> expression TIMES expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    PLUS            reduce using rule 28 (expression -> expression TIMES expression .)
+    MINUS           reduce using rule 28 (expression -> expression TIMES expression .)
+    TIMES           reduce using rule 28 (expression -> expression TIMES expression .)
+    COMPARATOR      reduce using rule 28 (expression -> expression TIMES expression .)
+    BOOLEAN_OPERATOR reduce using rule 28 (expression -> expression TIMES expression .)
+    IMPLIES         reduce using rule 28 (expression -> expression TIMES expression .)
+    VARIABLE        reduce using rule 28 (expression -> expression TIMES expression .)
+    LPAREN          reduce using rule 28 (expression -> expression TIMES expression .)
+    NUMBER          reduce using rule 28 (expression -> expression TIMES expression .)
+    TRUE            reduce using rule 28 (expression -> expression TIMES expression .)
+    FALSE           reduce using rule 28 (expression -> expression TIMES expression .)
+    PRE_ANNOTATION  reduce using rule 28 (expression -> expression TIMES expression .)
+    POST_ANNOTATION reduce using rule 28 (expression -> expression TIMES expression .)
+    ANNOTATION      reduce using rule 28 (expression -> expression TIMES expression .)
+    LOOP_ANNOTATION reduce using rule 28 (expression -> expression TIMES expression .)
+    WHILE           reduce using rule 28 (expression -> expression TIMES expression .)
+    IF              reduce using rule 28 (expression -> expression TIMES expression .)
+    ASSUME          reduce using rule 28 (expression -> expression TIMES expression .)
+    BOOL_TYPE       reduce using rule 28 (expression -> expression TIMES expression .)
+    INT_TYPE        reduce using rule 28 (expression -> expression TIMES expression .)
+    FUNCTION        reduce using rule 28 (expression -> expression TIMES expression .)
+    RETURN          reduce using rule 28 (expression -> expression TIMES expression .)
+    $end            reduce using rule 28 (expression -> expression TIMES expression .)
+    RBRACE          reduce using rule 28 (expression -> expression TIMES expression .)
+    RPAREN          reduce using rule 28 (expression -> expression TIMES expression .)
+
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 32 ]
+  ! TIMES           [ shift and go to state 33 ]
+  ! COMPARATOR      [ shift and go to state 34 ]
+  ! BOOLEAN_OPERATOR [ shift and go to state 35 ]
+  ! IMPLIES         [ shift and go to state 36 ]
+
+
+state 55
+
+    (35) expression -> expression COMPARATOR expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    COMPARATOR      reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    BOOLEAN_OPERATOR reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    IMPLIES         reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    VARIABLE        reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    LPAREN          reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    NUMBER          reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    TRUE            reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    FALSE           reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    PRE_ANNOTATION  reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    POST_ANNOTATION reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    ANNOTATION      reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    LOOP_ANNOTATION reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    WHILE           reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    IF              reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    ASSUME          reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    BOOL_TYPE       reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    INT_TYPE        reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    FUNCTION        reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    RETURN          reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    $end            reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    RBRACE          reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    RPAREN          reduce using rule 35 (expression -> expression COMPARATOR expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+
+  ! PLUS            [ reduce using rule 35 (expression -> expression COMPARATOR expression .) ]
+  ! MINUS           [ reduce using rule 35 (expression -> expression COMPARATOR expression .) ]
+  ! TIMES           [ reduce using rule 35 (expression -> expression COMPARATOR expression .) ]
+  ! COMPARATOR      [ shift and go to state 34 ]
+  ! BOOLEAN_OPERATOR [ shift and go to state 35 ]
+  ! IMPLIES         [ shift and go to state 36 ]
+
+
+state 56
+
+    (36) expression -> expression BOOLEAN_OPERATOR expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    BOOLEAN_OPERATOR reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    IMPLIES         reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    VARIABLE        reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    LPAREN          reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    NUMBER          reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    TRUE            reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    FALSE           reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    PRE_ANNOTATION  reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    POST_ANNOTATION reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    ANNOTATION      reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    LOOP_ANNOTATION reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    WHILE           reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    IF              reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    ASSUME          reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    BOOL_TYPE       reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    INT_TYPE        reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    FUNCTION        reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    RETURN          reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    $end            reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    RBRACE          reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    RPAREN          reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+
+  ! PLUS            [ reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .) ]
+  ! MINUS           [ reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .) ]
+  ! TIMES           [ reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .) ]
+  ! COMPARATOR      [ reduce using rule 36 (expression -> expression BOOLEAN_OPERATOR expression .) ]
+  ! BOOLEAN_OPERATOR [ shift and go to state 35 ]
+  ! IMPLIES         [ shift and go to state 36 ]
+
+
+state 57
+
+    (37) expression -> expression IMPLIES expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    IMPLIES         reduce using rule 37 (expression -> expression IMPLIES expression .)
+    VARIABLE        reduce using rule 37 (expression -> expression IMPLIES expression .)
+    LPAREN          reduce using rule 37 (expression -> expression IMPLIES expression .)
+    NUMBER          reduce using rule 37 (expression -> expression IMPLIES expression .)
+    TRUE            reduce using rule 37 (expression -> expression IMPLIES expression .)
+    FALSE           reduce using rule 37 (expression -> expression IMPLIES expression .)
+    PRE_ANNOTATION  reduce using rule 37 (expression -> expression IMPLIES expression .)
+    POST_ANNOTATION reduce using rule 37 (expression -> expression IMPLIES expression .)
+    ANNOTATION      reduce using rule 37 (expression -> expression IMPLIES expression .)
+    LOOP_ANNOTATION reduce using rule 37 (expression -> expression IMPLIES expression .)
+    WHILE           reduce using rule 37 (expression -> expression IMPLIES expression .)
+    IF              reduce using rule 37 (expression -> expression IMPLIES expression .)
+    ASSUME          reduce using rule 37 (expression -> expression IMPLIES expression .)
+    BOOL_TYPE       reduce using rule 37 (expression -> expression IMPLIES expression .)
+    INT_TYPE        reduce using rule 37 (expression -> expression IMPLIES expression .)
+    FUNCTION        reduce using rule 37 (expression -> expression IMPLIES expression .)
+    RETURN          reduce using rule 37 (expression -> expression IMPLIES expression .)
+    $end            reduce using rule 37 (expression -> expression IMPLIES expression .)
+    RBRACE          reduce using rule 37 (expression -> expression IMPLIES expression .)
+    RPAREN          reduce using rule 37 (expression -> expression IMPLIES expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+
+  ! PLUS            [ reduce using rule 37 (expression -> expression IMPLIES expression .) ]
+  ! MINUS           [ reduce using rule 37 (expression -> expression IMPLIES expression .) ]
+  ! TIMES           [ reduce using rule 37 (expression -> expression IMPLIES expression .) ]
+  ! COMPARATOR      [ reduce using rule 37 (expression -> expression IMPLIES expression .) ]
+  ! BOOLEAN_OPERATOR [ reduce using rule 37 (expression -> expression IMPLIES expression .) ]
+  ! IMPLIES         [ shift and go to state 36 ]
+
+
+state 58
+
+    (25) assignment -> VARIABLE ASSIGNMENT expression .
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    VARIABLE        reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    LPAREN          reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    NUMBER          reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    TRUE            reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    FALSE           reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    PRE_ANNOTATION  reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    POST_ANNOTATION reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    ANNOTATION      reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    LOOP_ANNOTATION reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    WHILE           reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    IF              reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    ASSUME          reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    BOOL_TYPE       reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    INT_TYPE        reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    FUNCTION        reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    RETURN          reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    $end            reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    RBRACE          reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .)
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+  ! MINUS           [ reduce using rule 25 (assignment -> VARIABLE ASSIGNMENT expression .) ]
+
+
+state 59
+
+    (29) expression -> LPAREN expression RPAREN .
+
+    PLUS            reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    TIMES           reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    COMPARATOR      reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    BOOLEAN_OPERATOR reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    IMPLIES         reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    VARIABLE        reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    LPAREN          reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    NUMBER          reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    TRUE            reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    FALSE           reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    PRE_ANNOTATION  reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    POST_ANNOTATION reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    ANNOTATION      reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    LOOP_ANNOTATION reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    WHILE           reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    IF              reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    ASSUME          reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    BOOL_TYPE       reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    INT_TYPE        reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    FUNCTION        reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    RETURN          reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    $end            reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    RBRACE          reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 29 (expression -> LPAREN expression RPAREN .)
+
+
+state 60
+
+    (17) while_loop -> WHILE LPAREN expression . RPAREN LBRACE statement_list RBRACE
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    RPAREN          shift and go to state 63
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+
+state 61
+
+    (38) if_then_else -> IF LPAREN expression . RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (26) expression -> expression . PLUS expression
+    (27) expression -> expression . MINUS expression
+    (28) expression -> expression . TIMES expression
+    (35) expression -> expression . COMPARATOR expression
+    (36) expression -> expression . BOOLEAN_OPERATOR expression
+    (37) expression -> expression . IMPLIES expression
+
+    RPAREN          shift and go to state 64
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 32
+    TIMES           shift and go to state 33
+    COMPARATOR      shift and go to state 34
+    BOOLEAN_OPERATOR shift and go to state 35
+    IMPLIES         shift and go to state 36
+
+
+state 62
+
+    (13) function_declaration -> FUNCTION VARIABLE LPAREN . parameter_list RPAREN LBRACE statement_list RBRACE
+    (15) parameter_list -> . declaration
+    (16) parameter_list -> . declaration COMMA parameter_list
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+
+    parameter_list                 shift and go to state 65
+    declaration                    shift and go to state 66
+
+state 63
+
+    (17) while_loop -> WHILE LPAREN expression RPAREN . LBRACE statement_list RBRACE
+
+    LBRACE          shift and go to state 67
+
+
+state 64
+
+    (38) if_then_else -> IF LPAREN expression RPAREN . LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+
+    LBRACE          shift and go to state 68
+
+
+state 65
+
+    (13) function_declaration -> FUNCTION VARIABLE LPAREN parameter_list . RPAREN LBRACE statement_list RBRACE
+
+    RPAREN          shift and go to state 69
+
+
+state 66
+
+    (15) parameter_list -> declaration .
+    (16) parameter_list -> declaration . COMMA parameter_list
+
+    RPAREN          reduce using rule 15 (parameter_list -> declaration .)
+    COMMA           shift and go to state 70
+
+
+state 67
+
+    (17) while_loop -> WHILE LPAREN expression RPAREN LBRACE . statement_list RBRACE
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement statement_list
+    (4) statement -> . assignment
+    (5) statement -> . expression
+    (6) statement -> . annotation
+    (7) statement -> . while_loop
+    (8) statement -> . if_then_else
+    (9) statement -> . assumption
+    (10) statement -> . declaration
+    (11) statement -> . function_declaration
+    (12) statement -> . return_statement
+    (25) assignment -> . VARIABLE ASSIGNMENT expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+    (20) annotation -> . PRE_ANNOTATION expression
+    (21) annotation -> . POST_ANNOTATION expression
+    (22) annotation -> . ANNOTATION expression
+    (23) annotation -> . LOOP_ANNOTATION expression
+    (17) while_loop -> . WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+    (38) if_then_else -> . IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (24) assumption -> . ASSUME expression
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+    (13) function_declaration -> . FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+    (14) return_statement -> . RETURN expression
+
+    VARIABLE        shift and go to state 13
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    MINUS           shift and go to state 14
+    PRE_ANNOTATION  shift and go to state 19
+    POST_ANNOTATION shift and go to state 20
+    ANNOTATION      shift and go to state 21
+    LOOP_ANNOTATION shift and go to state 22
+    WHILE           shift and go to state 23
+    IF              shift and go to state 24
+    ASSUME          shift and go to state 25
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+    FUNCTION        shift and go to state 28
+    RETURN          shift and go to state 29
+
+    expression                     shift and go to state 5
+    statement_list                 shift and go to state 71
+    statement                      shift and go to state 3
+    assignment                     shift and go to state 4
+    annotation                     shift and go to state 6
+    while_loop                     shift and go to state 7
+    if_then_else                   shift and go to state 8
+    assumption                     shift and go to state 9
+    declaration                    shift and go to state 10
+    function_declaration           shift and go to state 11
+    return_statement               shift and go to state 12
+
+state 68
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE . statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement statement_list
+    (4) statement -> . assignment
+    (5) statement -> . expression
+    (6) statement -> . annotation
+    (7) statement -> . while_loop
+    (8) statement -> . if_then_else
+    (9) statement -> . assumption
+    (10) statement -> . declaration
+    (11) statement -> . function_declaration
+    (12) statement -> . return_statement
+    (25) assignment -> . VARIABLE ASSIGNMENT expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+    (20) annotation -> . PRE_ANNOTATION expression
+    (21) annotation -> . POST_ANNOTATION expression
+    (22) annotation -> . ANNOTATION expression
+    (23) annotation -> . LOOP_ANNOTATION expression
+    (17) while_loop -> . WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+    (38) if_then_else -> . IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (24) assumption -> . ASSUME expression
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+    (13) function_declaration -> . FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+    (14) return_statement -> . RETURN expression
+
+    VARIABLE        shift and go to state 13
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    MINUS           shift and go to state 14
+    PRE_ANNOTATION  shift and go to state 19
+    POST_ANNOTATION shift and go to state 20
+    ANNOTATION      shift and go to state 21
+    LOOP_ANNOTATION shift and go to state 22
+    WHILE           shift and go to state 23
+    IF              shift and go to state 24
+    ASSUME          shift and go to state 25
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+    FUNCTION        shift and go to state 28
+    RETURN          shift and go to state 29
+
+    expression                     shift and go to state 5
+    statement_list                 shift and go to state 72
+    statement                      shift and go to state 3
+    assignment                     shift and go to state 4
+    annotation                     shift and go to state 6
+    while_loop                     shift and go to state 7
+    if_then_else                   shift and go to state 8
+    assumption                     shift and go to state 9
+    declaration                    shift and go to state 10
+    function_declaration           shift and go to state 11
+    return_statement               shift and go to state 12
+
+state 69
+
+    (13) function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN . LBRACE statement_list RBRACE
+
+    LBRACE          shift and go to state 73
+
+
+state 70
+
+    (16) parameter_list -> declaration COMMA . parameter_list
+    (15) parameter_list -> . declaration
+    (16) parameter_list -> . declaration COMMA parameter_list
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+
+    declaration                    shift and go to state 66
+    parameter_list                 shift and go to state 74
+
+state 71
+
+    (17) while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list . RBRACE
+
+    RBRACE          shift and go to state 75
+
+
+state 72
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list . RBRACE ELSE LBRACE statement_list RBRACE
+
+    RBRACE          shift and go to state 76
+
+
+state 73
+
+    (13) function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE . statement_list RBRACE
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement statement_list
+    (4) statement -> . assignment
+    (5) statement -> . expression
+    (6) statement -> . annotation
+    (7) statement -> . while_loop
+    (8) statement -> . if_then_else
+    (9) statement -> . assumption
+    (10) statement -> . declaration
+    (11) statement -> . function_declaration
+    (12) statement -> . return_statement
+    (25) assignment -> . VARIABLE ASSIGNMENT expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+    (20) annotation -> . PRE_ANNOTATION expression
+    (21) annotation -> . POST_ANNOTATION expression
+    (22) annotation -> . ANNOTATION expression
+    (23) annotation -> . LOOP_ANNOTATION expression
+    (17) while_loop -> . WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+    (38) if_then_else -> . IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (24) assumption -> . ASSUME expression
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+    (13) function_declaration -> . FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+    (14) return_statement -> . RETURN expression
+
+    VARIABLE        shift and go to state 13
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    MINUS           shift and go to state 14
+    PRE_ANNOTATION  shift and go to state 19
+    POST_ANNOTATION shift and go to state 20
+    ANNOTATION      shift and go to state 21
+    LOOP_ANNOTATION shift and go to state 22
+    WHILE           shift and go to state 23
+    IF              shift and go to state 24
+    ASSUME          shift and go to state 25
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+    FUNCTION        shift and go to state 28
+    RETURN          shift and go to state 29
+
+    statement_list                 shift and go to state 77
+    statement                      shift and go to state 3
+    assignment                     shift and go to state 4
+    expression                     shift and go to state 5
+    annotation                     shift and go to state 6
+    while_loop                     shift and go to state 7
+    if_then_else                   shift and go to state 8
+    assumption                     shift and go to state 9
+    declaration                    shift and go to state 10
+    function_declaration           shift and go to state 11
+    return_statement               shift and go to state 12
+
+state 74
+
+    (16) parameter_list -> declaration COMMA parameter_list .
+
+    RPAREN          reduce using rule 16 (parameter_list -> declaration COMMA parameter_list .)
+
+
+state 75
+
+    (17) while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .
+
+    VARIABLE        reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    LPAREN          reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    NUMBER          reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    TRUE            reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    FALSE           reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    MINUS           reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    PRE_ANNOTATION  reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    POST_ANNOTATION reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    ANNOTATION      reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    LOOP_ANNOTATION reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    WHILE           reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    IF              reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    ASSUME          reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    BOOL_TYPE       reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    INT_TYPE        reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    FUNCTION        reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    RETURN          reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    $end            reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+    RBRACE          reduce using rule 17 (while_loop -> WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE .)
+
+
+state 76
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE . ELSE LBRACE statement_list RBRACE
+
+    ELSE            shift and go to state 78
+
+
+state 77
+
+    (13) function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list . RBRACE
+
+    RBRACE          shift and go to state 79
+
+
+state 78
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE . LBRACE statement_list RBRACE
+
+    LBRACE          shift and go to state 80
+
+
+state 79
+
+    (13) function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .
+
+    VARIABLE        reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    LPAREN          reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    NUMBER          reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    TRUE            reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    FALSE           reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    MINUS           reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    PRE_ANNOTATION  reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    POST_ANNOTATION reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    ANNOTATION      reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    LOOP_ANNOTATION reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    WHILE           reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    IF              reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    ASSUME          reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    BOOL_TYPE       reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    INT_TYPE        reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    FUNCTION        reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    RETURN          reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    $end            reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+    RBRACE          reduce using rule 13 (function_declaration -> FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE .)
+
+
+state 80
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE . statement_list RBRACE
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement statement_list
+    (4) statement -> . assignment
+    (5) statement -> . expression
+    (6) statement -> . annotation
+    (7) statement -> . while_loop
+    (8) statement -> . if_then_else
+    (9) statement -> . assumption
+    (10) statement -> . declaration
+    (11) statement -> . function_declaration
+    (12) statement -> . return_statement
+    (25) assignment -> . VARIABLE ASSIGNMENT expression
+    (26) expression -> . expression PLUS expression
+    (27) expression -> . expression MINUS expression
+    (28) expression -> . expression TIMES expression
+    (29) expression -> . LPAREN expression RPAREN
+    (30) expression -> . NUMBER
+    (31) expression -> . TRUE
+    (32) expression -> . FALSE
+    (33) expression -> . VARIABLE
+    (34) expression -> . MINUS expression
+    (35) expression -> . expression COMPARATOR expression
+    (36) expression -> . expression BOOLEAN_OPERATOR expression
+    (37) expression -> . expression IMPLIES expression
+    (20) annotation -> . PRE_ANNOTATION expression
+    (21) annotation -> . POST_ANNOTATION expression
+    (22) annotation -> . ANNOTATION expression
+    (23) annotation -> . LOOP_ANNOTATION expression
+    (17) while_loop -> . WHILE LPAREN expression RPAREN LBRACE statement_list RBRACE
+    (38) if_then_else -> . IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE
+    (24) assumption -> . ASSUME expression
+    (18) declaration -> . BOOL_TYPE VARIABLE
+    (19) declaration -> . INT_TYPE VARIABLE
+    (13) function_declaration -> . FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+    (14) return_statement -> . RETURN expression
+
+    VARIABLE        shift and go to state 13
+    LPAREN          shift and go to state 15
+    NUMBER          shift and go to state 16
+    TRUE            shift and go to state 17
+    FALSE           shift and go to state 18
+    MINUS           shift and go to state 14
+    PRE_ANNOTATION  shift and go to state 19
+    POST_ANNOTATION shift and go to state 20
+    ANNOTATION      shift and go to state 21
+    LOOP_ANNOTATION shift and go to state 22
+    WHILE           shift and go to state 23
+    IF              shift and go to state 24
+    ASSUME          shift and go to state 25
+    BOOL_TYPE       shift and go to state 26
+    INT_TYPE        shift and go to state 27
+    FUNCTION        shift and go to state 28
+    RETURN          shift and go to state 29
+
+    expression                     shift and go to state 5
+    statement_list                 shift and go to state 81
+    statement                      shift and go to state 3
+    assignment                     shift and go to state 4
+    annotation                     shift and go to state 6
+    while_loop                     shift and go to state 7
+    if_then_else                   shift and go to state 8
+    assumption                     shift and go to state 9
+    declaration                    shift and go to state 10
+    function_declaration           shift and go to state 11
+    return_statement               shift and go to state 12
+
+state 81
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list . RBRACE
+
+    RBRACE          shift and go to state 82
+
+
+state 82
+
+    (38) if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .
+
+    VARIABLE        reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    LPAREN          reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    NUMBER          reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    TRUE            reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    FALSE           reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    MINUS           reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    PRE_ANNOTATION  reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    POST_ANNOTATION reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    ANNOTATION      reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    LOOP_ANNOTATION reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    WHILE           reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    IF              reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    ASSUME          reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    BOOL_TYPE       reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    INT_TYPE        reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    FUNCTION        reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    RETURN          reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    $end            reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
+    RBRACE          reduce using rule 38 (if_then_else -> IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for BOOLEAN_OPERATOR in state 40 resolved as shift
-WARNING: shift/reduce conflict for IMPLIES in state 40 resolved as shift
-WARNING: reduce/reduce conflict in state 7 resolved using rule (expression -> VARIABLE)
-WARNING: rejected rule (formula -> VARIABLE) in state 7
-WARNING: reduce/reduce conflict in state 27 resolved using rule (expression -> VARIABLE)
-WARNING: rejected rule (formula -> VARIABLE) in state 27
-WARNING: reduce/reduce conflict in state 30 resolved using rule (expression -> VARIABLE)
-WARNING: rejected rule (formula -> VARIABLE) in state 30
+WARNING: shift/reduce conflict for MINUS in state 5 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 42 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 43 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 44 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 47 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 51 resolved as shift

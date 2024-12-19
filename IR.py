@@ -1,11 +1,9 @@
 import copy
-from copy import deepcopy
-
-from Basic_path import *
 from parser import *
-from Node import *
+from expr import *
 from typing import Union
 from project_config import DEBUG, get_debug
+import z3
 
 
 class AnnotationOrderError(Exception):
@@ -24,205 +22,198 @@ class WhileLoopWithNoAnnotation(Exception):
     def __init__(self, message="While loop without annotation."):
         super().__init__(message)
 
-verification_conditions= []
-basic_paths = []
-index = 0
+class LoopAnnotationError(Exception):
+    def __init__(self, message="Loop annotation without a while loop following it."):
+        super().__init__(message)
 
-def generate_vc(conditions, body, generated_by=None, index=None):
-    if len(conditions) != 2:
-        raise PostConditionError()
-
-
-    # basic_paths.append(Basic_path(copy.deepcopy(conditions[0]),copy.deepcopy(body), copy.deepcopy(conditions[1]),generated_by,index))
-
-
-    body = body[::-1]  # Reverse
-    # variables = {}  # Variable -> statement
-    substitutions = {}  # Variable -> New Variable
-    for statement in body:  # Assume body all has assignments
-
-        # substitute in post-cond
-        if statement.symbol == "assignment":
-            variable = statement.left
-            rhs_expr = statement.right
-            conditions[-1] = conditions[-1].subst({variable: rhs_expr})
-        elif statement.symbol == "assumption":
-            assumption = statement.left
-            conditions[-1] = conditions[-1].add_implication(assumption)
-    final_vc = conditions[-1].add_implication(conditions[0].left)
-    print(final_vc.print_node_rec())
-    return final_vc
-
-
-def negate_expression(expression:Node):
-    if expression.eval_type == "int":
+def substitute(expression, mapping):
+    if isinstance(expression, LiteralExpression):
         return expression
-    if expression.eval_type == "bool":
-        # TODO we can alternatively just add negation operator and let Z3 simplify it
-        if expression.symbol == "comparison":
-            if expression.op == "<":
-                return Node("comparison", ">=", expression.left, expression.right, "bool")
-            elif expression.op == ">":
-                return Node("comparison", "<=", expression.left, expression.right, "bool")
-            elif expression.op == "<=":
-                return Node("comparison", ">", expression.left, expression.right, "bool")
-            elif expression.op == ">=":
-                return Node("comparison", "<", expression.left, expression.right, "bool")
-        elif expression.symbol == "implies":
-            return Node("boolean", "^", expression.left,
-                        negate_expression(expression.right), "bool")
-        elif expression.symbol == "boolean":
-            if expression.op == "^":
-                return Node("boolean", "v", negate_expression(expression.left),
-                            negate_expression(expression.right), "bool")
-            elif expression.op == "v":
-                return Node("boolean", "^", negate_expression(expression.left),
-                            negate_expression(expression.right), "bool")
-
-def generate_basic_paths_helper(statements, conditions, body, generated_by=None):
-
-    last_statement_annotation = False
-    last_annotation = None
-    parent_loop_invariant = None
-
-    global index
-
-
-    while statements:
-        statement = statements.pop(0)
-        statement_type = statement.symbol
-
-        if not statement_type == "while_loop" and len(conditions) > 1:
-            raise AnnotationWithNoWhileLoop
-
-        if statement_type == "annotation":
-            conditions.append(statement)
-            last_statement_annotation = True
-            last_annotation = statement
-        elif statement_type == "assignment" or statement_type == "assumption":
-            body.append(statement)
-            last_statement_annotation = False
-        elif statement_type == "if_then_else":
-            body2 = copy.deepcopy(body)
-            conditions2 = copy.deepcopy(conditions)
-            statements2 = copy.deepcopy(statements)
-
-            then_statement = statement.left[1]
-            else_statement = statement.left[2]
-
-
-            if generated_by:
-                basic_paths.append(
-                    Basic_path(copy.deepcopy(generated_by[2]), copy.deepcopy(body[body.index(generated_by[2]):]),
-                               copy.deepcopy(statement),
-                               copy.deepcopy(generated_by), index))
-            else:
-                basic_paths.append(
-                    Basic_path(copy.deepcopy(conditions[0]), copy.deepcopy(body), copy.deepcopy(statement),
-                               copy.deepcopy(generated_by), index))
-
-            body.append(Node("assumption",None,statement.left[0],None, "bool"))
-            body.append(then_statement)
-
-            generated_by = ["if_statement",index,body[-1]]
-
-
-            body2.append(Node("assumption",None,negate_expression(statement.left[0]),None, "bool"))
-            body2.append(else_statement)
-
-            index += 1
-            generate_basic_paths_helper(statements2,conditions2,body2,["if_statement",index-1,body2[-1]])
-            index += 1
-            last_statement_annotation = False
-        elif statement_type == "while_loop":
-            if not last_statement_annotation:
-                raise WhileLoopWithNoAnnotation()
-
-            verification_conditions.append(generate_vc(conditions, body, generated_by,index))
-
-            if generated_by:
-                basic_paths.append(
-                    Basic_path(copy.deepcopy(generated_by[2]), copy.deepcopy(body[body.index(generated_by[2]):]),
-                               copy.deepcopy(statement),
-                               copy.deepcopy(generated_by), index))
-            else:
-                basic_paths.append(
-                    Basic_path(copy.deepcopy(conditions[0]), copy.deepcopy(body), copy.deepcopy(statement),
-                               copy.deepcopy(generated_by), index))
-
-            while_guard = statement.left[0]
-            while_body = statement.left[1:]
-
-            while_guard_assumption = Node("assumption",None, while_guard, None, "bool")
-            not_while_guard_assumption = Node("assumption", None, negate_expression(statement.left[0]), None, "bool")
-
-            body2 = [while_guard_assumption]
-            body = [not_while_guard_assumption]
-
-            parent_loop_invariant = copy.deepcopy(conditions[0])
-            conditions = [copy.deepcopy(last_annotation)]
-
-            conditions2 = copy.deepcopy(conditions)
-
-            statements2 = copy.deepcopy(while_body)
-
-            index += 1
-            generated_by = ["while_loop", index-1, body[0]]
-            generate_basic_paths_helper(statements2,conditions2,body2,["while_loop",index-1,body2[0]])
-
-            index += 1
-
-            last_statement_annotation = False
+    if isinstance(expression, VariableExpression):
+        if expression.name in mapping:
+            return mapping[expression.name]
         else:
-            raise Exception("Invalid expression, or expression with no effect", statement_type)
-    if generated_by:
-        if generated_by[0] == "while_loop" and len(conditions) == 1 and parent_loop_invariant is not None:
-            conditions.append(copy.deepcopy(parent_loop_invariant))
-        elif generated_by[0] == "while_loop" and len(conditions) == 1:
-            conditions.append(copy.deepcopy(conditions[0]))
-
-        basic_paths.append(
-            Basic_path(copy.deepcopy(generated_by[2]), copy.deepcopy(body[body.index(generated_by[2]):]), copy.deepcopy(conditions[-1]),
-                       copy.deepcopy(generated_by), index))
-
-
-
+            return expression
     else:
-        basic_paths.append(
-            Basic_path(copy.deepcopy(conditions[0]), copy.deepcopy(body), copy.deepcopy(conditions[-1]),
-                       copy.deepcopy(generated_by), index))
+        expression.left = substitute(expression.left, mapping)
+        expression.right = substitute(expression.right, mapping)
+        return expression
 
-    verification_conditions.append(generate_vc(conditions,body,generated_by,index))
 
+total = []
+
+# Function that collects all paths for a while loop
+def while_loop_collector(while_loop_statement, path=[], pre=None, post=None, context=None):
+
+
+
+def collector(statements, path=[], pre=None, post=None, context=None):
+    if statements == []:
+        path = copy.deepcopy(path)
+        total.append(path)
+        return
+    statement = statements[0]
+    tail = statements[1:]
+    if isinstance(statement, IfThenElseStatement):
+        then_statements = statement.then_body
+        else_statements = statement.else_body
+
+        condition_holds = AssumptionStatement(statement.condition)
+        condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
+
+        path.append(condition_holds)
+        then_flow = collector(then_statements, path, pre, post, statement)
+        path.pop()
+
+        path.append(condition_doesnt_hold)
+        else_flow = collector(else_statements, path, pre, post, statement)
+        path.pop()
+
+    elif isinstance(statement, WhileLoopStatement):
+        invariant = while_loop_statement.invariant
+        condition_holds_assumption = AssumptionStatement(while_loop_statement.condition)
+        condition_doesnt_hold_assumption = AssumptionStatement(NotExpression(while_loop_statement.condition))
+
+        condition_holds = AssumptionStatement(statement.condition)
+        condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
+
+        path.append(condition_holds)
+        while_flow = collector(statement.body, path, pre, post, statement)
+        path.pop()
+
+        path.append(condition_doesnt_hold)
+        while_flow = collector(statement.body, path, pre, post, statement)
+        path.pop()
+    elif isinstance(statement, AnnotationStatement):
+        if path == []:
+            path.append(statement)
+            collector(tail, path, pre, post, context)
+            path.pop()
+        else:
+            path.append(statement)
+            collector([], path, pre, post, context)
+            path.pop()
+    else:
+        path.append(statement)
+        collector(tail, path, pre, post, context)
+        path.pop()
+    return path
+
+def basic_path_generator(block, path=[]):
+    pre, post, function_declaration = block
+    pre = pre.expression
+    post = post.expression
+    parameters = function_declaration.parameter_list
+    body_statements = function_declaration.body
+    path = copy.deepcopy(path)
+
+   
+    return []
+
+def convert_to_z3(block):
+    pre, post, function_declaration = block
+    pre = pre.expression
+    post = post.expression
+    parameters = function_declaration.parameter_list
+    body = function_declaration.body
+    mapping = {}
+    solver = z3.Solver()
+    for parameter in parameters:
+        mapping[parameter.variable] = z3.Int(parameter.variable)
+    for statement in body[::-1]:
+        if isinstance(statement, AssignmentStatement):
+            variable_name = statement.variable
+            # Side effect that affects post condition
+            # Back propgation
+            substitute(post, { variable_name: statement.expression })
+    mapping['z3'] = z3
+    solver.add(z3.Not(eval(f"z3.Implies({Z3Serializer.serialize(pre)}, {Z3Serializer.serialize(post)})", mapping)))
+    solver_result = solver.check()
+    print(f"Function ({function_declaration.function_name}): ", end="")
+    if solver_result == z3.sat:
+        counter_example = solver.model()
+        print("Invalid!")
+        print("Counter example: ",counter_example)
+    else:
+        print("Valid!")
+    return pre, post, body, mapping
+
+def ensure_and_attach_loop_annotation(statements):
+    for i in range(len(statements)):
+        statement = statements[i]
+        if isinstance(statement, WhileLoopStatement):
+            if not isinstance(statements[i-1], LoopAnnotationStatement):
+                raise LoopAnnotationError()
+            else:
+                statements[i].invariant = statements[i-1]
+        if isinstance(statement, FunctionDeclarationStatement):
+            ensure_and_attach_loop_annotation(statement.body)
+        if isinstance(statement, IfThenElseStatement):
+            ensure_and_attach_loop_annotation(statement.then_body)
+            ensure_and_attach_loop_annotation(statement.else_body)
 
 def generate_basic_paths():
-    with open('code.tms') as f:
+    global total
+    with open('test.tms') as f:
         input = f.read()
-        statements = parser.parse(input)
-
-        if get_debug():
-            for statement in statements:
-                print(statement.print_node_rec())
-            return
-
-        # check if last statement is an annotation
-        if statements[-1].symbol != "annotation":
-            raise PostConditionError
+        program = parser.parse(input)
+        statements = program.statements
 
         # check that nothing but variable declaration happens before the first precondition.
         # pops all declarations until an annotation is met (annotation is not popped)
-        while statements:
-            statement = statements[0]
-            statement_type = statement.symbol
-            if statement_type == "annotation":
+        for statement in statements:
+            if isinstance(statement, AnnotationStatement):
                 break
-            if statement_type != "int_declaration" and statement_type != "bool_declaration" :
+            if not isinstance(statement, DeclarationStatement):
                 raise AnnotationOrderError()
-            statements.pop(0)
+        
+        for i in range(len(statements)):
+            statement = statements[i]
+            if isinstance(statement, WhileLoopStatement):
+                if isinstance(statements[i-1], LoopAnnotationStatement):
+                    statements[i].invariant = statements[i-1]
+                else:
+                    raise LoopAnnotationError()
+        
+        ensure_and_attach_loop_annotation(statements)
 
+        blocks = []
+        accumulator = []
+        for statement in statements:
+            if accumulator == []:
+                # Check that the first statement is a pre-annotation
+                if not isinstance(statement, PreAnnotationStatement):
+                    raise AnnotationOrderError()
+                else:
+                    accumulator.append(statement)
+            else:
+                # Check that the last statement is a pre-annotation
+                if isinstance(accumulator[-1], PreAnnotationStatement):
+                    if isinstance(statement, PostAnnotationStatement):
+                        accumulator.append(statement)
+                    else:
+                        raise AnnotationOrderError()
+                elif isinstance(accumulator[-1], PostAnnotationStatement):
+                    if not isinstance(statement, FunctionDeclarationStatement):
+                        raise AnnotationOrderError()
+                    else:
+                        accumulator.append(statement)
+                        blocks.append(accumulator)
+                        accumulator = []
         conditions = []
         body = []
-        generate_basic_paths_helper(statements, conditions, body)
-        return verification_conditions,basic_paths
+        verification_conditions = []
+        for block in blocks:
+            collector(block[2].body)
+            verification_conditions.extend(total)
+            # convert_to_z3(block)
+            total = []
 
+        return []
+
+
+def print_paths(all_paths):
+    for path in all_paths:
+        print("\n".join(map(str, path)))
+        print("-"*100)
 # generate_basic_paths()
