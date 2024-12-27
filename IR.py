@@ -42,12 +42,7 @@ def substitute(expression, mapping):
 
 total = []
 
-# Function that collects all paths for a while loop
-# def while_loop_collector(while_loop_statement, path=[], pre=None, post=None, context=None):
-
-
-
-def collector(statements, path=[], pre=None, post=None, context=None):
+def collector(statements, path=[], context=None):
     if statements == []:
         path = copy.deepcopy(path)
         if isinstance(context, WhileLoopStatement):
@@ -64,11 +59,11 @@ def collector(statements, path=[], pre=None, post=None, context=None):
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
         path.append(condition_holds)
-        then_flow = collector(then_statements, path, pre, post, statement)
+        then_flow = collector(then_statements, path, statement)
         path.pop()
 
         path.append(condition_doesnt_hold)
-        else_flow = collector(else_statements, path, pre, post, statement)
+        else_flow = collector(else_statements, path, statement)
         path.pop()
 
     elif isinstance(statement, WhileLoopStatement):
@@ -87,19 +82,19 @@ def collector(statements, path=[], pre=None, post=None, context=None):
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
         path.append(condition_holds)
-        while_flow = collector(statement.body, path, pre, post, statement)
+        while_flow = collector(statement.body, path, statement)
         path.pop()
 
         path.append(condition_doesnt_hold)
-        while_flow = collector(tail, path, pre, post, statement)
+        while_flow = collector(tail, path, statement)
         path.pop()
     elif isinstance(statement, AnnotationStatement):
         path.append(statement)
-        collector(tail, path, pre, post, context)
+        collector(tail, path, context)
         path.pop()
     else:
         path.append(statement)
-        collector(tail, path, pre, post, context)
+        collector(tail, path, context)
         path.pop()
     return path
 
@@ -156,6 +151,8 @@ def convert_to_z3(basic_paths):
             print("Valid!")
 
 def ensure_and_attach_loop_annotation(statements):
+    '''This takes the loop annotation and merges it into
+        the while loop statement'''
     for i in range(len(statements)):
         statement = statements[i]
         if isinstance(statement, WhileLoopStatement):
