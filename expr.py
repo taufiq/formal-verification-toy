@@ -15,7 +15,21 @@ class Z3Serializer:
                 return f"({serialize(expression.left)} {BINARY_OPERATOR_Z3_MAPPING[expression.op]} {serialize(expression.right)})"
             else:
                 return f"({serialize(expression.left)} {expression.op} {serialize(expression.right)})"
+        elif isinstance(expression, NotExpression):
+            return f"z3.Not({expression.expression})"
         return str(expression)
+
+
+def explore_and_collect_variables(expression, a={}):
+    if expression is None:
+        return
+    if isinstance(expression, VariableExpression):
+        a[expression.name] = expression.type
+    elif isinstance(expression, BinaryExpression):
+        explore_and_collect_variables(expression.left, a)
+        explore_and_collect_variables(expression.right, a)
+    elif isinstance(expression, UnaryExpression):
+        explore_and_collect_variables(expression.expression, a)
 
 class Expression:
     def __init__(self):
@@ -86,6 +100,10 @@ class IntLiteralExpression(LiteralExpression):
 class ComparisonBinaryExpression(BinaryExpression):
     def __init__(self, left, right, op):
         super().__init__(left, right, op)
+
+class ImpliesBinaryExpression(BinaryExpression):
+    def __init__(self, left, right):
+        super().__init__(left, right, BinaryOperator.IMPLIES)
 
 class DataType(Enum):
     INT = 0

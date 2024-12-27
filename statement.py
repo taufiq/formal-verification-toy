@@ -1,6 +1,6 @@
 class Statement:
     def __init__(self):
-        pass
+        self.context = None
 
 class AssignmentStatement:
     def __init__(self, variable, expression):

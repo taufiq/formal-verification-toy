@@ -1,8 +1,19 @@
-@Pre True
-@Post b >= a
-FUNCTION lmao(INT a, INT b) {
-    @Loop True
-    WHILE (a <= 5) {
-        b := b + 1
+@Pre a < b
+@Post a >= b
+FUNCTION aFunction(INT a, INT b) {
+    @Loop a <= b
+    WHILE (a < b) {
+        a := a + 1
+    }
+}
+
+
+@Pre a < b
+@Post a > b
+FUNCTION randomFunction(INT a, INT b) {
+    IF (a == 5) {
+        a := b + 1
+    } ELSE {
+        a := b + 2
     }
 }

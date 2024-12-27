@@ -43,13 +43,15 @@ def substitute(expression, mapping):
 total = []
 
 # Function that collects all paths for a while loop
-def while_loop_collector(while_loop_statement, path=[], pre=None, post=None, context=None):
+# def while_loop_collector(while_loop_statement, path=[], pre=None, post=None, context=None):
 
 
 
 def collector(statements, path=[], pre=None, post=None, context=None):
     if statements == []:
         path = copy.deepcopy(path)
+        if isinstance(context, WhileLoopStatement):
+            path.append(context.invariant)
         total.append(path)
         return
     statement = statements[0]
@@ -70,9 +72,16 @@ def collector(statements, path=[], pre=None, post=None, context=None):
         path.pop()
 
     elif isinstance(statement, WhileLoopStatement):
-        invariant = while_loop_statement.invariant
-        condition_holds_assumption = AssumptionStatement(while_loop_statement.condition)
-        condition_doesnt_hold_assumption = AssumptionStatement(NotExpression(while_loop_statement.condition))
+        invariant = statement.invariant
+
+        path.append(invariant)
+        total.append(copy.deepcopy(path))
+
+        # Keep Invariant
+        path = [path[-1]]
+
+        condition_holds_assumption = AssumptionStatement(statement.condition)
+        condition_doesnt_hold_assumption = AssumptionStatement(NotExpression(statement.condition))
 
         condition_holds = AssumptionStatement(statement.condition)
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
@@ -82,61 +91,69 @@ def collector(statements, path=[], pre=None, post=None, context=None):
         path.pop()
 
         path.append(condition_doesnt_hold)
-        while_flow = collector(statement.body, path, pre, post, statement)
+        while_flow = collector(tail, path, pre, post, statement)
         path.pop()
     elif isinstance(statement, AnnotationStatement):
-        if path == []:
-            path.append(statement)
-            collector(tail, path, pre, post, context)
-            path.pop()
-        else:
-            path.append(statement)
-            collector([], path, pre, post, context)
-            path.pop()
+        path.append(statement)
+        collector(tail, path, pre, post, context)
+        path.pop()
     else:
         path.append(statement)
         collector(tail, path, pre, post, context)
         path.pop()
     return path
 
-def basic_path_generator(block, path=[]):
-    pre, post, function_declaration = block
-    pre = pre.expression
-    post = post.expression
-    parameters = function_declaration.parameter_list
-    body_statements = function_declaration.body
-    path = copy.deepcopy(path)
-
-   
-    return []
-
-def convert_to_z3(block):
-    pre, post, function_declaration = block
-    pre = pre.expression
-    post = post.expression
-    parameters = function_declaration.parameter_list
-    body = function_declaration.body
-    mapping = {}
-    solver = z3.Solver()
-    for parameter in parameters:
-        mapping[parameter.variable] = z3.Int(parameter.variable)
-    for statement in body[::-1]:
+# This goes through all statements and sees what variables there are
+# Assumes all variables are Integers
+def collect_variables(statements):
+    variables = {}
+    for statement in statements:
         if isinstance(statement, AssignmentStatement):
-            variable_name = statement.variable
-            # Side effect that affects post condition
-            # Back propgation
-            substitute(post, { variable_name: statement.expression })
-    mapping['z3'] = z3
-    solver.add(z3.Not(eval(f"z3.Implies({Z3Serializer.serialize(pre)}, {Z3Serializer.serialize(post)})", mapping)))
-    solver_result = solver.check()
-    print(f"Function ({function_declaration.function_name}): ", end="")
-    if solver_result == z3.sat:
-        counter_example = solver.model()
-        print("Invalid!")
-        print("Counter example: ",counter_example)
-    else:
-        print("Valid!")
-    return pre, post, body, mapping
+            variables[statement.variable] = statement.expression
+            # TODO: add deduction?
+        else:
+            explore_and_collect_variables(statement.expression, variables)
+    return list(variables.keys())
+            
+
+def convert_to_z3(basic_paths):
+    basic_paths = copy.deepcopy(basic_paths)
+    for basic_path in basic_paths:
+        pre, post = basic_path[0], basic_path[-1]
+        immutable_basic_path = copy.deepcopy(basic_path)
+        statements = basic_path[1:-1]
+        pre = pre.expression
+        post = post.expression
+        variables = collect_variables(basic_path)
+        mapping = {}
+        solver = z3.Solver()
+        for variable in variables:
+            mapping[variable] = z3.Int(variable)
+        for statement in statements[::-1]:
+            if isinstance(statement, AssignmentStatement):
+                variable_name = statement.variable
+                # Side effect that affects post condition
+                # Back propgation
+                substitute(post, { variable_name: statement.expression })
+            if isinstance(statement, AssumptionStatement):
+                post = ImpliesBinaryExpression(statement.expression, post)
+            if isinstance(statement, AnnotationStatement):
+                pass
+
+        mapping['z3'] = z3
+        fol_statement = f"z3.Implies({Z3Serializer.serialize(pre)}, {Z3Serializer.serialize(post)})"
+        solver.add(z3.Not(eval(fol_statement, mapping)))
+        solver_result = solver.check()
+        print("Original basic path")
+        print(immutable_basic_path)
+        print("FOL")
+        print(fol_statement)
+        if solver_result == z3.sat:
+            counter_example = solver.model()
+            print("Invalid!")
+            print("Counter example: ",counter_example)
+        else:
+            print("Valid!")
 
 def ensure_and_attach_loop_annotation(statements):
     for i in range(len(statements)):
@@ -146,6 +163,7 @@ def ensure_and_attach_loop_annotation(statements):
                 raise LoopAnnotationError()
             else:
                 statements[i].invariant = statements[i-1]
+                statements.pop(i - 1)
         if isinstance(statement, FunctionDeclarationStatement):
             ensure_and_attach_loop_annotation(statement.body)
         if isinstance(statement, IfThenElseStatement):
@@ -204,9 +222,11 @@ def generate_basic_paths():
         body = []
         verification_conditions = []
         for block in blocks:
-            collector(block[2].body)
+            pre_condition, post_condition, function = block
+            statements = [pre_condition] + function.body + [post_condition]
+            collector(statements)
             verification_conditions.extend(total)
-            # convert_to_z3(block)
+            convert_to_z3(verification_conditions)
             total = []
 
         return []
