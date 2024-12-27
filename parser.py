@@ -54,16 +54,6 @@ functions = {}
 class ParseError(Exception):
     pass
 
-# def p_start(p):
-#     '''start : assignment
-#              | expression
-#              | annotation
-#              | assumption
-#              | declaration
-#              | return_statement
-#              | function_declaration'''
-#     p[0] = p[1]
-
 
 def p_program(p):
     '''program : statement_list'''
@@ -90,8 +80,12 @@ def p_statement(p):
     p[0] = p[1]
 
 def p_function_declaration(p):
-    'function_declaration : FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE'
-    p[0] = FunctionDeclarationStatement(p[2], p[4], p[7])
+    '''function_declaration : BOOL_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
+                        | INT_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE'''
+    if p[1] == "BOOL_TYPE":
+        p[0] = BoolFunctionDeclarationStatement(p[3], p[5], p[8])
+    elif p[1] == "INT_TYPE":
+        p[0] = IntFunctionDeclarationStatement(p[3], p[5], p[8])
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
@@ -218,7 +212,7 @@ def p_expression_variable(p):
 def p_expr_uminus(p):
     'expression : MINUS expression %prec UMINUS'
     # if p[2].eval_type == "int":
-    p[0] = UnaryExpression(p[2], DataType.INT)
+    p[0] = IntUnaryExpression(p[2], p[1])
     # else:
         # raise ParseError('Invalid unary minus expression')
 
@@ -242,9 +236,13 @@ def p_formula_implies(p):
     'expression : expression IMPLIES expression'
     # if p[1].eval_type == "bool" and p[3].eval_type == "bool":
         # p[2] is the operator, p[1] is the left, p[3] is the right
-    p[0] = ImpliesExpression(p[1], p[3])
+    p[0] = ImpliesExpression(p[1], p[3], p[2])
     # else:
         # raise ParseError('Invalid implies expression')
+
+def p_formula_not(p):
+    'expression: NOT expression'
+    p[0] = NotExpression(p[2],p[1])
 
 def p_if_then_else(p):
     'if_then_else : IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE'

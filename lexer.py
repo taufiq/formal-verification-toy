@@ -9,7 +9,8 @@ reserved = {
    'THEN': 'THEN',
    'ELSE': 'ELSE',
    "FUNCTION": "FUNCTION",
-   "WHILE": "WHILE"
+   "WHILE": "WHILE",
+    "NOT": "NOT"
 }
 # List of token names.   This is always required
 tokens = [

@@ -21,12 +21,7 @@ class Expression:
     def __init__(self):
         pass
 
-class NotExpression:
-    def __init__(self, expression):
-        self.expression = expression
-
-    def __repr__(self):
-        return f"(!{self.expression})"
+                                    ###### BINARY EXPRESSIONS ######
 
 class BinaryExpression:
     def __init__(self, left, right, op):
@@ -41,12 +36,25 @@ class BinaryExpression:
 
 class IntBinaryExpression(BinaryExpression):
     def __init__(self, left, right, op):
+        assert (isinstance(left, IntBinaryExpression) or isinstance(left, IntLiteralExpression))
+        assert (isinstance(right, IntBinaryExpression) or isinstance(right, IntLiteralExpression))
         super().__init__(left, right, op)
 
 class BooleanBinaryExpression(BinaryExpression):
     def __init__(self, left, right, op):
+        assert (isinstance(left, BooleanBinaryExpression) or isinstance(left, BooleanLiteralExpression))
+        assert (isinstance(right, BooleanBinaryExpression) or isinstance(right, BooleanLiteralExpression))
         super().__init__(left, right, op)
 
+class ComparisonBinaryExpression(BinaryExpression):
+    def __init__(self, left, right, op):
+        super().__init__(left, right, op)
+
+class ImpliesExpression(BinaryExpression):
+    def __init__(self, left, right, op):
+        super().__init__(left, right, op)
+
+                                    ###### UNARY EXPRESSIONS ######
 class UnaryExpression:
     def __init__(self, expression, op):
         self.expression = expression
@@ -55,17 +63,35 @@ class UnaryExpression:
     def __repr__(self):
         return f"({self.op} {self.expression})"
 
+class IntUnaryExpression(UnaryExpression):
+    def __init__(self, expression, op):
+        assert (isinstance(expression, IntUnaryExpression) or isinstance(expression, IntBinaryExpression) or isinstance(expression, IntLiteralExpression))
+        super().__init__(expression, op)
+
+class BooleanUnaryExpression(UnaryExpression):
+    def __init__(self, expression, op):
+        assert (isinstance(expression, BooleanUnaryExpression) or isinstance(expression, BooleanBinaryExpression) or isinstance(expression, BooleanLiteralExpression))
+        super().__init__(expression, op)
+
+class NotExpression(BooleanUnaryExpression):
+    def __init__(self, expression,op="NOT"):
+        super().__init__(expression, op)
+
+    def __repr__(self):
+        return f"(!{self.expression})"
+
+class UnaryMinusExpression(IntUnaryExpression):
+    def __init__(self, expression,op):
+        super().__init__(expression, op)
+
+    def __repr__(self):
+        return f"(!{self.expression})"
+
+                                ###### PARAMETERS & VARIABLES ######
+
 class ParameterDeclarationExpression:
     def __init__(self, variable, type):
         self.variable = variable
-
-class LiteralExpression:
-    def __init__(self, value, type):
-        self.value = value
-        self.type = type
-    
-    def __repr__(self):
-        return str(self.value)
 
 class VariableExpression:
     def __init__(self, name, type):
@@ -75,6 +101,15 @@ class VariableExpression:
     def __repr__(self):
         return self.name
 
+                                   ###### LITERAL EXPRESSION ######
+class LiteralExpression:
+    def __init__(self, value, type):
+        self.value = value
+        self.type = type
+
+    def __repr__(self):
+        return str(self.value)
+
 class BooleanLiteralExpression(LiteralExpression):
     def __init__(self, value):
         super().__init__(value, DataType.BOOL)
@@ -83,9 +118,6 @@ class IntLiteralExpression(LiteralExpression):
     def __init__(self, value):
         super().__init__(value, DataType.INT)
 
-class ComparisonBinaryExpression(BinaryExpression):
-    def __init__(self, left, right, op):
-        super().__init__(left, right, op)
 
 class DataType(Enum):
     INT = 0
