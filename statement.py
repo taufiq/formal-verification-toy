@@ -1,9 +1,16 @@
+from abc import abstractmethod
+
+from expr import BooleanUnaryExpression, BooleanBinaryExpression, BooleanLiteralExpression, IntUnaryExpression, \
+    IntBinaryExpression, IntLiteralExpression
+
+
 class Statement:
     def __init__(self):
         self.context = None
 
-class AssignmentStatement:
+class AssignmentStatement(Statement):
     def __init__(self, variable, expression):
+        super().__init__()
         self.variable = variable
         self.expression = expression
 
@@ -21,8 +28,10 @@ class IntAssignmentStatement(AssignmentStatement):
     def __repr__(self):
         return f"Int Assignment: {self.variable} = {self.expression}"
 
-class WhileLoopStatement:
+class WhileLoopStatement(Statement):
     def __init__(self, condition, body, invariant=None):
+        super().__init__()
+        assert (isinstance(condition, BooleanUnaryExpression) or isinstance(condition, BooleanBinaryExpression))
         self.condition = condition
         self.body = body
         self.invariant = invariant
@@ -32,15 +41,18 @@ class WhileLoopStatement:
             return True
         return self.body[-1] == statement
 
-class ForStatement:
+class ForStatement(Statement):
     def __init__(self, initial_statement, condition, increment_statement, body):
+        super().__init__()
         self.initial_statement = initial_statement
         self.condition = condition
         self.increment_statement = increment_statement
         self.body = body
 
-class IfThenElseStatement:
+class IfThenElseStatement(Statement):
     def __init__(self, condition, then_body, else_body):
+        super().__init__()
+        assert (isinstance(condition, BooleanUnaryExpression) or isinstance(condition, BooleanBinaryExpression))
         self.condition = condition
         self.then_body = then_body
         self.else_body = else_body
@@ -48,24 +60,59 @@ class IfThenElseStatement:
     def __repr__(self):
         return f"IF ({self.condition}) THEN {self.then_body} ELSE {self.else_body}"
 
-class ReturnStatement:
-    def __init__(self, expression):
-        self.expression = expression
-    
-    def __repr__(self):
-        return f"RETURN {self.expression}"
 
-class FunctionDeclarationStatement:
+class FunctionDeclarationStatement(Statement):
     def __init__(self, function_name, parameter_list, body):
+        super().__init__()
         self.function_name = function_name
         self.parameter_list = parameter_list
         self.body = body
-    
+
     def __repr__(self):
         return f"FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
 
-class AnnotationStatement:
+    @abstractmethod
+    def check_valid_return_statement(self, return_statement):
+        pass
+
+class ReturnStatement(Statement):
     def __init__(self, expression):
+        super().__init__()
+        self.expression = expression
+
+    def __repr__(self):
+        return f"RETURN {self.expression}"
+
+
+class IntFunctionDeclarationStatement(FunctionDeclarationStatement):
+    def __init__(self, function_name, parameter_list, body):
+        super().__init__(function_name, parameter_list, body)
+
+    def __repr__(self):
+        return f"INT FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
+
+    def check_valid_return_statement(self, return_statement: ReturnStatement):
+        return isinstance(return_statement.expression, IntUnaryExpression) \
+        or isinstance(return_statement.expression, IntBinaryExpression) \
+        or isinstance(return_statement.expression, IntLiteralExpression)
+
+class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
+    def __init__(self, function_name, parameter_list, body):
+        super().__init__(function_name, parameter_list, body)
+
+    def __repr__(self):
+        return f"BOOL FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
+
+    def check_valid_return_statement(self, return_statement: ReturnStatement):
+        return isinstance(return_statement.expression, BooleanUnaryExpression) \
+        or isinstance(return_statement.expression, BooleanBinaryExpression) \
+        or isinstance(return_statement.expression, BooleanLiteralExpression)
+
+
+
+class AnnotationStatement(Statement):
+    def __init__(self, expression):
+        super().__init__()
         self.expression = expression
     
     def __repr__(self):
@@ -92,19 +139,17 @@ class LoopAnnotationStatement(AnnotationStatement):
     def __repr__(self):
         return f"@Loop {self.expression}"
 
-class ReturnStatement:
+class AssumptionStatement(Statement):
     def __init__(self, expression):
-        self.expression = expression
-
-class AssumptionStatement:
-    def __init__(self, expression):
+        super().__init__()
         self.expression = expression
 
     def __repr__(self):
         return f"ASSUME {self.expression}"
 
-class DeclarationStatement:
+class DeclarationStatement(Statement):
     def __init__(self, variable, type):
+        super().__init__()
         self.variable = variable
         self.type = type
 

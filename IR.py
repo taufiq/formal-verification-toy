@@ -1,13 +1,17 @@
 import copy
 from parser import *
 from expr import *
-from typing import Union
+from typing import Union, List
 from project_config import DEBUG, get_debug
 import z3
 
 
+class AnnotationFuncError(Exception):
+    def __init__(self, message="Only functions declarations are allowed, no code should exist outside functions' body."):
+        super().__init__(message)
+
 class AnnotationOrderError(Exception):
-    def __init__(self, message="Only variable declarations can precede the first annotation."):
+    def __init__(self, message="A precondition should be followed by a postcondition for each function."):
         super().__init__(message)
 
 class PostConditionError(Exception):
@@ -26,6 +30,10 @@ class LoopAnnotationError(Exception):
     def __init__(self, message="Loop annotation without a while loop following it."):
         super().__init__(message)
 
+class ExpressionWithNoEffect(Exception):
+    def __init__(self, message="Expression with no effect."):
+        super().__init__(message)
+
 def substitute(expression, mapping):
     if isinstance(expression, LiteralExpression):
         return expression
@@ -42,15 +50,35 @@ def substitute(expression, mapping):
 
 total = []
 
+def generate_basic_paths_rec(statements, path, function_type, pre=Union[None,List[Statement]], post=Union[None,List[Statement]], context=None):
+
+    if pre is not None:
+        path = copy.copy(pre)
+
+    basic_paths = []
+
+    while statements:
+        statement = statements.pop()
+
+        if isinstance(statement, IfThenElseStatement):
+            then_statements = statement.then_body
+            else_statements = statement.else_body
+
+
 def collector(statements, path=[], context=None):
-    if statements == []:
+    statements = copy.copy(statements)
+    path = copy.copy(path)
+
+    if not statements:
         path = copy.deepcopy(path)
         if isinstance(context, WhileLoopStatement):
             path.append(context.invariant)
         total.append(path)
         return
+
     statement = statements[0]
     tail = statements[1:]
+
     if isinstance(statement, IfThenElseStatement):
         then_statements = statement.then_body
         else_statements = statement.else_body
@@ -59,12 +87,11 @@ def collector(statements, path=[], context=None):
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
         path.append(condition_holds)
-        then_flow = collector(then_statements, path, statement)
-        path.pop()
+        collector(then_statements + tail, path, statement)
+
 
         path.append(condition_doesnt_hold)
-        else_flow = collector(else_statements, path, statement)
-        path.pop()
+        collector(else_statements + tail, path, statement)
 
     elif isinstance(statement, WhileLoopStatement):
         invariant = statement.invariant
@@ -75,28 +102,31 @@ def collector(statements, path=[], context=None):
         # Keep Invariant
         path = [path[-1]]
 
-        condition_holds_assumption = AssumptionStatement(statement.condition)
-        condition_doesnt_hold_assumption = AssumptionStatement(NotExpression(statement.condition))
-
         condition_holds = AssumptionStatement(statement.condition)
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
         path.append(condition_holds)
-        while_flow = collector(statement.body, path, statement)
-        path.pop()
+        collector(statement.body, path, statement)
 
         path.append(condition_doesnt_hold)
-        while_flow = collector(tail, path, statement)
-        path.pop()
+        collector(tail, path, statement)
+
+    elif isinstance(statement, ReturnStatement):
+        path.append(statement)
+        total.append(copy.deepcopy(path))
+
+    elif isinstance(statement, AssignmentStatement) or isinstance(statement, AssumptionStatement):
+        path.append(statement)
+        collector(tail, path, context)
+
     elif isinstance(statement, AnnotationStatement):
-        path.append(statement)
-        collector(tail, path, context)
-        path.pop()
+        raise AnnotationWithNoWhileLoop()
+
     else:
-        path.append(statement)
-        collector(tail, path, context)
-        path.pop()
-    return path
+        raise ExpressionWithNoEffect()
+
+    return
+
 
 # This goes through all statements and sees what variables there are
 # Assumes all variables are Integers
@@ -109,7 +139,7 @@ def collect_variables(statements):
         else:
             explore_and_collect_variables(statement.expression, variables)
     return list(variables.keys())
-            
+
 
 def convert_to_z3(basic_paths):
     basic_paths = copy.deepcopy(basic_paths)
@@ -167,6 +197,53 @@ def ensure_and_attach_loop_annotation(statements):
             ensure_and_attach_loop_annotation(statement.then_body)
             ensure_and_attach_loop_annotation(statement.else_body)
 
+# make sure that all the code is inside function declarations with pre and post annotations
+def ensure_function_declarations(statements):
+    previous_statement = None
+
+    class StatementType(Enum):
+        PRE = 1
+        POST = 2
+        FUNC = 3
+
+    if len(statements) % len(StatementType) != 0:
+        raise AnnotationFuncError()
+
+    for statement in statements:
+        if isinstance(statement, PreAnnotationStatement):
+            if  not (previous_statement is None or previous_statement == StatementType.FUNC):
+                raise AnnotationOrderError()
+            else:
+                previous_statement = StatementType.PRE
+        elif isinstance(statement, PostAnnotationStatement):
+            if previous_statement != StatementType.PRE:
+                raise AnnotationOrderError()
+            else:
+                previous_statement = StatementType.POST
+        elif isinstance(statement, FunctionDeclarationStatement):
+            if previous_statement != StatementType.POST:
+                raise AnnotationOrderError()
+            else:
+                previous_statement = StatementType.FUNC
+        else:
+            raise AnnotationFuncError()
+
+# Every function should have at least 1 return statement outside any if-else or while loop statements.
+def ensure_return_statements_aux(function:FunctionDeclarationStatement):
+    for statement in function.body:
+        if isinstance(statement, ReturnStatement):
+            return function.check_valid_return_statement(statement)
+        elif isinstance(statement, FunctionDeclarationStatement):
+            ensure_return_statements_aux(statement)
+    return False
+
+# make sure that the type of the expressions returned match the function type
+# works for nested function calls
+def ensure_return_statements(statements):
+    for statement in statements:
+        if isinstance(statement, FunctionDeclarationStatement):
+            ensure_return_statements(statement.body)
+
 def generate_basic_paths():
     global total
     with open('test.tms') as f:
@@ -174,59 +251,30 @@ def generate_basic_paths():
         program = parser.parse(input)
         statements = program.statements
 
-        # check that nothing but variable declaration happens before the first precondition.
-        # pops all declarations until an annotation is met (annotation is not popped)
-        for statement in statements:
-            if isinstance(statement, AnnotationStatement):
-                break
-            if not isinstance(statement, DeclarationStatement):
-                raise AnnotationOrderError()
-        
-        for i in range(len(statements)):
-            statement = statements[i]
-            if isinstance(statement, WhileLoopStatement):
-                if isinstance(statements[i-1], LoopAnnotationStatement):
-                    statements[i].invariant = statements[i-1]
-                else:
-                    raise LoopAnnotationError()
-        
+        ensure_function_declarations(statements)
+
         ensure_and_attach_loop_annotation(statements)
 
-        blocks = []
-        accumulator = []
-        for statement in statements:
-            if accumulator == []:
-                # Check that the first statement is a pre-annotation
-                if not isinstance(statement, PreAnnotationStatement):
-                    raise AnnotationOrderError()
-                else:
-                    accumulator.append(statement)
-            else:
-                # Check that the last statement is a pre-annotation
-                if isinstance(accumulator[-1], PreAnnotationStatement):
-                    if isinstance(statement, PostAnnotationStatement):
-                        accumulator.append(statement)
-                    else:
-                        raise AnnotationOrderError()
-                elif isinstance(accumulator[-1], PostAnnotationStatement):
-                    if not isinstance(statement, FunctionDeclarationStatement):
-                        raise AnnotationOrderError()
-                    else:
-                        accumulator.append(statement)
-                        blocks.append(accumulator)
-                        accumulator = []
-        conditions = []
-        body = []
+        ensure_return_statements(statements)
+
         verification_conditions = []
-        for block in blocks:
-            pre_condition, post_condition, function = block
+
+        for func_index in range(0,len(statements),3):
+            assert(isinstance(statements[func_index], PreAnnotationStatement))
+            assert(isinstance(statements[func_index + 1], PostAnnotationStatement))
+            assert(isinstance(statements[func_index + 2], FunctionDeclarationStatement))
+
+            pre_condition = statements[func_index]
+            post_condition = statements[func_index + 1]
+            function = statements[func_index + 2]
+
             statements = [pre_condition] + function.body + [post_condition]
             collector(statements)
             verification_conditions.extend(total)
             convert_to_z3(verification_conditions)
             total = []
 
-        return []
+        return
 
 
 def print_paths(all_paths):
