@@ -50,22 +50,36 @@ class BinaryExpression:
 
 class IntBinaryExpression(BinaryExpression):
     def __init__(self, left, right, op):
-        assert (isinstance(left, IntBinaryExpression) or isinstance(left, IntLiteralExpression))
-        assert (isinstance(right, IntBinaryExpression) or isinstance(right, IntLiteralExpression))
+        assert (isinstance(left, IntBinaryExpression) or isinstance(left, IntLiteralExpression)
+                or (isinstance(left, VariableExpression) and left.type == DataType.INT)
+                or (isinstance(left, IntUnaryExpression)))
+        assert (isinstance(right, IntBinaryExpression) or isinstance(right, IntLiteralExpression)
+                or (isinstance(right, VariableExpression) and right.type == DataType.INT)
+                or (isinstance(right, IntUnaryExpression)))
         super().__init__(left, right, op)
 
 class BooleanBinaryExpression(BinaryExpression):
     def __init__(self, left, right, op):
-        assert (isinstance(left, BooleanBinaryExpression) or isinstance(left, BooleanLiteralExpression))
-        assert (isinstance(right, BooleanBinaryExpression) or isinstance(right, BooleanLiteralExpression))
         super().__init__(left, right, op)
 
-class ComparisonBinaryExpression(BinaryExpression):
+class ComparisonBinaryExpression(BooleanBinaryExpression):
     def __init__(self, left, right, op):
+        assert (isinstance(left, IntBinaryExpression) or isinstance(left, IntLiteralExpression)
+                or (isinstance(left, VariableExpression) and left.type == DataType.INT)
+                or (isinstance(right, IntUnaryExpression)))
+        assert (isinstance(right, IntBinaryExpression) or isinstance(right, IntLiteralExpression)
+                or (isinstance(right, VariableExpression) and right.type == DataType.INT)
+                or (isinstance(right, IntUnaryExpression)))
         super().__init__(left, right, op)
 
-class ImpliesExpression(BinaryExpression):
+class ImpliesExpression(BooleanBinaryExpression):
     def __init__(self, left, right, op):
+        assert (isinstance(left, BooleanBinaryExpression) or isinstance(left, BooleanLiteralExpression)
+                or (isinstance(left, VariableExpression) and left.type == DataType.BOOL)
+                or (isinstance(right, BooleanUnaryExpression)))
+        assert (isinstance(right, BooleanBinaryExpression) or isinstance(right, BooleanLiteralExpression)
+                or (isinstance(right, VariableExpression) and right.type == DataType.BOOL)
+                or (isinstance(right, BooleanUnaryExpression)))
         super().__init__(left, right, op)
 
                                     ###### UNARY EXPRESSIONS ######
@@ -79,12 +93,16 @@ class UnaryExpression:
 
 class IntUnaryExpression(UnaryExpression):
     def __init__(self, expression, op):
-        assert (isinstance(expression, IntUnaryExpression) or isinstance(expression, IntBinaryExpression) or isinstance(expression, IntLiteralExpression))
+        assert (isinstance(expression, IntUnaryExpression) or isinstance(expression, IntBinaryExpression)
+                or isinstance(expression, IntLiteralExpression)
+                or (isinstance(expression, VariableExpression) and expression.type == DataType.INT))
         super().__init__(expression, op)
 
 class BooleanUnaryExpression(UnaryExpression):
     def __init__(self, expression, op):
-        assert (isinstance(expression, BooleanUnaryExpression) or isinstance(expression, BooleanBinaryExpression) or isinstance(expression, BooleanLiteralExpression))
+        assert (isinstance(expression, BooleanUnaryExpression) or isinstance(expression, BooleanBinaryExpression)
+                or isinstance(expression, BooleanLiteralExpression)
+                or (isinstance(expression, VariableExpression) and expression.type == DataType.BOOL))
         super().__init__(expression, op)
 
 class NotExpression(BooleanUnaryExpression):

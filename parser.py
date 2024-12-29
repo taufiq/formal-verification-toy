@@ -82,10 +82,12 @@ def p_statement(p):
 def p_function_declaration(p):
     '''function_declaration : BOOL_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
                         | INT_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE'''
-    if p[1] == "BOOL_TYPE":
+    if p[1] == "BOOL":
         p[0] = BoolFunctionDeclarationStatement(p[3], p[5], p[8])
-    elif p[1] == "INT_TYPE":
+    elif p[1] == "INT":
         p[0] = IntFunctionDeclarationStatement(p[3], p[5], p[8])
+    else:
+        raise ParseError("Invalid function declaration")
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
@@ -241,7 +243,7 @@ def p_formula_implies(p):
         # raise ParseError('Invalid implies expression')
 
 def p_formula_not(p):
-    'expression: NOT expression'
+    'expression : NOT expression'
     p[0] = NotExpression(p[2],p[1])
 
 def p_if_then_else(p):

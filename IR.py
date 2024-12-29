@@ -34,6 +34,15 @@ class ExpressionWithNoEffect(Exception):
     def __init__(self, message="Expression with no effect."):
         super().__init__(message)
 
+class Context:
+    def __init__(self, pre_condition:AnnotationStatement, post_condition:AnnotationStatement,
+                 origin_statement:Union[None,Statement]):
+        self.pre_condition = pre_condition
+        self.post_condition = post_condition
+        self.origin_statement = origin_statement
+
+
+
 def substitute(expression, mapping):
     if isinstance(expression, LiteralExpression):
         return expression
@@ -50,29 +59,14 @@ def substitute(expression, mapping):
 
 total = []
 
-def generate_basic_paths_rec(statements, path, function_type, pre=Union[None,List[Statement]], post=Union[None,List[Statement]], context=None):
-
-    if pre is not None:
-        path = copy.copy(pre)
-
-    basic_paths = []
-
-    while statements:
-        statement = statements.pop()
-
-        if isinstance(statement, IfThenElseStatement):
-            then_statements = statement.then_body
-            else_statements = statement.else_body
-
-
-def collector(statements, path=[], context=None):
+def collector(statements:List[Statement], path:List[Statement], context:Union[None, Context]):
     statements = copy.copy(statements)
     path = copy.copy(path)
 
     if not statements:
         path = copy.deepcopy(path)
-        if isinstance(context, WhileLoopStatement):
-            path.append(context.invariant)
+        if context.origin_statement and isinstance(context.origin_statement, WhileLoopStatement):
+            path.append(context.origin_statement.invariant)
         total.append(path)
         return
 
@@ -87,11 +81,11 @@ def collector(statements, path=[], context=None):
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
         path.append(condition_holds)
-        collector(then_statements + tail, path, statement)
+        collector(then_statements + tail, path, Context(context.pre_condition, context.post_condition, statement))
 
 
         path.append(condition_doesnt_hold)
-        collector(else_statements + tail, path, statement)
+        collector(else_statements + tail, path, Context(context.pre_condition, context.post_condition, statement))
 
     elif isinstance(statement, WhileLoopStatement):
         invariant = statement.invariant
@@ -106,14 +100,16 @@ def collector(statements, path=[], context=None):
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
         path.append(condition_holds)
-        collector(statement.body, path, statement)
+        collector(statement.body, path, Context(context.pre_condition, context.post_condition, statement))
 
         path.append(condition_doesnt_hold)
-        collector(tail, path, statement)
+        collector(tail, path, Context(context.pre_condition, context.post_condition, statement))
 
     elif isinstance(statement, ReturnStatement):
         path.append(statement)
+        path.append(context.post_condition)
         total.append(copy.deepcopy(path))
+
 
     elif isinstance(statement, AssignmentStatement) or isinstance(statement, AssumptionStatement):
         path.append(statement)
@@ -268,8 +264,8 @@ def generate_basic_paths():
             post_condition = statements[func_index + 1]
             function = statements[func_index + 2]
 
-            statements = [pre_condition] + function.body + [post_condition]
-            collector(statements)
+            # statements = function.body
+            collector(function.body,[pre_condition],Context(pre_condition,post_condition,None))
             verification_conditions.extend(total)
             convert_to_z3(verification_conditions)
             total = []

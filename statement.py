@@ -32,6 +32,8 @@ class WhileLoopStatement(Statement):
     def __init__(self, condition, body, invariant=None):
         super().__init__()
         assert (isinstance(condition, BooleanUnaryExpression) or isinstance(condition, BooleanBinaryExpression))
+        if invariant:
+            assert(isinstance(invariant, LoopAnnotationStatement))
         self.condition = condition
         self.body = body
         self.invariant = invariant
