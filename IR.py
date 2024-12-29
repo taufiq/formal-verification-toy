@@ -34,6 +34,11 @@ class ExpressionWithNoEffect(Exception):
     def __init__(self, message="Expression with no effect."):
         super().__init__(message)
 
+class MissingReturnStatement(Exception):
+    def __init__(self,
+                 message="Each function should have a return statement outside if/else statements and while loops."):
+        super().__init__(message)
+
 class Context:
     def __init__(self, pre_condition:AnnotationStatement, post_condition:AnnotationStatement,
                  origin_statement:Union[None,Statement]):
@@ -64,9 +69,11 @@ def collector(statements:List[Statement], path:List[Statement], context:Union[No
     path = copy.copy(path)
 
     if not statements:
-        path = copy.deepcopy(path)
         if context.origin_statement and isinstance(context.origin_statement, WhileLoopStatement):
             path.append(context.origin_statement.invariant)
+        else:
+            path.append(context.post_condition)
+        path = copy.deepcopy(path)
         total.append(path)
         return
 
@@ -179,7 +186,8 @@ def convert_to_z3(basic_paths):
 def ensure_and_attach_loop_annotation(statements):
     '''This takes the loop annotation and merges it into
         the while loop statement'''
-    for i in range(len(statements)):
+    i = 0
+    while i < len(statements):
         statement = statements[i]
         if isinstance(statement, WhileLoopStatement):
             if not isinstance(statements[i-1], LoopAnnotationStatement):
@@ -187,11 +195,13 @@ def ensure_and_attach_loop_annotation(statements):
             else:
                 statements[i].invariant = statements[i-1]
                 statements.pop(i - 1)
+                i = i - 1
         if isinstance(statement, FunctionDeclarationStatement):
             ensure_and_attach_loop_annotation(statement.body)
         if isinstance(statement, IfThenElseStatement):
             ensure_and_attach_loop_annotation(statement.then_body)
             ensure_and_attach_loop_annotation(statement.else_body)
+        i += 1
 
 # make sure that all the code is inside function declarations with pre and post annotations
 def ensure_function_declarations(statements):
@@ -238,7 +248,8 @@ def ensure_return_statements_aux(function:FunctionDeclarationStatement):
 def ensure_return_statements(statements):
     for statement in statements:
         if isinstance(statement, FunctionDeclarationStatement):
-            ensure_return_statements(statement.body)
+            if not ensure_return_statements_aux(statement):
+                raise MissingReturnStatement()
 
 def generate_basic_paths():
     global total

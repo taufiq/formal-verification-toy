@@ -5,6 +5,7 @@ INT FUNCTION aFunction(INT a, INT b) {
     WHILE (a < b) {
         a := a + 1
     }
+    return a
 }
 
 
@@ -16,4 +17,5 @@ INT FUNCTION randomFunction(INT a, INT b) {
     } ELSE {
         a := b + 2
     }
+    return a
 }

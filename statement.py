@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from expr import BooleanUnaryExpression, BooleanBinaryExpression, BooleanLiteralExpression, IntUnaryExpression, \
-    IntBinaryExpression, IntLiteralExpression
+    IntBinaryExpression, IntLiteralExpression, VariableExpression, DataType
 
 
 class Statement:
@@ -96,7 +96,8 @@ class IntFunctionDeclarationStatement(FunctionDeclarationStatement):
     def check_valid_return_statement(self, return_statement: ReturnStatement):
         return isinstance(return_statement.expression, IntUnaryExpression) \
         or isinstance(return_statement.expression, IntBinaryExpression) \
-        or isinstance(return_statement.expression, IntLiteralExpression)
+        or isinstance(return_statement.expression, IntLiteralExpression) \
+        or (isinstance(return_statement.expression, VariableExpression) and return_statement.expression.type == DataType.INT)
 
 class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
     def __init__(self, function_name, parameter_list, body):
@@ -108,7 +109,9 @@ class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
     def check_valid_return_statement(self, return_statement: ReturnStatement):
         return isinstance(return_statement.expression, BooleanUnaryExpression) \
         or isinstance(return_statement.expression, BooleanBinaryExpression) \
-        or isinstance(return_statement.expression, BooleanLiteralExpression)
+        or isinstance(return_statement.expression, BooleanLiteralExpression) \
+        or (isinstance(return_statement.expression, VariableExpression) and return_statement.expression.type == DataType.BOOL)
+
 
 
 
