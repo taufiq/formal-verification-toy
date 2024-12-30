@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from expr import BooleanUnaryExpression, BooleanBinaryExpression, BooleanLiteralExpression, IntUnaryExpression, \
-    IntBinaryExpression, IntLiteralExpression, VariableExpression, DataType
+    IntBinaryExpression, IntLiteralExpression, VariableExpression, DataType, check_expression_type
 
 
 class Statement:
@@ -22,7 +22,7 @@ class BooleanAssignmentStatement(AssignmentStatement):
         return f"Boolean Assignment: {self.variable} = {self.expression}"
 
 class IntAssignmentStatement(AssignmentStatement):
-    def __init__(self, variable, expression):
+    def __init__(self, variable:str, expression):
         super().__init__(variable, expression)
     
     def __repr__(self):
@@ -30,8 +30,9 @@ class IntAssignmentStatement(AssignmentStatement):
 
 class WhileLoopStatement(Statement):
     def __init__(self, condition, body, invariant=None):
+        check_expression_type(condition, DataType.BOOL)
         super().__init__()
-        assert (isinstance(condition, BooleanUnaryExpression) or isinstance(condition, BooleanBinaryExpression))
+
         if invariant:
             assert(isinstance(invariant, LoopAnnotationStatement))
         self.condition = condition
@@ -94,10 +95,7 @@ class IntFunctionDeclarationStatement(FunctionDeclarationStatement):
         return f"INT FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
 
     def check_valid_return_statement(self, return_statement: ReturnStatement):
-        return isinstance(return_statement.expression, IntUnaryExpression) \
-        or isinstance(return_statement.expression, IntBinaryExpression) \
-        or isinstance(return_statement.expression, IntLiteralExpression) \
-        or (isinstance(return_statement.expression, VariableExpression) and return_statement.expression.type == DataType.INT)
+        return check_expression_type(return_statement, DataType.INT)
 
 class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
     def __init__(self, function_name, parameter_list, body):
@@ -107,16 +105,12 @@ class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
         return f"BOOL FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
 
     def check_valid_return_statement(self, return_statement: ReturnStatement):
-        return isinstance(return_statement.expression, BooleanUnaryExpression) \
-        or isinstance(return_statement.expression, BooleanBinaryExpression) \
-        or isinstance(return_statement.expression, BooleanLiteralExpression) \
-        or (isinstance(return_statement.expression, VariableExpression) and return_statement.expression.type == DataType.BOOL)
-
-
+        return check_expression_type(return_statement, DataType.BOOL)
 
 
 class AnnotationStatement(Statement):
     def __init__(self, expression):
+        check_expression_type(expression, DataType.BOOL)
         super().__init__()
         self.expression = expression
     

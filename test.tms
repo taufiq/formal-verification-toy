@@ -1,6 +1,7 @@
 @Pre a < b
 @Post a >= b
 INT FUNCTION aFunction(INT a, INT b) {
+    DECLARE (INT x, BOOL z)
     @Loop a <= b
     WHILE (a < b) {
         a := a + 1

@@ -1,3 +1,5 @@
+import copy
+
 from lexer import tokens
 import ply.yacc as yacc
 from expr import *
@@ -48,7 +50,10 @@ from statement import *
 #     ('right', 'UMINUS'),  # Unary minus
 # )
 
+# variables of the function being currently parsed
 variables = {}
+
+# name -> [variables_dict]
 functions = {}
 
 class ParseError(Exception):
@@ -58,6 +63,18 @@ class ParseError(Exception):
 def p_program(p):
     '''program : statement_list'''
     p[0] = Program(p[1])
+
+
+def p_function_body(p):
+    '''function_body : DECLARE LPAREN parameter_list RPAREN statement_list
+                    | statement_list'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    elif len(p) == 6:
+        p[0] = p[3] + p[5]
+    else:
+        raise ParseError("Invalid function body")
+
 
 def p_statement_list(p):
     '''statement_list : statement
@@ -74,20 +91,24 @@ def p_statement(p):
              | while_loop
              | if_then_else
              | assumption
-             | declaration
              | function_declaration
              | return_statement'''
     p[0] = p[1]
 
 def p_function_declaration(p):
-    '''function_declaration : BOOL_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE
-                        | INT_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE statement_list RBRACE'''
+    '''function_declaration : BOOL_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE function_body RBRACE
+                        | INT_TYPE FUNCTION VARIABLE LPAREN parameter_list RPAREN LBRACE function_body RBRACE'''
+    global variables
+    global functions
+
     if p[1] == "BOOL":
         p[0] = BoolFunctionDeclarationStatement(p[3], p[5], p[8])
     elif p[1] == "INT":
         p[0] = IntFunctionDeclarationStatement(p[3], p[5], p[8])
     else:
         raise ParseError("Invalid function declaration")
+    functions[p[3]] = [copy.copy(variables)]
+    variables = {}
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
@@ -108,21 +129,27 @@ def p_while_loop(p):
 
 def p_bool_declaration(p):
     'declaration : BOOL_TYPE VARIABLE'
+    global variables
     variable_name = p[2]
     if variable_name in variables:
         raise ParseError('Variable already declared')
+    elif variable_name == "rv":
+        raise ParseError('Variable name rv is reserved')
     else:
         variables[variable_name] = DataType.BOOL
         p[0] = BooleanDeclarationStatement(variable_name)
 
 def p_int_declaration(p):
     'declaration : INT_TYPE VARIABLE'
+    global variables
     variable_name = p[2]
-    # if variable_name in variables:
-        # raise ParseError('Variable already declared')
-    # else:
-    variables[variable_name] = DataType.INT
-    p[0] = IntDeclarationStatement(variable_name)
+    if variable_name in variables:
+        raise ParseError('Variable already declared')
+    elif variable_name == "rv":
+        raise ParseError('Variable name rv is reserved')
+    else:
+        variables[variable_name] = DataType.INT
+        p[0] = IntDeclarationStatement(variable_name)
 
 
 def p_annotation(p):
@@ -203,13 +230,16 @@ def p_expression_bool(p):
 
 def p_expression_variable(p):
     'expression : VARIABLE'
-    p[0] = VariableExpression(p[1], DataType.INT)
-    # if variables.get(p[1]) == DataType.INT:
-    #     p[0] = VariableExpression(p[1], DataType.INT)
-    # elif variables.get(p[1]) == DataType.BOOL:
-    #     p[0] = VariableExpression(p[1], DataType.BOOL)
-    # else:
-    #     raise ParseError('Invalid variable')
+    global variables
+
+    if variables.get(p[1]) == DataType.INT:
+        p[0] = VariableExpression(p[1], DataType.INT)
+    elif variables.get(p[1]) == DataType.BOOL:
+        p[0] = VariableExpression(p[1], DataType.BOOL)
+    elif p[1] == "rv":
+        p[0] = ReturnValueVariableExpression()
+    else:
+        raise ParseError(f"variable used but not declared" )
 
 def p_expr_uminus(p):
     'expression : MINUS expression %prec UMINUS'
