@@ -1,7 +1,8 @@
-@Pre a < b
-@Post a >= b
+
 INT FUNCTION aFunction(INT a, INT b) {
     DECLARE (INT x, BOOL z)
+    @Pre a < b
+    @Post a >= b
     @Loop a <= b
     WHILE (a < b) {
         a := a + 1
@@ -10,9 +11,10 @@ INT FUNCTION aFunction(INT a, INT b) {
 }
 
 
-@Pre a < b
-@Post a > b
+
 INT FUNCTION randomFunction(INT a, INT b) {
+    @Pre a < b
+    @Post a > b
     IF (a == 5) {
         a := b + 1
     } ELSE {

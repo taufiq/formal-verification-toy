@@ -1,0 +1,13 @@
+INT FUNCTION simpleMul(INT a, INT b) {
+    DECLARE (INT i, INT result)
+    @Pre a > 0 ^ b > 0
+    @Post rv == a * b
+    result := 0
+    i := a
+    @Loop result + i * b == 0 + (a * b)
+    WHILE (i > 0) {
+        result := result + b
+        i := i - 1
+    }
+    return result
+}

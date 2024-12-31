@@ -7,7 +7,7 @@ import z3
 
 
 class AnnotationFuncError(Exception):
-    def __init__(self, message="Only functions declarations are allowed, no code should exist outside functions' body."):
+    def __init__(self, message="Only functions declarations are allowed, no code should exist outside a function's body."):
         super().__init__(message)
 
 class AnnotationOrderError(Exception):
@@ -73,8 +73,8 @@ def substitute(expression, mapping):
 total = []
 
 def collector(statements:List[Statement], path:List[Statement], context:Union[None, Context]):
-    statements = copy.copy(statements)
-    path = copy.copy(path)
+    statements = copy.deepcopy(statements)
+    path = copy.deepcopy(path)
 
     if not statements:
         if context.origin_statement and isinstance(context.origin_statement, WhileLoopStatement):
@@ -95,12 +95,10 @@ def collector(statements:List[Statement], path:List[Statement], context:Union[No
         condition_holds = AssumptionStatement(statement.condition)
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
-        path.append(condition_holds)
-        collector(then_statements + tail, path, Context(context.pre_condition, context.post_condition, statement))
+        collector(then_statements + tail, path + [condition_holds], Context(context.pre_condition, context.post_condition, statement))
 
 
-        path.append(condition_doesnt_hold)
-        collector(else_statements + tail, path, Context(context.pre_condition, context.post_condition, statement))
+        collector(else_statements + tail, path + [condition_doesnt_hold], Context(context.pre_condition, context.post_condition, statement))
 
     elif isinstance(statement, WhileLoopStatement):
         invariant = statement.invariant
@@ -114,11 +112,9 @@ def collector(statements:List[Statement], path:List[Statement], context:Union[No
         condition_holds = AssumptionStatement(statement.condition)
         condition_doesnt_hold = AssumptionStatement(NotExpression(statement.condition))
 
-        path.append(condition_holds)
-        collector(statement.body, path, Context(context.pre_condition, context.post_condition, statement))
+        collector(statement.body, path + [condition_holds], Context(context.pre_condition, context.post_condition, statement))
 
-        path.append(condition_doesnt_hold)
-        collector(tail, path, Context(context.pre_condition, context.post_condition, statement))
+        collector(tail, path + [condition_doesnt_hold], Context(context.pre_condition, context.post_condition, statement))
 
     elif isinstance(statement, ReturnStatement):
         path.append(statement)
@@ -133,6 +129,8 @@ def collector(statements:List[Statement], path:List[Statement], context:Union[No
     elif isinstance(statement, AnnotationStatement):
         raise AnnotationWithNoWhileLoop()
 
+    elif isinstance(statement, DeclarationStatement):
+        collector(tail, path, context)
     else:
         raise ExpressionWithNoEffect()
 
@@ -156,7 +154,7 @@ def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
     for basic_path in basic_paths:
 
         pre, post = basic_path[0], basic_path[-1]
-        variables = functions[function.function_name]
+        variables = functions[function.function_name][0]
         statements = basic_path[1:-1]
 
         if isinstance(basic_path[-2], ReturnStatement):
@@ -227,36 +225,41 @@ def ensure_and_attach_loop_annotation(statements):
             ensure_and_attach_loop_annotation(statement.else_body)
         i += 1
 
-# make sure that all the code is inside function declarations with pre and post annotations
 def ensure_function_declarations(statements):
-    previous_statement = None
-
-    class StatementType(Enum):
-        PRE = 1
-        POST = 2
-        FUNC = 3
-
-    if len(statements) % len(StatementType) != 0:
-        raise AnnotationFuncError()
+    ''' make sure that all the code is inside a function's body  with pre and post annotations '''
 
     for statement in statements:
-        if isinstance(statement, PreAnnotationStatement):
-            if  not (previous_statement is None or previous_statement == StatementType.FUNC):
-                raise AnnotationOrderError()
-            else:
-                previous_statement = StatementType.PRE
-        elif isinstance(statement, PostAnnotationStatement):
-            if previous_statement != StatementType.PRE:
-                raise AnnotationOrderError()
-            else:
-                previous_statement = StatementType.POST
-        elif isinstance(statement, FunctionDeclarationStatement):
-            if previous_statement != StatementType.POST:
-                raise AnnotationOrderError()
-            else:
-                previous_statement = StatementType.FUNC
+        if isinstance(statement, FunctionDeclarationStatement):
+            continue
         else:
             raise AnnotationFuncError()
+
+
+    for function in statements:
+        statement_index = 0
+        body_statements = function.body
+        while statement_index < len(body_statements):
+            if isinstance(body_statements[statement_index], DeclarationStatement):
+                statement_index += 1
+            else:
+                break
+
+        if statement_index < len(body_statements):
+            if isinstance(body_statements[statement_index], PreAnnotationStatement):
+                if isinstance(body_statements[statement_index+1], PostAnnotationStatement):
+                    statement_index = statement_index + 2
+                    while statement_index < len(body_statements):
+                        if isinstance(statement_index, PreAnnotationStatement):
+                            raise PreConditionError("Incorrect placement of Precondition")
+                        if isinstance(statement_index, PostAnnotationStatement):
+                            raise PostConditionError("Incorrect placement of PostCondition")
+                        statement_index = statement_index + 1
+                else:
+                    raise PostConditionMissing()
+            else:
+                raise PreConditionError("Missing precondition")
+
+    return
 
 
 
@@ -281,12 +284,14 @@ def ensure_return_statements(statements):
                 raise MissingReturnStatement()
 
 
-def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:AnnotationStatement, parameter_variables:List[DeclarationStatement]):
+def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:AnnotationStatement, parameter_list:List[DeclarationStatement]):
     ''' make sure that the precondition and postcondition contain only parameter variables, or also "rv" for postcondition '''
-    def ensure_pre_post_condition_aux(expression, parameter_variables, condition: str):
+    def ensure_pre_post_condition_aux(expression, parameter_list, condition: str):
         assert (condition == "precondition" or condition == "postcondition")
 
         if expression is None:
+            return True
+        elif isinstance(expression, IntLiteralExpression) or isinstance(expression, BooleanLiteralExpression):
             return True
         elif isinstance(expression, ReturnValueVariableExpression):
             if condition == "precondition":
@@ -294,24 +299,25 @@ def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:
             elif condition == "postcondition":
                 return True
         elif isinstance(expression, VariableExpression):
-            return expression.name in parameter_variables
+            return expression.name in parameter_list
         elif isinstance(expression, BinaryExpression):
-            return explore_and_collect_variables(expression.left, parameter_variables) and \
-                explore_and_collect_variables(expression.right, parameter_variables)
+            return ensure_pre_post_condition_aux(expression.left, parameter_list, condition) and \
+                ensure_pre_post_condition_aux(expression.right, parameter_list, condition)
         elif isinstance(expression, UnaryExpression):
-            return explore_and_collect_variables(expression.expression, parameter_variables)
+            return ensure_pre_post_condition_aux(expression.expression, parameter_list, condition)
 
-    parameter_variables = [parameter.variable for parameter in parameter_variables]
+    parameter_list = [parameter.variable for parameter in parameter_list]
 
-    if not ensure_pre_post_condition_aux(pre_condition, parameter_variables, "precondition"):
+    if not ensure_pre_post_condition_aux(pre_condition.expression, parameter_list, "precondition"):
         raise PreConditionError()
-    if not ensure_pre_post_condition_aux(post_condition, parameter_variables, "postcondition"):
+    if not ensure_pre_post_condition_aux(post_condition.expression, parameter_list, "postcondition"):
         raise PostConditionError()
+
 
 
 def generate_basic_paths():
     global total
-    with open('test.tms') as f:
+    with open('tests/PositiveMul.tms') as f:
         input = f.read()
         program = parser.parse(input)
         statements = program.statements
@@ -325,21 +331,24 @@ def generate_basic_paths():
 
         basic_paths = []
 
-        for func_index in range(0,len(statements),3):
-            assert(isinstance(statements[func_index], PreAnnotationStatement))
-            assert(isinstance(statements[func_index + 1], PostAnnotationStatement))
-            assert(isinstance(statements[func_index + 2], FunctionDeclarationStatement))
+        for func_index in range(0,len(statements)):
 
-            pre_condition = statements[func_index]
-            post_condition = statements[func_index + 1]
-            function = statements[func_index + 2]
+            function = statements[func_index]
+            function.set_precondition()
+            function.set_postcondition()
 
-            ensure_pre_post_condition(pre_condition, post_condition, function.parameter_variables)
+            pre_condition = function.precondition
+            post_condition = function.postcondition
 
-            # statements = function.body
-            collector(function.body,[pre_condition],Context(pre_condition,post_condition,None))
-            basic_paths.extend(total)
-            convert_to_z3(basic_paths,function)
+            assert(isinstance(statements[func_index], FunctionDeclarationStatement))
+            assert(isinstance(pre_condition, PreAnnotationStatement))
+            assert(isinstance(post_condition, PostAnnotationStatement))
+
+            ensure_pre_post_condition(pre_condition, post_condition, function.parameter_list)
+
+            collector(function.get_body_after_annotations(),[pre_condition],Context(pre_condition,post_condition,None))
+            # basic_paths.extend(total)
+            convert_to_z3(total,function)
             total = []
 
         return

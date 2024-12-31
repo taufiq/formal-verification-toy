@@ -43,6 +43,7 @@ tokens = [
    'ASSUME',
    'RETURN',
    'IMPLIES',
+    'SEMI_COLUMN'
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -57,6 +58,7 @@ t_RBRACE  = r'\}'
 t_ASSIGNMENT = r':='
 t_IMPLIES = r'=>'
 t_COMMA = r','
+t_SEMI_COLUMN = r';'
 
 
 

@@ -44,12 +44,14 @@ def check_expression_type(expression, expected_type):
     or isinstance(expression, IntBinaryExpression) \
     or isinstance(expression, IntLiteralExpression) \
     or (isinstance(expression, VariableExpression) and expression.type == DataType.INT) \
+    or (isinstance(expression, ReturnValueVariableExpression)) \
     and (expected_type == DataType.INT):
         return True
     elif isinstance(expression, BooleanUnaryExpression) \
     or isinstance(expression, BooleanBinaryExpression) \
     or isinstance(expression, BooleanLiteralExpression) \
     or (isinstance(expression, VariableExpression) and expression.type == DataType.BOOL) \
+    or (isinstance(expression, ReturnValueVariableExpression)) \
     and expected_type == DataType.BOOL:
         return True
     else:

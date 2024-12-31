@@ -61,20 +61,17 @@ class ParseError(Exception):
 
 
 def p_program(p):
-    '''program : statement_list'''
+    '''program : function_list'''
     p[0] = Program(p[1])
 
 
-def p_function_body(p):
-    '''function_body : DECLARE LPAREN parameter_list RPAREN statement_list
-                    | statement_list'''
+def p_function_list(p):
+    '''function_list : function_declaration
+                    | function_declaration function_list'''
     if len(p) == 2:
         p[0] = [p[1]]
-    elif len(p) == 6:
-        p[0] = p[3] + p[5]
-    else:
-        raise ParseError("Invalid function body")
-
+    elif len(p) == 3:
+        p[0] = [p[1]] + p[2]
 
 def p_statement_list(p):
     '''statement_list : statement
@@ -83,6 +80,7 @@ def p_statement_list(p):
         p[0] = [p[1]]
     elif len(p) == 3:
         p[0] = [p[1]] + p[2]
+
 
 def p_statement(p):
     '''statement : assignment
@@ -109,6 +107,18 @@ def p_function_declaration(p):
         raise ParseError("Invalid function declaration")
     functions[p[3]] = [copy.copy(variables)]
     variables = {}
+
+
+def p_function_body(p):
+    '''function_body : DECLARE LPAREN parameter_list RPAREN statement_list
+                    | statement_list'''
+    if len(p) == 2:
+        p[0] = p[1]
+    elif len(p) == 6:
+        p[0] = p[3] + p[5]
+    else:
+        raise ParseError("Invalid function body")
+
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
@@ -155,7 +165,6 @@ def p_int_declaration(p):
 def p_annotation(p):
     '''annotation : PRE_ANNOTATION expression
                   | POST_ANNOTATION expression
-                  | ANNOTATION expression
                   | LOOP_ANNOTATION expression'''
     # if p[2].eval_type == "bool":
     expression = p[2]
@@ -216,7 +225,7 @@ def p_expression_times(p):
 
 def p_parenthesis_expr(p):
     'expression : LPAREN expression RPAREN'
-    p[0] = Expression(p[2])
+    p[0] = p[2]
 
 def p_expression_num(p):
     'expression : NUMBER'

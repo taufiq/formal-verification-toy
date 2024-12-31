@@ -9,6 +9,7 @@ from project_config import set_debug, get_debug
 if len(sys.argv) > 1 and  sys.argv[1] == "DEBUG":
     set_debug(True)
 
+
 if get_debug():
     generate_basic_paths()
 else:
