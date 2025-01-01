@@ -1,0 +1,19 @@
+BOOL FUNCTION is_checker_board(BOOL a, BOOL b, BOOL c, BOOL d) {
+    @Pre TRUE;
+    @Post rv == (a^c^NOT(b)^NOT(d)) v (NOT(a)^NOT(c)^b^d);
+    IF (a^c) {
+        IF (NOT(b)^NOT(d)) {
+            return TRUE;
+        } ELSE {
+            return FALSE;
+        }
+    } ELSE { return FALSE; }
+
+    IF (b^d) {
+        IF (NOT(a) ^ NOT(d)) {
+            return TRUE;
+        } ELSE {return TRUE;}
+    } ELSE {return FALSE;}
+
+    return FALSE;
+}

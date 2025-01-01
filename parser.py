@@ -75,22 +75,37 @@ def p_function_list(p):
 
 def p_statement_list(p):
     '''statement_list : statement
-                    | statement statement_list'''
+                    | statement statement_list
+                    | statement_with_no_semi_col statement_list
+                    | statement_with_no_semi_col
+                    | NOP SEMICOLON
+                    | NOP statement_list'''
     if len(p) == 2:
         p[0] = [p[1]]
     elif len(p) == 3:
-        p[0] = [p[1]] + p[2]
+        if p[1] == "NOP":
+            if p[2] == "SEMICOLON":
+                p[0] = []
+            else:
+                p[0] = p[2]
+        else:
+            p[0] = [p[1]] + p[2]
+
+
+def p_statement_with_no_semi_col(p):
+    '''statement_with_no_semi_col : while_loop
+                 | if_then_else
+                 | function_declaration
+    '''
+    p[0] = p[1]
 
 
 def p_statement(p):
-    '''statement : assignment
-             | expression
-             | annotation
-             | while_loop
-             | if_then_else
-             | assumption
-             | function_declaration
-             | return_statement'''
+    '''statement : assignment SEMICOLON
+             | expression SEMICOLON
+             | annotation SEMICOLON
+             | assumption SEMICOLON
+             | return_statement SEMICOLON'''
     p[0] = p[1]
 
 def p_function_declaration(p):
@@ -110,12 +125,12 @@ def p_function_declaration(p):
 
 
 def p_function_body(p):
-    '''function_body : DECLARE LPAREN parameter_list RPAREN statement_list
+    '''function_body : DECLARE LPAREN parameter_list RPAREN SEMICOLON statement_list
                     | statement_list'''
     if len(p) == 2:
         p[0] = p[1]
-    elif len(p) == 6:
-        p[0] = p[3] + p[5]
+    elif len(p) == 7:
+        p[0] = p[3] + p[6]
     else:
         raise ParseError("Invalid function body")
 
@@ -308,12 +323,12 @@ precedence = (
 # Error rule for syntax errors
 def p_error(p):
     # print("Syntax error in input!")
-    raise ParseError(f"Syntax error in input! {p}")
+    raise ParseError(f"Syntax error in input! {p.value} at line {p.lineno}")
 
 
 
 # Build the parser
-parser = yacc.yacc(debug=True)
+parser = yacc.yacc(debug=False)
 
 def gen_new_symbol(symbol):
     return symbol + ''

@@ -69,9 +69,12 @@ def substitute(expression, mapping):
             return mapping[expression.name]
         else:
             return expression
-    else:
+    elif isinstance(expression, BinaryExpression):
         expression.left = substitute(expression.left, mapping)
         expression.right = substitute(expression.right, mapping)
+        return expression
+    elif isinstance(expression, UnaryExpression):
+        expression.expression = substitute(expression.expression, mapping)
         return expression
 
 
@@ -323,7 +326,7 @@ def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:
 
 def generate_basic_paths():
     global total
-    with open('tests/PositiveMul.tms') as f:
+    with open('tests/checker_board_pattern.tms') as f:
         input = f.read()
         program = parser.parse(input)
         statements = program.statements

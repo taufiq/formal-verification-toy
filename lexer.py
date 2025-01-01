@@ -11,7 +11,8 @@ reserved = {
    "FUNCTION": "FUNCTION",
    "WHILE": "WHILE",
     "NOT": "NOT",
-    "DECLARE": "DECLARE"
+    "DECLARE": "DECLARE",
+    "NOP": "NOP"
 }
 # List of token names.   This is always required
 tokens = [
@@ -43,7 +44,7 @@ tokens = [
    'ASSUME',
    'RETURN',
    'IMPLIES',
-    'SEMI_COLUMN'
+    'SEMICOLON'
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -58,7 +59,7 @@ t_RBRACE  = r'\}'
 t_ASSIGNMENT = r':='
 t_IMPLIES = r'=>'
 t_COMMA = r','
-t_SEMI_COLUMN = r';'
+t_SEMICOLON = r';'
 
 
 

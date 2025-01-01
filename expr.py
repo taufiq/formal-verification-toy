@@ -22,8 +22,12 @@ class Z3Serializer:
             else:
                 return f"({serialize(expression.left)} {expression.op} {serialize(expression.right)})"
         elif isinstance(expression, NotExpression):
-            return f"z3.Not({expression.expression})"
-
+            return f"z3.Not({serialize(expression.expression)})"
+        elif isinstance(expression, BooleanLiteralExpression):
+            if expression.value == "TRUE":
+                return f"True"
+            elif expression.value == "FALSE":
+                return "False"
         return str(expression)
 
 
