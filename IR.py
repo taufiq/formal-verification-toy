@@ -59,7 +59,12 @@ class Context:
 def substitute(expression, mapping):
     if isinstance(expression, LiteralExpression):
         return expression
-    if isinstance(expression, VariableExpression):
+    elif isinstance(expression, VariableExpression):
+        if expression.name in mapping:
+            return mapping[expression.name]
+        else:
+            return expression
+    elif isinstance(expression, ReturnValueVariableExpression):
         if expression.name in mapping:
             return mapping[expression.name]
         else:
@@ -155,7 +160,6 @@ def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
 
         pre, post = basic_path[0], basic_path[-1]
         variables = functions[function.function_name][0]
-        statements = basic_path[1:-1]
 
         if isinstance(basic_path[-2], ReturnStatement):
             if isinstance(function, IntFunctionDeclarationStatement):
@@ -164,6 +168,8 @@ def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
             elif isinstance(function, BoolFunctionDeclarationStatement):
                 basic_path[-2] = BooleanAssignmentStatement("rv", basic_path[-2].expression)
                 variables["rv"] = DataType.BOOL
+
+        statements = basic_path[1:-1]
 
         immutable_basic_path = copy.deepcopy(basic_path)
         pre = pre.expression
@@ -185,7 +191,7 @@ def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
                 # Back propgation
                 substitute(post, { variable_name: statement.expression })
             elif isinstance(statement, AssumptionStatement):
-                post = ImpliesBinaryExpression(statement.expression, post)
+                post = ImpliesExpression(statement.expression, post, "=>")
 
             if isinstance(statement, AnnotationStatement):
                 pass

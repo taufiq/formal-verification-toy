@@ -11,11 +11,11 @@ class Z3Serializer:
     def serialize(expression):
         serialize = Z3Serializer.serialize
         if isinstance(expression, BinaryExpression):
-            if expression.op == BinaryOperator.IMPLIES:
+            if expression.op == "=>":
                 return f"z3.Implies({serialize(expression.left)}, {serialize(expression.right)})"
-            if expression.op == BinaryOperator.AND:
+            if expression.op == '^':
                 return f"z3.And({serialize(expression.left)}, {serialize(expression.right)})"
-            if expression.op == BinaryOperator.OR:
+            if expression.op == 'v':
                 return f"z3.Or({serialize(expression.left)}, {serialize(expression.right)})"
             if expression.op in BINARY_OPERATOR_Z3_MAPPING:
                 return f"({serialize(expression.left)} {BINARY_OPERATOR_Z3_MAPPING[expression.op]} {serialize(expression.right)})"
@@ -164,10 +164,10 @@ class IntLiteralExpression(LiteralExpression):
     def __init__(self, value):
         super().__init__(value, DataType.INT)
 
-
-class ImpliesBinaryExpression(BinaryExpression):
-    def __init__(self, left, right):
-        super().__init__(left, right, BinaryOperator.IMPLIES)
+#
+# class ImpliesBinaryExpression(BinaryExpression):
+#     def __init__(self, left, right):
+#         super().__init__(left, right, BinaryOperator.IMPLIES)
 
 class DataType(Enum):
     INT = 0
