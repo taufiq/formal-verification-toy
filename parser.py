@@ -84,7 +84,7 @@ def p_statement_list(p):
         p[0] = [p[1]]
     elif len(p) == 3:
         if p[1] == "NOP":
-            if p[2] == "SEMICOLON":
+            if p[2] == ";":
                 p[0] = []
             else:
                 p[0] = p[2]
@@ -297,8 +297,8 @@ def p_formula_implies(p):
         # raise ParseError('Invalid implies expression')
 
 def p_formula_not(p):
-    'expression : NOT expression'
-    p[0] = NotExpression(p[2],p[1])
+    'expression : NOT LPAREN  expression RPAREN'
+    p[0] = NotExpression(p[3],p[1])
 
 def p_if_then_else(p):
     'if_then_else : IF LPAREN expression RPAREN LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE'
@@ -313,8 +313,8 @@ def p_if_then_else(p):
 precedence = (
     ('right', 'ASSIGNMENT'),
     ('left', 'IMPLIES'),
-    ('left', 'BOOLEAN_OPERATOR'),
     ('nonassoc', 'COMPARATOR'),
+    ('left', 'BOOLEAN_OPERATOR'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES'),
     ('right', 'UMINUS'),  # Unary minus

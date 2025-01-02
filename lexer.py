@@ -28,7 +28,7 @@ tokens = [
    'COMMA',
    'PRE_ANNOTATION',
    'POST_ANNOTATION',
-   'ANNOTATION',
+   # 'ANNOTATION',
    'LOOP_ANNOTATION',
    'VARIABLE',
    'COMPARATOR',
@@ -69,9 +69,6 @@ def t_TRUTH_VALUES(t):
     t.type = reserved.get(t.value,'TRUTH_VALUES')
     return t
 
-def t_ASSUME(t):
-    r'assume'
-    return t
 
 def t_RETURN(t):
     r'return'
@@ -108,9 +105,12 @@ def t_LOOP_ANNOTATION(t):
     r'\@Loop'
     return t
 
-def t_ANNOTATION(t):
+def t_ASSUME(t):
     r'\@'
     return t
+# def t_ANNOTATION(t):
+#     r'\@'
+#     return t
 
 def t_VARIABLE(t):
     r'\w+'

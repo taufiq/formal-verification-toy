@@ -105,7 +105,7 @@ class AssumptionStatement(Statement):
         self.expression = expression
 
     def __repr__(self):
-        return f"ASSUME {self.expression}"
+        return f"@ {self.expression}"
 
 
 class DeclarationStatement(Statement):

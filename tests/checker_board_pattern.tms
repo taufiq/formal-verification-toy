@@ -5,15 +5,20 @@ BOOL FUNCTION is_checker_board(BOOL a, BOOL b, BOOL c, BOOL d) {
         IF (NOT(b)^NOT(d)) {
             return TRUE;
         } ELSE {
-            return FALSE;
+            NOP;
         }
-    } ELSE { return FALSE; }
+    } ELSE {
+        NOP;
+    }
 
     IF (b^d) {
-        IF (NOT(a) ^ NOT(d)) {
+        IF(NOT(a)^NOT(c)) {
             return TRUE;
-        } ELSE {return TRUE;}
-    } ELSE {return FALSE;}
-
+        } ELSE {
+            NOP;
+        }
+    } ELSE {
+        NOP;
+    }
     return FALSE;
 }
