@@ -95,7 +95,6 @@ def p_statement_list(p):
 def p_statement_with_no_semi_col(p):
     '''statement_with_no_semi_col : while_loop
                  | if_then_else
-                 | function_declaration
     '''
     p[0] = p[1]
 
@@ -328,7 +327,7 @@ def p_error(p):
 
 
 # Build the parser
-parser = yacc.yacc(debug=False)
+parser = yacc.yacc(debug=True)
 
 def gen_new_symbol(symbol):
     return symbol + ''

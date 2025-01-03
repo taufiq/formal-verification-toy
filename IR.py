@@ -44,7 +44,8 @@ class ExpressionWithNoEffect(Exception):
 
 class MissingReturnStatement(Exception):
     def __init__(self,
-                 message="Each function should have a return statement outside if/else statements and while loops."):
+                 message="Each function should have a return statement outside any while loop and if-else statement,"
+                         + " or inside both if and else bodies of an if-else statement."):
         super().__init__(message)
 
 class Context:
@@ -143,18 +144,6 @@ def collector(statements:List[Statement], path:List[Statement], context:Union[No
         raise ExpressionWithNoEffect()
 
     return
-
-
-# This goes through all statements and sees what variables there are
-# Assumes all variables are Integers
-def collect_variables(statements):
-    variables = {}
-    for statement in statements:
-        if isinstance(statement, AssignmentStatement):
-            variables[statement.variable] = statement.expression
-        else:
-            explore_and_collect_variables(statement.expression, variables)
-    return list(variables.keys())
 
 
 def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
@@ -272,24 +261,39 @@ def ensure_function_declarations(statements):
 
 
 
-def ensure_return_statements(statements):
-    '''make sure that the type of the expressions returned match the function type
-     works for nested function calls'''
+def ensure_return_statements(program_statements) -> None:
+    '''ensure correct return statements types and placement.'''
 
-    def ensure_return_statements_aux(function: FunctionDeclarationStatement):
+    def ensure_correct_return_types(function: FunctionDeclarationStatement, statements) -> None:
+        '''make sure that the type of the expressions returned by all return statements
+         match the function type.'''
+
+        for statement in statements:
+            if isinstance(statement, ReturnStatement):
+                function.assert_valid_return_statement(statement)
+            elif isinstance(statement, IfThenElseStatement):
+                ensure_correct_return_types(function, statement.then_body)
+                ensure_correct_return_types(function, statement.else_body)
+            elif isinstance(statement, WhileLoopStatement):
+                ensure_correct_return_types(function, statement.body)
+
+    def ensure_return_statements_aux(statements) -> bool:
         '''
         Every function should have at least 1 return statement outside any if-else or while loop statements.
         '''
-        for func_statement in function.body:
-            if isinstance(func_statement, ReturnStatement):
-                return function.check_valid_return_statement(func_statement)
-            elif isinstance(func_statement, FunctionDeclarationStatement):
-                ensure_return_statements_aux(func_statement)
+        for statement in statements:
+            if isinstance(statement, ReturnStatement):
+                return True
+            elif isinstance(statement, IfThenElseStatement):
+                if (ensure_return_statements_aux(statement.then_body)
+                        and ensure_return_statements_aux(statement.else_body)):
+                    return True
         return False
 
-    for statement in statements:
+    for statement in program_statements:
         if isinstance(statement, FunctionDeclarationStatement):
-            if not ensure_return_statements_aux(statement):
+            ensure_correct_return_types(statement, statement.body)
+            if not ensure_return_statements_aux(statement.body):
                 raise MissingReturnStatement()
 
 
@@ -326,7 +330,7 @@ def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:
 
 def generate_basic_paths():
     global total
-    with open('tests/pos_double.tms') as f:
+    with open('tests/abs.tms') as f:
         input = f.read()
         program = parser.parse(input)
         statements = program.statements

@@ -30,20 +30,7 @@ class Z3Serializer:
                 return "False"
         return str(expression)
 
-
-def explore_and_collect_variables(expression, a={}):
-    if expression is None:
-        return
-    if isinstance(expression, VariableExpression):
-        a[expression.name] = expression.type
-    elif isinstance(expression, BinaryExpression):
-        explore_and_collect_variables(expression.left, a)
-        explore_and_collect_variables(expression.right, a)
-    elif isinstance(expression, UnaryExpression):
-        explore_and_collect_variables(expression.expression, a)
-
-
-def check_expression_type(expression, expected_type):
+def assert_expression_type(expression, expected_type):
     if isinstance(expression, IntUnaryExpression) \
     or isinstance(expression, IntBinaryExpression) \
     or isinstance(expression, IntLiteralExpression) \
@@ -80,8 +67,8 @@ class BinaryExpression:
 
 class IntBinaryExpression(BinaryExpression):
     def __init__(self, left, right, op):
-        check_expression_type(left, DataType.INT)
-        check_expression_type(right, DataType.INT)
+        assert_expression_type(left, DataType.INT)
+        assert_expression_type(right, DataType.INT)
         super().__init__(left, right, op)
 
 class BooleanBinaryExpression(BinaryExpression):
@@ -90,14 +77,14 @@ class BooleanBinaryExpression(BinaryExpression):
 
 class ComparisonBinaryExpression(BooleanBinaryExpression):
     def __init__(self, left, right, op):
-        check_expression_type(left, DataType.INT)
-        check_expression_type(right, DataType.INT)
+        assert_expression_type(left, DataType.INT)
+        assert_expression_type(right, DataType.INT)
         super().__init__(left, right, op)
 
 class ImpliesExpression(BooleanBinaryExpression):
     def __init__(self, left, right, op):
-        check_expression_type(left, DataType.BOOL)
-        check_expression_type(right, DataType.BOOL)
+        assert_expression_type(left, DataType.BOOL)
+        assert_expression_type(right, DataType.BOOL)
         super().__init__(left, right, op)
 
                                     ###### UNARY EXPRESSIONS ######
@@ -111,12 +98,12 @@ class UnaryExpression:
 
 class IntUnaryExpression(UnaryExpression):
     def __init__(self, expression, op):
-        check_expression_type(expression, DataType.INT)
+        assert_expression_type(expression, DataType.INT)
         super().__init__(expression, op)
 
 class BooleanUnaryExpression(UnaryExpression):
     def __init__(self, expression, op):
-        check_expression_type(expression, DataType.BOOL)
+        assert_expression_type(expression, DataType.BOOL)
         super().__init__(expression, op)
 
 class NotExpression(BooleanUnaryExpression):

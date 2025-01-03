@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Union, List
 
 from expr import BooleanUnaryExpression, BooleanBinaryExpression, BooleanLiteralExpression, IntUnaryExpression, \
-    IntBinaryExpression, IntLiteralExpression, VariableExpression, DataType, check_expression_type
+    IntBinaryExpression, IntLiteralExpression, VariableExpression, DataType, assert_expression_type
 
 
 class Statement:
@@ -31,7 +31,7 @@ class IntAssignmentStatement(AssignmentStatement):
 
 class WhileLoopStatement(Statement):
     def __init__(self, condition, body, invariant=None):
-        check_expression_type(condition, DataType.BOOL)
+        assert_expression_type(condition, DataType.BOOL)
         super().__init__()
 
         if invariant:
@@ -67,7 +67,7 @@ class IfThenElseStatement(Statement):
 
 class AnnotationStatement(Statement):
     def __init__(self, expression):
-        check_expression_type(expression, DataType.BOOL)
+        assert_expression_type(expression, DataType.BOOL)
         super().__init__()
         self.expression = expression
 
@@ -166,7 +166,7 @@ class FunctionDeclarationStatement(Statement):
 
 
     @abstractmethod
-    def check_valid_return_statement(self, return_statement):
+    def assert_valid_return_statement(self, return_statement):
         pass
 
 class ReturnStatement(Statement):
@@ -185,8 +185,8 @@ class IntFunctionDeclarationStatement(FunctionDeclarationStatement):
     def __repr__(self):
         return f"INT FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
 
-    def check_valid_return_statement(self, return_statement: ReturnStatement):
-        return check_expression_type(return_statement.expression, DataType.INT)
+    def assert_valid_return_statement(self, return_statement: ReturnStatement):
+        return assert_expression_type(return_statement.expression, DataType.INT)
 
 class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
     def __init__(self, function_name, parameter_list, body):
@@ -195,8 +195,8 @@ class BoolFunctionDeclarationStatement(FunctionDeclarationStatement):
     def __repr__(self):
         return f"BOOL FUNCTION {self.function_name} ({', '.join(self.parameter_list)}) {{ {self.body} }}"
 
-    def check_valid_return_statement(self, return_statement: ReturnStatement):
-        return check_expression_type(return_statement.expression, DataType.BOOL)
+    def assert_valid_return_statement(self, return_statement: ReturnStatement):
+        return assert_expression_type(return_statement.expression, DataType.BOOL)
 
 class Program:
     def __init__(self, statements):

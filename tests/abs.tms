@@ -1,0 +1,10 @@
+INT FUNCTION abs(INT x) {
+   @Pre TRUE;
+   @Post rv >= 0;
+    IF (x >= 0) {
+       return x;
+    } ELSE {
+       x:= 1 ;
+    }
+}
+
