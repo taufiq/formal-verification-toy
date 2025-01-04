@@ -189,8 +189,9 @@ def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
                 pass
 
         mapping['z3'] = z3
-        fol_statement = f"z3.Implies({Z3Serializer.serialize(pre)}, {Z3Serializer.serialize(post)})"
-        solver.add(z3.Not(eval(fol_statement, mapping)))
+        fol_statement_z3 = f"z3.Implies({Z3Serializer.serialize(pre)}, {Z3Serializer.serialize(post)})"
+        fol_statement = f"({pre}) => ({post})"
+        solver.add(z3.Not(eval(fol_statement_z3, mapping)))
         solver_result = solver.check()
         print("Original basic path")
         print(immutable_basic_path)

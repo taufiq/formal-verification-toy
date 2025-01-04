@@ -80,8 +80,8 @@ class BinaryExpression:
         self.op = op
 
     def __repr__(self):
-        if self.op in BINARY_OPERATOR_Z3_MAPPING:
-            return f"({self.left} {BINARY_OPERATOR_Z3_MAPPING[self.op]} {self.right})"
+        if self.op in BINARY_OPERATOR_TEXT_MAPPING:
+            return f"({self.left} {BINARY_OPERATOR_TEXT_MAPPING[self.op]} {self.right})"
         return f"({self.left} {self.op} {self.right})"
 
 class IntBinaryExpression(BinaryExpression):
@@ -213,4 +213,18 @@ BINARY_OPERATOR_Z3_MAPPING= {
     BinaryOperator.AND: "z3.And",
     BinaryOperator.OR: "z3.Or",
     BinaryOperator.IMPLIES: "z3.Implies",
+}
+
+BINARY_OPERATOR_TEXT_MAPPING= {
+    BinaryOperator.PLUS: "+",
+    BinaryOperator.MINUS: "-",
+    BinaryOperator.TIMES: "*",
+    BinaryOperator.EQUALS: "==",
+    BinaryOperator.LESS_THAN: "<",
+    BinaryOperator.LESS_THAN_EQUALS: "<=",
+    BinaryOperator.GREATER_THAN: ">",
+    BinaryOperator.GREATER_THAN_EQUALS: ">=",
+    BinaryOperator.AND: "^",
+    BinaryOperator.OR: "v",
+    BinaryOperator.IMPLIES: "=>",
 }
