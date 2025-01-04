@@ -1,24 +1,24 @@
 
 INT FUNCTION aFunction(INT a, INT b) {
     DECLARE (INT x, BOOL z);
-    @Pre a < b;
-    @Post a >= b;
-    @Loop a <= b;
+    @PRE a < b;
+    @POST a >= b;
+    @LOOP a <= b;
     WHILE (a < b) {
         a := a + 1;
     }
-    return a;
+    RETURN a;
 }
 
 INT FUNCTION randomFunction(INT a, INT b) {
-    @Pre a < b;
-    @Post a > b;
+    @PRE a < b;
+    @POST a > b;
     IF (a == 5) {
         a := b + 1;
     } ELSE {
         a := b + 2;
     }
-    return a;
+    RETURN a;
 };
 
 

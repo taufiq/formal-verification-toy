@@ -1,7 +1,7 @@
 INT FUNCTION simpleMul(INT a, INT b) {
     DECLARE (INT i, INT result);
-    @Pre a > 0 ^ b > 0;
-    @Post rv == a * b;
+    @PRE a > 0 ^ b > 0;
+    @POST rv == a * b;
     result := 0;
     i := a;
     @Loop (result + (i * b) == 0 + (a * b)) ^ (a > 0) ^ (i >= 0) ^ (result >= 0) ^ (b > 0);
@@ -9,5 +9,5 @@ INT FUNCTION simpleMul(INT a, INT b) {
         result := result + b;
         i := i - 1;
     }
-    return result;
+    RETURN result;
 }

@@ -133,8 +133,7 @@ def p_function_body(p):
     else:
         raise ParseError("Invalid function body")
 
-
-def p_return_statement(p):
+def p_return_statememnt(p):
     'return_statement : RETURN expression'
     p[0] = ReturnStatement(p[2])
 
@@ -182,11 +181,11 @@ def p_annotation(p):
                   | LOOP_ANNOTATION expression'''
     # if p[2].eval_type == "bool":
     expression = p[2]
-    if p[1] == '@Pre':
+    if p[1] == '@PRE':
         p[0] = PreAnnotationStatement(expression)
-    elif p[1] == '@Post':
+    elif p[1] == '@POST':
         p[0] = PostAnnotationStatement(expression)
-    elif p[1] == '@Loop':
+    elif p[1] == '@LOOP':
         p[0] = LoopAnnotationStatement(expression)
     else:
         p[0] = AnnotationStatement(expression)

@@ -1,11 +1,11 @@
 INT FUNCTION pos_double(INT x) {
     DECLARE (INT double_x);
-    @Pre x > 0;
-    @Post rv == 2 * x;
+    @PRE x > 0;
+    @POST rv == 2 * x;
     double_x := x;
-    @Loop double_x <= 2 * x;
+    @LOOP double_x <= 2 * x;
     WHILE (NOT (double_x == 2*x)) {
         double_x := double_x + 1;
     }
-    return double_x;
+    RETURN double_x;
 }

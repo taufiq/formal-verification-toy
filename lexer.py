@@ -71,7 +71,7 @@ def t_TRUTH_VALUES(t):
 
 
 def t_RETURN(t):
-    r'return'
+    r'RETURN'
     return t
 
 def t_COMPARATOR(t):
@@ -94,15 +94,15 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 def t_PRE_ANNOTATION(t):
-    r'\@Pre'
+    r'\@PRE'
     return t
 
 def t_POST_ANNOTATION(t):
-    r'\@Post'
+    r'\@POST'
     return t
 
 def t_LOOP_ANNOTATION(t):
-    r'\@Loop'
+    r'\@LOOP'
     return t
 
 def t_ASSUME(t):

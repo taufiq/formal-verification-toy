@@ -1,10 +1,10 @@
 INT FUNCTION abs(INT x) {
-   @Pre TRUE;
-   @Post rv >= 0;
+   @PRE TRUE;
+   @POST rv >= 0;
     IF (x >= 0) {
-       return x;
+       RETURN x;
     } ELSE {
-       x:= 1 ;
+       RETURN -x ;
     }
 }
 
