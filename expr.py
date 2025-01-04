@@ -30,19 +30,38 @@ class Z3Serializer:
                 return "False"
         return str(expression)
 
-def assert_expression_type(expression, expected_type):
-    if isinstance(expression, IntUnaryExpression) \
+
+def check_expression_type(expression, expected_type):
+    if (isinstance(expression, IntUnaryExpression) \
     or isinstance(expression, IntBinaryExpression) \
     or isinstance(expression, IntLiteralExpression) \
     or (isinstance(expression, VariableExpression) and expression.type == DataType.INT) \
-    or (isinstance(expression, ReturnValueVariableExpression)) \
+    or (isinstance(expression, ReturnValueVariableExpression))) \
     and (expected_type == DataType.INT):
         return True
-    elif isinstance(expression, BooleanUnaryExpression) \
+    elif (isinstance(expression, BooleanUnaryExpression) \
     or isinstance(expression, BooleanBinaryExpression) \
     or isinstance(expression, BooleanLiteralExpression) \
     or (isinstance(expression, VariableExpression) and expression.type == DataType.BOOL) \
-    or (isinstance(expression, ReturnValueVariableExpression)) \
+    or (isinstance(expression, ReturnValueVariableExpression))) \
+    and expected_type == DataType.BOOL:
+        return True
+    else:
+        return False
+
+def assert_expression_type(expression, expected_type):
+    if (isinstance(expression, IntUnaryExpression) \
+    or isinstance(expression, IntBinaryExpression) \
+    or isinstance(expression, IntLiteralExpression) \
+    or (isinstance(expression, VariableExpression) and expression.type == DataType.INT) \
+    or (isinstance(expression, ReturnValueVariableExpression))) \
+    and (expected_type == DataType.INT):
+        return True
+    elif (isinstance(expression, BooleanUnaryExpression) \
+    or isinstance(expression, BooleanBinaryExpression) \
+    or isinstance(expression, BooleanLiteralExpression) \
+    or (isinstance(expression, VariableExpression) and expression.type == DataType.BOOL) \
+    or (isinstance(expression, ReturnValueVariableExpression))) \
     and expected_type == DataType.BOOL:
         return True
     else:
@@ -77,9 +96,13 @@ class BooleanBinaryExpression(BinaryExpression):
 
 class ComparisonBinaryExpression(BooleanBinaryExpression):
     def __init__(self, left, right, op):
-        assert_expression_type(left, DataType.INT)
-        assert_expression_type(right, DataType.INT)
-        super().__init__(left, right, op)
+        if (check_expression_type(left, DataType.INT) and
+            check_expression_type(right, DataType.INT)) or \
+                (check_expression_type(left, DataType.BOOL) and
+                 check_expression_type(right, DataType.BOOL)):
+            super().__init__(left, right, op)
+        else:
+            raise InvalidExpressionType()
 
 class ImpliesExpression(BooleanBinaryExpression):
     def __init__(self, left, right, op):

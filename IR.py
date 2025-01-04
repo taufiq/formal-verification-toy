@@ -330,7 +330,7 @@ def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:
 
 def generate_basic_paths():
     global total
-    with open('tests/abs.tms') as f:
+    with open('tests/checker_board_pattern.tms') as f:
         input = f.read()
         program = parser.parse(input)
         statements = program.statements
