@@ -56,6 +56,22 @@ variables = {}
 # name -> [variables_dict]
 functions = {}
 
+
+def reset_functions():
+    global functions
+    functions = {}
+
+def set_functions(name, value):
+    global functions
+    functions[name] = value
+
+def get_functions(name):
+    global functions
+    return functions[name]
+
+def exists_functions(name):
+    return name in functions
+
 class ParseError(Exception):
     pass
 
@@ -119,7 +135,13 @@ def p_function_declaration(p):
         p[0] = IntFunctionDeclarationStatement(p[3], p[5], p[8])
     else:
         raise ParseError("Invalid function declaration")
-    functions[p[3]] = [copy.copy(variables)]
+
+    if exists_functions(p[3]):
+        raise ParseError("Functions should not have identical names.")
+
+
+    # functions[p[3]] = [copy.copy(variables)]
+    set_functions(p[3], [copy.copy(variables)])
     variables = {}
 
 
@@ -311,8 +333,8 @@ def p_if_then_else(p):
 precedence = (
     ('right', 'ASSIGNMENT'),
     ('left', 'IMPLIES'),
-    ('nonassoc', 'COMPARATOR'),
     ('left', 'BOOLEAN_OPERATOR'),
+    ('nonassoc', 'COMPARATOR'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES'),
     ('right', 'UMINUS'),  # Unary minus

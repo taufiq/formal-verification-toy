@@ -2,8 +2,8 @@ import copy
 from parser import *
 from expr import *
 from typing import Union, List
-from project_config import DEBUG, get_debug
 import z3
+
 
 
 class AnnotationFuncError(Exception):
@@ -146,12 +146,16 @@ def collector(statements:List[Statement], path:List[Statement], context:Union[No
     return
 
 
-def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
+def convert_to_z3(basic_paths, function:FunctionDeclarationStatement) -> bool:
     basic_paths = copy.deepcopy(basic_paths)
+    is_invalid = False
+
+    print("Validating function: " + function.function_name)
     for basic_path in basic_paths:
 
         pre, post = basic_path[0], basic_path[-1]
-        variables = functions[function.function_name][0]
+        variables = get_functions(function.function_name)[0]
+        # variables = functions[function.function_name][0]
 
         if isinstance(basic_path[-2], ReturnStatement):
             if isinstance(function, IntFunctionDeclarationStatement):
@@ -195,14 +199,16 @@ def convert_to_z3(basic_paths, function:FunctionDeclarationStatement):
         solver_result = solver.check()
         print("Original basic path")
         print(immutable_basic_path)
-        print("FOL")
+        print("VC")
         print(fol_statement)
         if solver_result == z3.sat:
+            is_invalid = True
             counter_example = solver.model()
             print("Invalid!")
             print("Counter example: ",counter_example)
         else:
             print("Valid!")
+    return not is_invalid
 
 def ensure_and_attach_loop_annotation(statements):
     '''This takes the loop annotation and merges it into
@@ -329,9 +335,10 @@ def ensure_pre_post_condition(pre_condition:AnnotationStatement, post_condition:
 
 
 
-def generate_basic_paths():
+def generate_basic_paths(file_path:str) -> bool:
     global total
-    with open('tests/checker_board_pattern.tms') as f:
+
+    with open(file_path) as f:
         input = f.read()
         program = parser.parse(input)
         statements = program.statements
@@ -343,8 +350,7 @@ def generate_basic_paths():
         ensure_return_statements(statements)
 
 
-        basic_paths = []
-
+        is_invalid = False
         for func_index in range(0,len(statements)):
 
             function = statements[func_index]
@@ -362,10 +368,11 @@ def generate_basic_paths():
 
             collector(function.get_body_after_annotations(),[pre_condition],Context(pre_condition,post_condition,None))
             # basic_paths.extend(total)
-            convert_to_z3(total,function)
+            if not(convert_to_z3(total,function)):
+                is_invalid = True
             total = []
 
-        return
+        return not is_invalid
 
 
 def print_paths(all_paths):

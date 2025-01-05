@@ -6,7 +6,7 @@ reserved = {
    "INT" : "INT_TYPE",
    "BOOL" : "BOOL_TYPE",
    'IF': 'IF',
-   'THEN': 'THEN',
+   # 'THEN': 'THEN',
    'ELSE': 'ELSE',
    "FUNCTION": "FUNCTION",
    "WHILE": "WHILE",
@@ -38,7 +38,7 @@ tokens = [
 #    'GREATER_THAN',
 #    'GREATER_THAN_EQUAL',
    'ASSIGNMENT',
-   'TRUTH_VALUES',
+   # 'TRUTH_VALUES',
    # 'INT_TYPE',
    # 'BOOL_TYPE',
    'ASSUME',
@@ -63,12 +63,12 @@ t_SEMICOLON = r';'
 
 
 
-
-def t_TRUTH_VALUES(t):
-    r'(TRUE|FALSE)'
-    t.type = reserved.get(t.value,'TRUTH_VALUES')
-    return t
-
+#
+# def t_TRUTH_VALUES(t):
+#     r'(TRUE|FALSE)'
+#     t.type = reserved.get(t.value,'TRUTH_VALUES')
+#     return t
+#
 
 def t_RETURN(t):
     r'RETURN'

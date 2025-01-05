@@ -19,7 +19,7 @@ INT FUNCTION randomFunction(INT a, INT b) {
         a := b + 2;
     }
     RETURN a;
-};
+}
 
 
 
