@@ -1,0 +1,43 @@
+import os
+from logging import exception
+from os import walk
+from IR import *
+from parser import *
+
+SHOULD_PASS = "should_pass"
+SHOULD_FAIL = "should_fail"
+SHOULD_THROW_ERROR = "should_throw_error"
+
+
+for (dirpath, dirnames, filenames) in walk(SHOULD_PASS):
+
+    for filename in filenames:
+        reset_functions()
+        print("")
+        print("### running tests for " + filename + " ###")
+        print("")
+        assert(generate_basic_paths(os.path.join(dirpath, filename)))
+
+for (dirpath, dirnames, filenames) in walk(SHOULD_FAIL):
+    for filename in filenames:
+        reset_functions()
+        print("")
+        print("### running tests for " + filename + " ###")
+        print("")
+        assert (not(generate_basic_paths(os.path.join(dirpath, filename))))
+
+
+for (dirpath, dirnames, filenames) in walk(SHOULD_THROW_ERROR):
+    for filename in filenames:
+        reset_functions()
+        print("")
+        print("### running tests for " + filename + " ###")
+        print("")
+        try:
+            generate_basic_paths(os.path.join(dirpath, filename))
+        except BaseException as e:
+            assert(True)
+            print(e)
+        else:
+            assert(False)
+

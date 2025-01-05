@@ -6,10 +6,13 @@ reserved = {
    "INT" : "INT_TYPE",
    "BOOL" : "BOOL_TYPE",
    'IF': 'IF',
-   'THEN': 'THEN',
+   # 'THEN': 'THEN',
    'ELSE': 'ELSE',
    "FUNCTION": "FUNCTION",
-   "WHILE": "WHILE"
+   "WHILE": "WHILE",
+    "NOT": "NOT",
+    "DECLARE": "DECLARE",
+    "NOP": "NOP"
 }
 # List of token names.   This is always required
 tokens = [
@@ -23,7 +26,10 @@ tokens = [
    'LBRACE',
    'RBRACE',
    'COMMA',
-   'ANNOTATION',
+   'PRE_ANNOTATION',
+   'POST_ANNOTATION',
+   # 'ANNOTATION',
+   'LOOP_ANNOTATION',
    'VARIABLE',
    'COMPARATOR',
    'BOOLEAN_OPERATOR',
@@ -32,12 +38,13 @@ tokens = [
 #    'GREATER_THAN',
 #    'GREATER_THAN_EQUAL',
    'ASSIGNMENT',
-   'TRUTH_VALUES',
+   # 'TRUTH_VALUES',
    # 'INT_TYPE',
    # 'BOOL_TYPE',
    'ASSUME',
    'RETURN',
    'IMPLIES',
+    'SEMICOLON'
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -52,25 +59,23 @@ t_RBRACE  = r'\}'
 t_ASSIGNMENT = r':='
 t_IMPLIES = r'=>'
 t_COMMA = r','
+t_SEMICOLON = r';'
 
 
 
-
-def t_TRUTH_VALUES(t):
-    r'(TRUE|FALSE)'
-    t.type = reserved.get(t.value,'TRUTH_VALUES')
-    return t
-
-def t_ASSUME(t):
-    r'assume'
-    return t
+#
+# def t_TRUTH_VALUES(t):
+#     r'(TRUE|FALSE)'
+#     t.type = reserved.get(t.value,'TRUTH_VALUES')
+#     return t
+#
 
 def t_RETURN(t):
-    r'return'
+    r'RETURN'
     return t
 
 def t_COMPARATOR(t):
-    r'(>=|<=|<|>)'
+    r'(>=|<=|<|>|==)'
     return t
 
 def t_BOOLEAN_OPERATOR(t):
@@ -88,9 +93,24 @@ def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-def t_ANNOTATION(t):
+def t_PRE_ANNOTATION(t):
+    r'\@PRE'
+    return t
+
+def t_POST_ANNOTATION(t):
+    r'\@POST'
+    return t
+
+def t_LOOP_ANNOTATION(t):
+    r'\@LOOP'
+    return t
+
+def t_ASSUME(t):
     r'\@'
     return t
+# def t_ANNOTATION(t):
+#     r'\@'
+#     return t
 
 def t_VARIABLE(t):
     r'\w+'
