@@ -19,7 +19,7 @@ You can write code in `.tpl` files and verify them.
 
 ## Detailed Description
 
-You can refer to the report to see a more in-depth explanation of the language. It is located under `/report`.
+You can refer to the report to see a more in-depth explanation of the language. It is located under `/report/report.pdf`.
 
 ## Quick Start
 
