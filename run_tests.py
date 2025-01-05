@@ -4,9 +4,9 @@ from os import walk
 from IR import *
 from parser import *
 
-SHOULD_PASS = "should_pass"
-SHOULD_FAIL = "should_fail"
-SHOULD_THROW_ERROR = "should_throw_error"
+SHOULD_PASS = "tests/should_pass"
+SHOULD_FAIL = "tests/should_fail"
+SHOULD_THROW_ERROR = "tests/should_throw_error"
 
 
 for (dirpath, dirnames, filenames) in walk(SHOULD_PASS):
