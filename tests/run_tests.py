@@ -17,6 +17,8 @@ for (dirpath, dirnames, filenames) in walk(SHOULD_PASS):
         print("### running tests for " + filename + " ###")
         print("")
         assert(generate_basic_paths(os.path.join(dirpath, filename)))
+        print("")
+        print("# Test passed for " + filename + " #")
 
 for (dirpath, dirnames, filenames) in walk(SHOULD_FAIL):
     for filename in filenames:
@@ -25,7 +27,7 @@ for (dirpath, dirnames, filenames) in walk(SHOULD_FAIL):
         print("### running tests for " + filename + " ###")
         print("")
         assert (not(generate_basic_paths(os.path.join(dirpath, filename))))
-
+        print("# Test passed for " + filename + " #")
 
 for (dirpath, dirnames, filenames) in walk(SHOULD_THROW_ERROR):
     for filename in filenames:
@@ -38,6 +40,8 @@ for (dirpath, dirnames, filenames) in walk(SHOULD_THROW_ERROR):
         except BaseException as e:
             assert(True)
             print(e)
+            print("")
+            print("# Test passed for " + filename + " #")
         else:
             assert(False)
 
