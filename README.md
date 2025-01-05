@@ -25,7 +25,7 @@ You can refer to the report to see a more in-depth explanation of the language. 
 
 All instructions should be placed inside a function declaration, function calls are not supported.
 
-Currently we only support `INT` and `BOOL` return types.
+Currently we only support `INT` and `BOOL`types.
 
 Pre & Post Conditions can be specified using our `@PRE` and `@POST` annotations.
 
