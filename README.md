@@ -23,7 +23,7 @@ You can refer to the report to see a more in-depth explanation of the language. 
 
 ## Quick Start
 
-You can declare functions in our language and declare the return type.
+All instructions should be placed inside a function declaration, function calls are not supported.
 
 Currently we only support `INT` and `BOOL` return types.
 
@@ -32,13 +32,12 @@ Pre & Post Conditions can be specified using our `@PRE` and `@POST` annotations.
 If you would like to verify a property of the return value you can refer to it using
 `rv` (As shown in the example below).
 
-In this example we have a absolute function and we want to verify that
-the return value is >= 0.
+In this example we want to verify if the function abs returns the  absolute value of the variable x.
 
 ```
 INT FUNCTION abs(INT x) {
    @PRE TRUE;
-   @POST rv >= 0;
+   @POST rv >= 0 ^ rv == x v rv == -x;
     IF (x >= 0) {
        RETURN x;
     } ELSE {
@@ -51,7 +50,7 @@ INT FUNCTION abs(INT x) {
 
 We also support loop invariants!
 
-To verify some invariant of loops, you can use the `@LOOP` annotation as shown below.
+To verify an invariant of a loop, you can use the `@LOOP` annotation as shown below.
 
 ```
 INT FUNCTION aFunction(INT a, INT b) {
